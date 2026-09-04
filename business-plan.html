@@ -3,28 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Business Plan — Loren & Sarah</title>
+    <title>Business Plan & Brand Studio — Loren & Sarah</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
             --bg: #0a0a0a;
-            --surface: #111;
-            --surface-2: #1a1a1a;
-            --border: #222;
-            --border-light: #333;
-            --text: #e0e0e0;
-            --text-muted: #888;
-            --text-dim: #555;
-            --accent: #c9a87c;
-            --accent-dim: #8a7355;
-            --pink: #d4727e;
-            --green: #7ec9a0;
-            --blue: #7ea8c9;
-            --purple: #a07ec9;
-            --red: #c97e7e;
+            --surface: #121212;
+            --surface-2: #1c1c1c;
+            --surface-3: #262626;
+            --border: #262626;
+            --border-light: #383838;
+            --text: #e2e2e2;
+            --text-muted: #949494;
+            --text-dim: #5c5c5c;
+            --accent: #d8b284;
+            --accent-dim: #997850;
+            --pink: #e07a88;
+            --green: #82d4a6;
+            --blue: #86b4d8;
+            --purple: #b08cd8;
+            --red: #d88282;
         }
 
         html { scroll-behavior: smooth; }
@@ -40,74 +41,117 @@
 
         /* ===== HERO ===== */
         .hero {
-            min-height: 100vh;
+            min-height: 85vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 2rem;
+            padding: 3rem 1.5rem;
             position: relative;
             overflow: hidden;
+            border-bottom: 1px solid var(--border);
         }
 
         .hero::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(ellipse at 30% 50%, rgba(201,168,124,0.06) 0%, transparent 60%),
-                        radial-gradient(ellipse at 70% 50%, rgba(212,114,126,0.04) 0%, transparent 60%);
+            background: radial-gradient(ellipse at 30% 40%, rgba(216,178,132,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 60%, rgba(224,122,136,0.06) 0%, transparent 60%);
             pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: rgba(216,178,132,0.08);
+            border: 1px solid rgba(216,178,132,0.25);
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            margin-bottom: 1.5rem;
         }
 
         .hero h1 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-size: clamp(2.4rem, 6.5vw, 4.6rem);
             font-weight: 400;
             letter-spacing: 0.02em;
-            margin-bottom: 0.5rem;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeUp 1s 0.3s forwards;
+            margin-bottom: 0.6rem;
+            line-height: 1.15;
+            transition: color 0.3s;
         }
 
-        .hero h1 span { color: var(--accent); }
+        .hero h1 span.accent { color: var(--accent); }
 
         .hero .subtitle {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
-            letter-spacing: 0.2em;
+            letter-spacing: 0.25em;
             text-transform: uppercase;
-            margin-bottom: 2rem;
-            opacity: 0;
-            animation: fadeUp 1s 0.6s forwards;
+            margin-bottom: 1.5rem;
+            font-weight: 300;
         }
 
-        .hero .scroll-hint {
-            position: absolute;
-            bottom: 2rem;
-            font-size: 0.7rem;
+        .hero-tagline-preview {
+            max-width: 600px;
+            font-style: italic;
             color: var(--text-dim);
-            letter-spacing: 0.2em;
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            min-height: 1.6em;
+            transition: color 0.3s;
+        }
+        .hero-tagline-preview.active { color: var(--accent); }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            opacity: 0;
-            animation: fadeUp 1s 1.2s forwards, pulse 2s 2.5s infinite;
+            padding: 0.65rem 1.25rem;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--border-light);
+            background: var(--surface);
+            color: var(--text);
         }
 
-        .hero .scroll-hint::after {
-            content: '↓';
-            display: block;
-            margin-top: 0.5rem;
-            font-size: 1rem;
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--surface-2);
         }
 
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 700;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+        .btn-primary:hover {
+            background: #e8cbb0;
+            color: #000;
+            border-color: #e8cbb0;
         }
 
         /* ===== NAVIGATION ===== */
@@ -115,12 +159,12 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(10,10,10,0.9);
+            background: rgba(10,10,10,0.92);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
-            padding: 0.8rem 1rem;
+            padding: 0.7rem 1rem;
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
             overflow-x: auto;
             justify-content: center;
             flex-wrap: wrap;
@@ -129,29 +173,56 @@
         .plan-nav a {
             color: var(--text-dim);
             text-decoration: none;
-            font-size: 0.7rem;
-            letter-spacing: 0.15em;
+            font-size: 0.68rem;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            padding: 0.4rem 0.8rem;
+            padding: 0.35rem 0.7rem;
             border: 1px solid transparent;
             border-radius: 2px;
-            transition: all 0.3s;
+            transition: all 0.2s;
             white-space: nowrap;
         }
 
-        .plan-nav a:hover {
+        .plan-nav a:hover, .plan-nav a.highlight {
             color: var(--accent);
             border-color: var(--accent-dim);
         }
 
+        /* ===== FLOATING SAVE BANNER ===== */
+        .save-banner {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 200;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .save-indicator {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--green);
+            letter-spacing: 0.1em;
+            opacity: 0;
+            transition: opacity 0.3s;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid rgba(130,212,166,0.3);
+            padding: 0.4rem 0.8rem;
+            border-radius: 3px;
+        }
+
+        .save-indicator.show { opacity: 1; }
+
         /* ===== SECTIONS ===== */
         .section {
-            max-width: 800px;
+            max-width: 860px;
             margin: 0 auto;
-            padding: 5rem 1.5rem;
+            padding: 4.5rem 1.5rem;
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s, transform 0.8s;
+            transform: translateY(25px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
         }
 
         .section.visible {
@@ -159,35 +230,261 @@
             transform: translateY(0);
         }
 
+        .section-header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
         .section-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 4rem;
-            color: var(--border);
-            font-weight: 700;
-            line-height: 1;
-            margin-bottom: 0.5rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+            display: block;
         }
 
         .section h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 400;
-            margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
         .section .section-lead {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 2.5rem;
-            max-width: 500px;
+            max-width: 580px;
+            margin-top: 0.4rem;
         }
 
         .divider {
-            width: 40px;
+            width: 50px;
             height: 1px;
-            background: var(--accent-dim);
-            margin: 4rem auto;
+            background: var(--border-light);
+            margin: 3.5rem auto;
         }
+
+        /* ===== LIVE BRAND STUDIO / WORKSPACE ===== */
+        .workspace-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .workspace-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #fff;
+        }
+
+        .live-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: rgba(130,212,166,0.1);
+            color: var(--green);
+            border: 1px solid rgba(130,212,166,0.25);
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .live-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--green);
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        @media (max-width: 680px) {
+            .field-row { grid-template-columns: 1fr; }
+        }
+
+        .field-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .field-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.45rem;
+        }
+
+        .field-subtext {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+        }
+
+        .text-input, .textarea-input, .select-input {
+            width: 100%;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            padding: 0.75rem 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .text-input:focus, .textarea-input:focus, .select-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--surface-3);
+        }
+
+        .textarea-input {
+            min-height: 90px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .name-hero-input {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            letter-spacing: 0.03em;
+            color: #fff;
+            padding: 0.85rem 1rem;
+            border-color: var(--border-light);
+        }
+
+        .name-status-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .chip-btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 0.3rem 0.7rem;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip-btn:hover {
+            color: var(--text);
+            border-color: var(--border-light);
+        }
+
+        .chip-btn.active {
+            background: rgba(216,178,132,0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .brand-preview-box {
+            background: #000;
+            border: 1px dashed var(--border-light);
+            padding: 1.5rem;
+            border-radius: 3px;
+            text-align: center;
+            margin-top: 0.8rem;
+        }
+
+        .brand-preview-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .brand-preview-caption {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        /* ===== DECISION STATUS PILLS / SUMMARY DASHBOARD ===== */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .dash-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1.1rem 0.9rem;
+            text-align: center;
+            border-radius: 3px;
+            transition: all 0.25s;
+        }
+
+        .dash-card .dash-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-dim);
+        }
+
+        .dash-card .dash-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .dash-card.decided { border-color: rgba(130,212,166,0.4); }
+        .dash-card.decided .dash-value { color: var(--green); }
+        .dash-card.progress { border-color: rgba(216,178,132,0.4); }
+        .dash-card.progress .dash-value { color: var(--accent); }
+        .dash-card.pending .dash-value { color: var(--red); }
 
         /* ===== FOUNDATION TABLE ===== */
         .foundation-grid {
@@ -197,11 +494,13 @@
             background: var(--border);
             border: 1px solid var(--border);
             margin-bottom: 2rem;
+            border-radius: 3px;
+            overflow: hidden;
         }
 
         .foundation-item {
             background: var(--surface);
-            padding: 1.2rem 1.5rem;
+            padding: 1.1rem 1.4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -213,17 +512,18 @@
         }
 
         .foundation-item .status {
-            font-size: 0.75rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.68rem;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             padding: 0.2rem 0.6rem;
             border-radius: 2px;
         }
 
-        .status.done { background: rgba(126,201,160,0.15); color: var(--green); }
-        .status.building { background: rgba(201,168,124,0.15); color: var(--accent); }
-        .status.tbd { background: rgba(201,126,126,0.15); color: var(--red); }
-        .status.progress { background: rgba(160,126,201,0.15); color: var(--purple); }
+        .status.done { background: rgba(130,212,166,0.12); color: var(--green); }
+        .status.building { background: rgba(216,178,132,0.12); color: var(--accent); }
+        .status.tbd { background: rgba(216,130,130,0.12); color: var(--red); }
+        .status.progress { background: rgba(176,140,216,0.12); color: var(--purple); }
 
         @media (max-width: 600px) {
             .foundation-grid { grid-template-columns: 1fr; }
@@ -232,58 +532,68 @@
         /* ===== ACCORDION / QUESTIONS ===== */
         .question-card {
             border: 1px solid var(--border);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            border-radius: 3px;
             overflow: hidden;
-            transition: border-color 0.3s;
+            transition: border-color 0.25s;
         }
 
-        .question-card:hover {
-            border-color: var(--border-light);
-        }
+        .question-card:hover { border-color: var(--border-light); }
+        .question-card.has-answer { border-color: rgba(130,212,166,0.35); }
 
         .question-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.2rem 1.5rem;
+            padding: 1.15rem 1.4rem;
             cursor: pointer;
             user-select: none;
             background: var(--surface);
-            transition: background 0.3s;
+            transition: background 0.25s;
         }
 
-        .question-header:hover {
-            background: var(--surface-2);
-        }
+        .question-header:hover { background: var(--surface-2); }
 
         .question-header h3 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
         }
 
+        .question-header .answered-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            display: none;
+            flex-shrink: 0;
+            box-shadow: 0 0 6px var(--green);
+        }
+
+        .question-card.has-answer .answered-dot { display: inline-block; }
+
         .question-header .icon {
-            font-size: 1.2rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
             color: var(--text-dim);
-            transition: transform 0.3s;
+            transition: transform 0.25s;
             flex-shrink: 0;
             margin-left: 1rem;
         }
 
-        .question-card.open .question-header .icon {
-            transform: rotate(45deg);
-        }
+        .question-card.open .question-header .icon { transform: rotate(45deg); }
 
         .question-body {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.5s ease;
+            transition: max-height 0.4s ease;
             background: var(--bg);
         }
 
-        .question-card.open .question-body {
-            max-height: 800px;
-        }
+        .question-card.open .question-body { max-height: 1400px; }
 
         .question-body-inner {
             padding: 1.5rem;
@@ -295,10 +605,11 @@
         .question-body-inner ul {
             list-style: none;
             padding: 0;
+            margin-bottom: 1.2rem;
         }
 
         .question-body-inner li {
-            padding: 0.4rem 0;
+            padding: 0.35rem 0;
             padding-left: 1.2rem;
             position: relative;
         }
@@ -310,88 +621,75 @@
             color: var(--accent-dim);
         }
 
+        .answer-area {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .answer-area label {
+            display: block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
         /* ===== CALLOUT BOXES ===== */
         .callout {
-            padding: 1.2rem 1.5rem;
-            margin: 1.5rem 0;
+            padding: 1.2rem 1.4rem;
+            margin: 1.2rem 0;
             border-left: 2px solid;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            border-radius: 0 3px 3px 0;
         }
 
-        .callout.warning {
-            border-color: var(--pink);
-            background: rgba(212,114,126,0.05);
-            color: var(--pink);
-        }
-
-        .callout.tip {
-            border-color: var(--green);
-            background: rgba(126,201,160,0.05);
-            color: var(--green);
-        }
-
-        .callout.important {
-            border-color: var(--accent);
-            background: rgba(201,168,124,0.05);
-            color: var(--accent);
-        }
-
-        .callout.idea {
-            border-color: var(--purple);
-            background: rgba(160,126,201,0.05);
-            color: var(--purple);
-        }
+        .callout.warning { border-color: var(--pink); background: rgba(224,122,136,0.05); color: #f09ea8; }
+        .callout.tip { border-color: var(--green); background: rgba(130,212,166,0.05); color: #a4e6c0; }
+        .callout.important { border-color: var(--accent); background: rgba(216,178,132,0.05); color: #e4c49d; }
+        .callout.idea { border-color: var(--purple); background: rgba(176,140,216,0.05); color: #cfb3ee; }
 
         .callout strong {
             display: block;
             margin-bottom: 0.3rem;
-            font-size: 0.7rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.68rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
         }
 
-        /* ===== CHANNEL DIAGRAM ===== */
+        /* ===== CHANNELS ===== */
         .channels {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 0.9rem;
             margin: 2rem 0;
         }
 
         .channel-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            padding: 1.5rem;
+            padding: 1.4rem;
             text-align: center;
-            transition: border-color 0.3s, transform 0.3s;
+            border-radius: 3px;
+            transition: all 0.25s;
         }
 
         .channel-card:hover {
             border-color: var(--accent-dim);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
-        .channel-card .channel-icon {
-            font-size: 1.8rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .channel-card h4 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-        }
-
-        .channel-card p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
+        .channel-card .channel-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+        .channel-card h4 { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 400; margin-bottom: 0.4rem; }
+        .channel-card p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
         .channel-card .priority {
             margin-top: 0.8rem;
-            font-size: 0.65rem;
-            letter-spacing: 0.15em;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
         }
 
@@ -400,69 +698,53 @@
         .priority.optional { color: var(--text-dim); }
 
         /* ===== TIMELINE ===== */
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
-            margin: 2rem 0;
-        }
+        .timeline { position: relative; padding-left: 2rem; margin: 2rem 0; }
+        .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--border); }
 
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: var(--border);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -2rem;
-            top: 0.5rem;
-            width: 7px;
-            height: 7px;
-            background: var(--accent-dim);
-            border-radius: 50%;
-            transform: translateX(-3px);
-        }
+        .timeline-item { position: relative; margin-bottom: 2rem; padding-bottom: 1rem; }
+        .timeline-item::before { content: ''; position: absolute; left: -2rem; top: 0.5rem; width: 7px; height: 7px; background: var(--accent); border-radius: 50%; transform: translateX(-3px); }
 
         .timeline-item h4 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 400;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.7rem;
             color: var(--accent);
         }
 
-        .timeline-item ul {
-            list-style: none;
-        }
+        .timeline-item ul { list-style: none; }
 
         .timeline-item li {
-            padding: 0.3rem 0;
+            padding: 0.35rem 0;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             cursor: pointer;
             transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .timeline-item li::before {
-            content: '○ ';
-            color: var(--text-dim);
-            transition: color 0.2s;
+        .timeline-checkbox {
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--border-light);
+            border-radius: 2px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
 
-        .timeline-item li.checked::before {
-            content: '● ';
-            color: var(--green);
+        .timeline-item li.checked .timeline-checkbox {
+            background: var(--green);
+            border-color: var(--green);
+            color: #000;
         }
 
         .timeline-item li.checked {
@@ -470,314 +752,413 @@
             text-decoration: line-through;
         }
 
-        /* ===== REVENUE TABLE ===== */
-        .revenue-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 2rem 0;
-            font-size: 0.85rem;
-        }
-
-        .revenue-table th {
-            text-align: left;
-            padding: 0.8rem 1rem;
-            border-bottom: 1px solid var(--border-light);
-            color: var(--text-muted);
-            font-weight: 400;
-            font-size: 0.7rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-        }
-
-        .revenue-table td {
-            padding: 0.8rem 1rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-muted);
-        }
-
-        .revenue-table tr:hover td {
-            background: var(--surface);
-        }
-
-        .revenue-table .scenario {
-            color: var(--text);
-            font-family: 'Playfair Display', serif;
-        }
-
-        .revenue-table .net {
-            color: var(--green);
-            font-weight: 500;
-        }
-
-        /* ===== GAPS / RED FLAGS ===== */
-        .gap-list {
-            counter-reset: gaps;
-        }
-
-        .gap-item {
-            display: flex;
-            gap: 1rem;
-            padding: 1.2rem 0;
-            border-bottom: 1px solid var(--border);
-            align-items: flex-start;
-        }
-
-        .gap-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--pink);
-            flex-shrink: 0;
-            width: 2rem;
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        .gap-item p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .gap-item p strong {
-            color: var(--text);
-        }
-
-        /* ===== JEWELRY SECTION ===== */
-        .product-lines {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        @media (max-width: 600px) {
-            .product-lines { grid-template-columns: 1fr; }
-        }
+        /* ===== PRODUCT LINES ===== */
+        .product-lines { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 2rem 0; }
+        @media (max-width: 600px) { .product-lines { grid-template-columns: 1fr; } }
 
         .product-line {
+            background: var(--surface);
             border: 1px solid var(--border);
-            padding: 2rem;
+            padding: 1.6rem;
             position: relative;
-            overflow: hidden;
+            border-radius: 3px;
         }
 
-        .product-line::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-        }
-
+        .product-line::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
         .product-line.vintage::before { background: var(--accent); }
         .product-line.jewelry::before { background: var(--purple); }
         .product-line.original::before { background: var(--pink); }
         .product-line.objects::before { background: var(--blue); }
 
-        .product-line h4 {
-            font-family: 'Playfair Display', serif;
-            font-weight: 400;
-            font-size: 1.1rem;
-            margin-bottom: 0.3rem;
-        }
+        .product-line h4 { font-family: 'Playfair Display', serif; font-weight: 400; font-size: 1.15rem; margin-bottom: 0.25rem; }
+        .product-line .who { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.8rem; }
+        .product-line p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
 
-        .product-line .who {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
+        /* ===== REVENUE TABLE ===== */
+        .revenue-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2.5rem; font-size: 0.85rem; }
+        .revenue-table th { text-align: left; padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--border-light); color: var(--text-muted); font-family: 'Space Mono', monospace; font-weight: 400; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; }
+        .revenue-table td { padding: 0.85rem 0.9rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+        .revenue-table tr:hover td { background: var(--surface); }
+        .revenue-table .scenario { color: var(--text); font-family: 'Playfair Display', serif; }
+        .revenue-table .net { color: var(--green); font-weight: 600; font-family: 'Space Mono', monospace; }
 
-        .product-line p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
+        /* ===== GAPS ===== */
+        .gap-list { counter-reset: gaps; }
+        .gap-item { display: flex; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+        .gap-number { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: var(--pink); flex-shrink: 0; width: 2rem; text-align: center; }
+        .gap-item p { color: var(--text-muted); font-size: 0.9rem; }
+        .gap-item p strong { color: var(--text); }
+
+        /* ===== NOTES ===== */
+        .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        @media (max-width: 680px) { .notes-grid { grid-template-columns: 1fr; } }
 
         /* ===== FOOTER ===== */
-        .plan-footer {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--text-dim);
+        .plan-footer { text-align: center; padding: 4rem 2rem 5rem; color: var(--text-dim); font-size: 0.75rem; letter-spacing: 0.15em; border-top: 1px solid var(--border); font-family: 'Space Mono', monospace; }
+        .plan-footer .heart { color: var(--pink); }
+
+        .toast {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--surface-3);
+            border: 1px solid var(--accent);
+            color: #fff;
+            font-family: 'Space Mono', monospace;
             font-size: 0.75rem;
-            letter-spacing: 0.15em;
+            padding: 0.7rem 1.4rem;
+            border-radius: 999px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 9999;
         }
 
-        .plan-footer .heart { color: var(--pink); }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
 </head>
 <body>
 
+    <div id="toast" class="toast">✓ Copied to clipboard</div>
+
     <!-- ===== HERO ===== -->
     <section class="hero">
-        <h1>Loren <span>&</span> Sarah</h1>
-        <p class="subtitle">Business Plan & Strategy Guide</p>
-        <div class="scroll-hint">Begin</div>
+        <div class="hero-badge">⚡ Living Brand Canvas</div>
+        <h1 id="hero-title">Loren <span class="accent">&</span> Sarah</h1>
+        <p class="subtitle" id="hero-subtitle">Vintage Archive & Chainmail Studio</p>
+        <p class="hero-tagline-preview" id="hero-tagline-preview">"Curated historical eras & handmade armor jewelry"</p>
+
+        <div class="hero-actions">
+            <a href="#workspace" class="btn btn-primary">✏️ Edit Decisions</a>
+            <button class="btn" onclick="copySummary()">📋 Copy Summary</button>
+            <a href="/index.html" class="btn">🌐 View Website Skeleton</a>
+        </div>
     </section>
 
     <!-- ===== NAV ===== -->
     <nav class="plan-nav">
-        <a href="#foundation">Foundation</a>
-        <a href="#questions">Big Questions</a>
-        <a href="#products">Product Lines</a>
-        <a href="#channels">Channels</a>
-        <a href="#timeline">Timeline</a>
-        <a href="#blind-spots">Blind Spots</a>
-        <a href="#revenue">Revenue</a>
-        <a href="#gaps">Gaps</a>
+        <a href="#workspace" class="highlight">✨ Brand Studio</a>
+        <a href="#foundation">01. Foundation</a>
+        <a href="#questions">02. Big Questions</a>
+        <a href="#products">03. Products</a>
+        <a href="#channels">04. Channels</a>
+        <a href="#timeline">05. Timeline</a>
+        <a href="#blind-spots">06. Blind Spots</a>
+        <a href="#revenue">07. Revenue</a>
+        <a href="#gaps">08. Gaps</a>
+        <a href="#notes">09. Notes</a>
     </nav>
+
+    <!-- ===== SAVE BANNER ===== -->
+    <div class="save-banner">
+        <div class="save-indicator" id="save-indicator">✓ Auto-saved</div>
+        <button class="btn" style="font-size:0.65rem; padding:0.4rem 0.8rem;" onclick="copySummary()">📋 Copy</button>
+        <button class="btn" style="font-size:0.65rem; padding:0.4rem 0.8rem; color:var(--red);" onclick="clearAll()">Reset</button>
+    </div>
+
+    <!-- ===== 00. LIVE BRAND STUDIO / DECISIONS WORKSPACE ===== -->
+    <section class="section" id="workspace">
+        <div class="section-header-wrap">
+            <div>
+                <span class="section-number">00 — Interactive Deck</span>
+                <h2>Brand Studio & Decision Workspace</h2>
+                <p class="section-lead">As you and Sarah brainstorm, fill in this section. It updates the hero above and saves automatically to your device.</p>
+            </div>
+            <div>
+                <span class="live-tag">Auto-Saving Enabled</span>
+            </div>
+        </div>
+
+        <!-- Quick Summary Cards -->
+        <div class="dashboard" id="dashboard">
+            <div class="dash-card pending" id="dash-name">
+                <div class="dash-value">?</div>
+                <div class="dash-label">Brand Name</div>
+            </div>
+            <div class="dash-card pending" id="dash-tagline">
+                <div class="dash-value">?</div>
+                <div class="dash-label">Concept / Ethos</div>
+            </div>
+            <div class="dash-card pending" id="dash-pricing">
+                <div class="dash-value">?</div>
+                <div class="dash-label">Price Bracket</div>
+            </div>
+            <div class="dash-card pending" id="dash-lily">
+                <div class="dash-value">?</div>
+                <div class="dash-label">Lily Art Direction</div>
+            </div>
+            <div class="dash-card pending" id="dash-jewelry">
+                <div class="dash-value">?</div>
+                <div class="dash-label">Jewelry Line</div>
+            </div>
+            <div class="dash-card pending" id="dash-structure">
+                <div class="dash-value">?</div>
+                <div class="dash-label">Partnership Split</div>
+            </div>
+        </div>
+
+        <!-- BRAND IDENTITY CARD -->
+        <div class="workspace-card">
+            <div class="workspace-header">
+                <h3>1. The Brand Identity & Name</h3>
+                <span style="font-family:'Space Mono'; font-size:0.75rem; color:var(--accent);">Priority #1</span>
+            </div>
+
+            <div class="field-group">
+                <div class="field-label">
+                    <span>Working Name / Chosen Name</span>
+                    <span class="field-subtext">Live updates the site header</span>
+                </div>
+                <input type="text" id="brand-name-input" class="text-input name-hero-input" data-key="brand-name" placeholder="e.g. Obscura Archives, Maison Anonyme, Relic & Mail...">
+                
+                <div class="name-status-toggle">
+                    <span style="font-size:0.7rem; color:var(--text-dim); align-self:center; font-family:'Space Mono'; margin-right:0.3rem;">Status:</span>
+                    <button type="button" class="chip-btn" data-status="brainstorming" onclick="setNameStatus('brainstorming')">💭 Brainstorming</button>
+                    <button type="button" class="chip-btn" data-status="shortlist" onclick="setNameStatus('shortlist')">🎯 Top 3 Shortlist</button>
+                    <button type="button" class="chip-btn" data-status="locked" onclick="setNameStatus('locked')">🔒 Decided & Locked In</button>
+                </div>
+
+                <!-- Live Logo Mockup -->
+                <div class="brand-preview-box">
+                    <div class="brand-preview-caption">Live Website Header Preview</div>
+                    <div class="brand-preview-logo" id="preview-logo-text">[ YOUR BRAND NAME ]</div>
+                    <div style="font-size:0.75rem; color:#888; font-family:serif; letter-spacing:0.1em;" id="preview-tagline-text">Curated Vintage & Handmade Armor Jewelry</div>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <div class="field-label">
+                        <span>Name Shortlist / Brainstorm Dump</span>
+                    </div>
+                    <textarea class="textarea-input" data-key="name-shortlist" placeholder="List ideas you and Sarah have tossed around...&#10;- Idea 1&#10;- Idea 2&#10;- Idea 3"></textarea>
+                </div>
+                <div class="field-group">
+                    <div class="field-label">
+                        <span>Concept / Elevator Pitch</span>
+                    </div>
+                    <textarea class="textarea-input" id="tagline-input" data-key="tagline" placeholder="In one sentence: what is this store?&#10;e.g. An anonymous archival vintage salon and bespoke chainmail jewelry practice based in Sydney."></textarea>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <div class="field-label"><span>Target Domain</span></div>
+                    <input type="text" class="text-input" data-key="domain-target" placeholder="e.g. yourname.com, yourname.co, yourname.store">
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>Instagram Handle</span></div>
+                    <input type="text" class="text-input" data-key="instagram-handle" placeholder="@yourstorename">
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCT & JEWELRY MATRIX -->
+        <div class="workspace-card">
+            <div class="workspace-header">
+                <h3>2. Product Offerings & Jewelry Direction</h3>
+                <span style="font-family:'Space Mono'; font-size:0.75rem; color:var(--purple);">Loren + Sarah</span>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <div class="field-label"><span>Loren's Chainmail Jewelry Focus</span></div>
+                    <textarea class="textarea-input" data-key="jewelry-chainmail" placeholder="Styles, pieces, weaves (e.g. European 4-in-1, Byzantine), materials (stainless steel, titanium, brass), signature pieces (collars, headdresses, bras, body chains, bracelets)..."></textarea>
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>Sarah's Jewelry Exploration</span></div>
+                    <textarea class="textarea-input" data-key="jewelry-sarah" placeholder="Skills from jewelry shop job, trade contacts, metals/stones, complementary aesthetic (delicate to pair with chainmail? charms? antique restorations?)..."></textarea>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <div class="field-label"><span>Vintage Curation Eras & Focus</span></div>
+                    <textarea class="textarea-input" data-key="vintage-eras" placeholder="Key eras you're sourcing (e.g. 70s disco, 90s minimalism, Victorian lace, 2000s archival, surrealist loungewear, antique ephemera)..."></textarea>
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>Price Brackets</span></div>
+                    <textarea class="textarea-input" data-key="pricing-strategy" placeholder="Accessible ($30–$90): accessories, objects&#10;Core ($100–$250): daily vintage, chainmail earrings/bracelets&#10;Statement ($300–$800+): runway pieces, full armor tops"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- CREATIVE DIRECTION (LILY'S ART) -->
+        <div class="workspace-card">
+            <div class="workspace-header">
+                <h3>3. Art Direction & Shoot 1 with Lily</h3>
+                <span style="font-family:'Space Mono'; font-size:0.75rem; color:var(--pink);">Editorial</span>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <div class="field-label"><span>Lily's Papier-Mâché Masks</span></div>
+                    <textarea class="textarea-input" data-key="lily-masks" placeholder="Mask styles, textures, paint finishes, anonymity concept, how many to make for Shoot #1..."></textarea>
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>Handmade Backdrops</span></div>
+                    <textarea class="textarea-input" data-key="lily-backdrops" placeholder="Materials, color palette, drape vs panel, texture (fabric, plaster, paper), portable vs studio setup..."></textarea>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <div class="field-label"><span>Shoot #1 Date & Location</span></div>
+                    <input type="text" class="text-input" data-key="shoot-schedule" placeholder="Target date, location, number of pieces to shoot (aim for 12–15)...">
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>Credits & Collaboration Agreement</span></div>
+                    <input type="text" class="text-input" data-key="lily-credit" placeholder="e.g. 'Art direction & sculptural masks by Lily [Surname]' - commission / trade / revenue share">
+                </div>
+            </div>
+        </div>
+
+        <!-- BUSINESS STRUCTURE & PARTNERSHIP -->
+        <div class="workspace-card">
+            <div class="workspace-header">
+                <h3>4. Partnership & Operations</h3>
+                <span style="font-family:'Space Mono'; font-size:0.75rem; color:var(--green);">The Agreement</span>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <div class="field-label"><span>Partnership Split & Money</span></div>
+                    <textarea class="textarea-input" data-key="partnership-terms" placeholder="50/50 profit split? How is initial inventory funded? (e.g. each put in $500 to a joint account). How is jewelry revenue handled (materials cost reimbursed first)?"></textarea>
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>Division of Labor</span></div>
+                    <textarea class="textarea-input" data-key="roles-division" placeholder="Loren: Sourcing, chainmail making, styling, website updates&#10;Sarah: Sourcing, jewelry trade sourcing, packaging, Depop messaging&#10;Both: Shoot days, Instagram reels, buying trips"></textarea>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <div class="field-label"><span>ABN & Banking Status</span></div>
+                    <input type="text" class="text-input" data-key="abn-bank-status" placeholder="ABN Partnership status, Joint bank account opened (Y/N)...">
+                </div>
+                <div class="field-group">
+                    <div class="field-label"><span>Shipping & Packaging Vision</span></div>
+                    <input type="text" class="text-input" data-key="packaging-vision" placeholder="Custom tissue, wax seal, chainmail care cards, eco mailers...">
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BAR -->
+        <div style="text-align:center; margin: 2rem 0 1rem;">
+            <button class="btn btn-primary" style="padding:0.8rem 1.6rem; font-size:0.8rem;" onclick="copySummary()">📋 Copy Current Decisions to Clipboard</button>
+            <button class="btn" style="padding:0.8rem 1.6rem; font-size:0.8rem;" onclick="downloadSummary()">⬇️ Download Summary (.txt)</button>
+        </div>
+    </section>
+
+    <div class="divider"></div>
 
     <!-- ===== 01. FOUNDATION ===== -->
     <section class="section" id="foundation">
-        <div class="section-number">01</div>
-        <h2>What You've Got</h2>
-        <p class="section-lead">Your foundation. Green means go, gold means in progress, red means this is blocking you.</p>
+        <span class="section-number">01</span>
+        <h2>What You've Got (The Assets)</h2>
+        <p class="section-lead">Your starting lineup. Green is ready, gold is in progress, red needs attention.</p>
 
         <div class="foundation-grid">
-            <div class="foundation-item">
-                <span class="label">Instagram</span>
-                <span class="status done">Created</span>
-            </div>
-            <div class="foundation-item">
-                <span class="label">Depop Store</span>
-                <span class="status done">Created</span>
-            </div>
-            <div class="foundation-item">
-                <span class="label">Website</span>
-                <span class="status building">Skeleton Built</span>
-            </div>
-            <div class="foundation-item">
-                <span class="label">Brand Name</span>
-                <span class="status tbd">Decide This Week</span>
-            </div>
-            <div class="foundation-item">
-                <span class="label">Photography</span>
-                <span class="status tbd">Waiting on Lily</span>
-            </div>
-            <div class="foundation-item">
-                <span class="label">Lily's Art & Masks</span>
-                <span class="status progress">In Progress</span>
-            </div>
-            <div class="foundation-item">
-                <span class="label">Loren's Chainmail Jewelry</span>
-                <span class="status progress">Making Pieces</span>
-            </div>
-            <div class="foundation-item">
-                <span class="label">Sarah's Jewelry Line</span>
-                <span class="status tbd">Future Launch</span>
-            </div>
+            <div class="foundation-item"><span class="label">Instagram Account</span><span class="status done">Live</span></div>
+            <div class="foundation-item"><span class="label">Depop Shop</span><span class="status done">Live</span></div>
+            <div class="foundation-item"><span class="label">Website (WHM-Inspired)</span><span class="status building">Skeleton Deployed</span></div>
+            <div class="foundation-item"><span class="label">Brand Name</span><span class="status tbd" id="status-name-chip">Decide This Week</span></div>
+            <div class="foundation-item"><span class="label">Lily's Papier-Mâché Masks</span><span class="status progress">In Progress</span></div>
+            <div class="foundation-item"><span class="label">Lily's Painted Backdrops</span><span class="status progress">In Progress</span></div>
+            <div class="foundation-item"><span class="label">Loren's Chainmail Line</span><span class="status progress">Making Inventory</span></div>
+            <div class="foundation-item"><span class="label">Sarah's Jewelry Exploration</span><span class="status building">Concepting</span></div>
         </div>
     </section>
 
     <div class="divider"></div>
 
-    <!-- ===== 02. BIG QUESTIONS ===== -->
+    <!-- ===== 02. BIG QUESTIONS (DETAILED GUIDE) ===== -->
     <section class="section" id="questions">
-        <div class="section-number">02</div>
-        <h2>The Big Questions</h2>
-        <p class="section-lead">These are the decisions that shape everything else. Sit down together and work through each one.</p>
+        <span class="section-number">02</span>
+        <h2>The Deeper Prompts</h2>
+        <p class="section-lead">Click any card to read guiding questions. Your answers will sync with the Brand Studio above.</p>
 
-        <div class="question-card">
+        <!-- Q1: Name -->
+        <div class="question-card" data-question="name">
             <div class="question-header" onclick="toggleCard(this)">
-                <h3>🏷️ What's the Name?</h3>
+                <h3><span class="answered-dot"></span>🏷️ What's the Name?</h3>
                 <span class="icon">+</span>
             </div>
             <div class="question-body">
                 <div class="question-body-inner">
-                    <p>This is blocking almost everything — your domain, your Instagram handle, your packaging, your brand identity.</p>
+                    <p>This is blocking your domain, Instagram bio, packaging, and custom stickers.</p>
                     <ul>
-                        <li>Does the name need to describe what you sell, or can it be abstract/evocative? (WHM doesn't say "vintage clothes" anywhere in its name)</li>
-                        <li>Does it need to work as a <code>.com</code> / <code>.co</code> / <code>.store</code> domain? Check availability <em>before</em> you fall in love with a name</li>
-                        <li>Does it need to match your existing Instagram handle, or are you willing to change it?</li>
-                        <li>Could it reference the masked/anonymous identity concept? That's a genuinely unique angle</li>
-                        <li>Test it: say it out loud. Text it to someone. Does it stick?</li>
+                        <li>Does it need to say "vintage", or can it be abstract like <em>Women's History Museum</em>?</li>
+                        <li>Does it roll off the tongue? Text it to three friends with zero context. What do they imagine?</li>
+                        <li>Does it capture both the antique vintage fabric AND the cold metallic chainmail?</li>
+                        <li>Could it reference the masks, the theater, the archival nature of the past?</li>
                     </ul>
                     <div class="callout important">
-                        <strong>Don't Wait</strong>
-                        Every week you operate under "TBD" is a week you're not building brand recognition. Set a deadline — even if it's imperfect, you can always refine.
+                        <strong>Rule of Thumb</strong>
+                        Don't let perfection hold back launching. If you find a name you 80% love and the <code>.com</code> or <code>.co</code> is open, claim it.
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="question-card">
+        <!-- Q2: Selling -->
+        <div class="question-card" data-question="selling">
             <div class="question-header" onclick="toggleCard(this)">
-                <h3>💰 What Are You Actually Selling?</h3>
+                <h3><span class="answered-dot"></span>💰 What Are You Actually Selling?</h3>
                 <span class="icon">+</span>
             </div>
             <div class="question-body">
                 <div class="question-body-inner">
-                    <p>WHM operates two distinct storefronts: a <em>Vintage Store</em> (curated finds, $50–$1,300) and a <em>Boutique</em> (original designs, higher price points). You've got even more potential lines — vintage, chainmail, Sarah's future jewelry, objects.</p>
+                    <p>WHM operates two storefronts: <em>Vintage Store</em> ($50–$1,300) and <em>Boutique</em> (original designs). You have an even richer mix:</p>
                     <ul>
-                        <li>Are you only reselling vintage pieces you source, or also creating originals? (Sounds like both!)</li>
-                        <li>What's your price range? Accessible ($20–$100) or collector/investment ($200+)?</li>
-                        <li>Clothing only, or also accessories, homewares, objects, ephemera?</li>
-                        <li>What eras are you drawn to? A rough focus helps your sourcing and brand story</li>
-                        <li>Is Depop a stepping stone to directing traffic to your own site?</li>
+                        <li><strong>Curated Vintage</strong>: Clothing, rare lingerie, jackets, skirts, 70s-90s designer.</li>
+                        <li><strong>Handmade Chainmail</strong>: Loren's armor-jewelry — high margins, zero sourcing constraints.</li>
+                        <li><strong>Jewelry & Metalwork</strong>: Sarah's craft, utilizing jewelry store trade knowledge.</li>
+                        <li><strong>Historical Ephemera</strong>: Antique hair combs, buttons, vintage matchbooks, postcards.</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div class="question-card">
+        <!-- Q3: Customer -->
+        <div class="question-card" data-question="customer">
             <div class="question-header" onclick="toggleCard(this)">
-                <h3>🎯 Who's Your Customer?</h3>
+                <h3><span class="answered-dot"></span>🎯 Who is the Customer?</h3>
                 <span class="icon">+</span>
             </div>
             <div class="question-body">
                 <div class="question-body-inner">
                     <ul>
-                        <li>Age range? Style tribe? (Depop crowd = 18–28; WHM's audience skews older and more collector-oriented)</li>
-                        <li>Local (Australia?) or international shipping?</li>
-                        <li>People who wear vintage daily, or buy statement pieces occasionally?</li>
-                        <li>What's their budget? This shapes your sourcing strategy entirely</li>
-                        <li>Are your jewelry customers the same people as your vintage clothing customers, or a different audience?</li>
+                        <li><strong>The Depop Customer</strong>: Fast-moving, 18–26, searching for specific aesthetics, responsive to video styling.</li>
+                        <li><strong>The Collector / Art Crowd</strong>: Buys through website lookbooks, attends gallery openings, appreciates Lily's masks and Loren's chainmail craftsmanship ($200+ ticket items).</li>
+                        <li><strong>Local vs International</strong>: Chainmail is lightweight and cheap to post worldwide; coats/boots take up volume.</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div class="question-card">
+        <!-- Q4: Visual Identity -->
+        <div class="question-card" data-question="visual">
             <div class="question-header" onclick="toggleCard(this)">
-                <h3>📸 The Visual Identity (Lily's Art Direction)</h3>
+                <h3><span class="answered-dot"></span>📸 The Masked / Anonymous Shoots</h3>
                 <span class="icon">+</span>
             </div>
             <div class="question-body">
                 <div class="question-body-inner">
-                    <p>The masked, anonymous editorial shoots with handmade backdrops — this is one of your strongest differentiators.</p>
+                    <p>The anonymity angle is brilliant. Why?</p>
                     <ul>
-                        <li>How many backdrops/masks does Lily need for the first collection? (Start with enough for 10–15 items)</li>
-                        <li>What's the visual tone? Surreal? Playful? Dark and moody? Collage-y?</li>
-                        <li>Same backdrop every shoot (brand recognition) or rotate (keep it fresh)?</li>
-                        <li>Will Lily be credited/featured? "Art direction by Lily" adds legitimacy</li>
-                        <li>File formats — shoot RAW if possible, export JPGs at 2000px+ wide, portrait orientation (3:4 ratio)</li>
+                        <li>It shifts focus completely to the garment, the chainmail, and the sculptural mask.</li>
+                        <li>Anyone can be the model without needing hair & makeup artist overhead.</li>
+                        <li>It gives the brand an uncanny, high-fashion art-object aura (think Maison Margiela, WHM, Leigh Bowery).</li>
                     </ul>
                     <div class="callout tip">
-                        <strong>Start Now, Perfect Later</strong>
-                        Use flatlay or hanger shots as a stopgap for Depop listings. Save the Lily shoots for the website editorial. Revenue first, perfection later.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="question-card">
-            <div class="question-header" onclick="toggleCard(this)">
-                <h3>🏗️ Business Structure</h3>
-                <span class="icon">+</span>
-            </div>
-            <div class="question-body">
-                <div class="question-body-inner">
-                    <p>Boring but important. Do this now, not later.</p>
-                    <ul>
-                        <li><strong>ABN/Business registration</strong> — Register as a partnership. It's free in Australia</li>
-                        <li><strong>Splitting costs and profits</strong> — 50/50? Based on who sources what? This is easier now than after your first $5,000</li>
-                        <li><strong>Bank account</strong> — Open a joint business account. Don't mix personal and business money</li>
-                        <li><strong>GST</strong> — Not needed until $75K revenue, but track income from the start</li>
-                        <li><strong>Insurance</strong> — Product liability, especially for antique/delicate items (~$200/year)</li>
-                    </ul>
-                    <div class="callout warning">
-                        <strong>Have the Money Conversation Early</strong>
-                        Who's paying for inventory? What happens if one of you wants out? A simple written agreement (doesn't need a lawyer — just write it down and both sign) prevents friendship-ending disputes.
+                        <strong>Shooting Tip</strong>
+                        Shoot both horizontal landscape for the website hero slideshow, and portrait 3:4 for the product grid and Depop listings.
                     </div>
                 </div>
             </div>
@@ -786,43 +1167,33 @@
 
     <div class="divider"></div>
 
-    <!-- ===== 03. PRODUCT LINES ===== -->
+    <!-- ===== 03. PRODUCT LINES & MARGINS ===== -->
     <section class="section" id="products">
-        <div class="section-number">03</div>
-        <h2>Your Product Lines</h2>
-        <p class="section-lead">You're not just a vintage shop — you've got four potential revenue streams. That's powerful.</p>
+        <span class="section-number">03</span>
+        <h2>Four Revenue Pillars</h2>
+        <p class="section-lead">Combining vintage curation with original jewelry gives you resilience that pure resellers don't have.</p>
 
         <div class="product-lines">
             <div class="product-line vintage">
-                <h4>Curated Vintage</h4>
-                <div class="who">Both — Loren & Sarah</div>
-                <p>Sourced vintage clothing, accessories, and objects from various eras. Your bread and butter to start. One-of-a-kind pieces with stories behind them.</p>
+                <h4>1. Curated Vintage Clothing</h4>
+                <div class="who">Curated by Loren & Sarah</div>
+                <p>One-off pieces found across op shops, estate sales, and private collections. Sells the lifestyle and taste level.</p>
             </div>
             <div class="product-line jewelry">
-                <h4>Chainmail Jewelry</h4>
-                <div class="who">Loren</div>
-                <p>Original handmade chainmail pieces. This is where you cross from reseller to maker — and your margins get much better. A real signature product line.</p>
+                <h4>2. Bespoke Chainmail Jewelry</h4>
+                <div class="who">Handmade by Loren</div>
+                <p>Wearable armor: collars, body harnesses, chainmail chokers, chain drop earrings. 80%+ profit margins.</p>
             </div>
             <div class="product-line original">
-                <h4>Sarah's Jewelry</h4>
-                <div class="who">Sarah — Future Launch</div>
-                <p>With Sarah's experience from the jewelry shop, she brings technical skill and trade knowledge. Could complement or contrast Loren's chainmail with a different aesthetic.</p>
+                <h4>3. Bench Jewelry & Metals</h4>
+                <div class="who">Sarah's Collection</div>
+                <p>Built with technical jewelry skills and trade knowledge. Charms, wirework, antique component re-workings.</p>
             </div>
             <div class="product-line objects">
-                <h4>Objects & Ephemera</h4>
+                <h4>4. Antiquities & Objects</h4>
                 <div class="who">Both</div>
-                <p>Vintage postcards, antique buttons, sewing kits, curiosities. Lower price point, great for first-time customers, and they tell stories about craft and history.</p>
+                <p>Ephemera, jewelry dishes, vintage hair accessories, antique vanity objects. Affordable entry-point pieces.</p>
             </div>
-        </div>
-
-        <div class="callout idea">
-            <strong>The Jewelry Advantage</strong>
-            Vintage reselling has slim margins after platform fees. Original jewelry that you make has much higher margins — you control the cost, the pricing, and it's repeatable. This could become your most profitable line.
-        </div>
-
-        <div class="callout tip">
-            <strong>Sarah's Insider Knowledge</strong>
-            Working at a jewelry shop means Sarah knows suppliers, materials, tools, pricing, and what actually sells. That's invaluable market intelligence that most startups would kill for. Use it.
         </div>
     </section>
 
@@ -830,99 +1201,71 @@
 
     <!-- ===== 04. CHANNELS ===== -->
     <section class="section" id="channels">
-        <div class="section-number">04</div>
-        <h2>Your Channels</h2>
-        <p class="section-lead">Each channel has a different job. Don't try to make them all do the same thing.</p>
+        <span class="section-number">04</span>
+        <h2>Channel Ecosystem</h2>
+        <p class="section-lead">How your platforms pass customers to each other.</p>
 
         <div class="channels">
             <div class="channel-card">
                 <div class="channel-icon">📷</div>
                 <h4>Instagram</h4>
-                <p>Brand building, community, behind-the-scenes, Lily's art</p>
-                <div class="priority high">High Priority — Your Shop Window</div>
+                <p>Visual universe, process clips of chainmail weaving, shoot BTS.</p>
+                <div class="priority high">Daily Engine</div>
             </div>
             <div class="channel-card">
                 <div class="channel-icon">🛍️</div>
                 <h4>Depop</h4>
-                <p>Sales volume, discovery, built-in trust and payment processing</p>
-                <div class="priority high">High Priority — Your Cash Register</div>
+                <p>Quick turnover, discovery, buyer reviews, frictionless mobile checkout.</p>
+                <div class="priority high">Cash Flow</div>
             </div>
             <div class="channel-card">
                 <div class="channel-icon">🌐</div>
-                <h4>Website</h4>
-                <p>Brand legitimacy, storytelling, editorial lookbook, eventually direct sales</p>
-                <div class="priority medium">Medium — Your Gallery</div>
+                <h4>The Website</h4>
+                <p>The art gallery, sound effects, lookbooks, hero archive, press inquiries.</p>
+                <div class="priority medium">Brand Flagship</div>
             </div>
             <div class="channel-card">
                 <div class="channel-icon">✉️</div>
-                <h4>Email List</h4>
-                <p>Drop announcements, first access, the only channel you truly own</p>
-                <div class="priority high">High — Start Collecting Now</div>
+                <h4>VIP Email List</h4>
+                <p>Secret early drop links 1 hour before Instagram knows.</p>
+                <div class="priority high">Highest Loyalty</div>
             </div>
-            <div class="channel-card">
-                <div class="channel-icon">🎬</div>
-                <h4>TikTok</h4>
-                <p>Reach, virality, sourcing trips, styling videos, behind-the-scenes</p>
-                <div class="priority optional">Optional — But Powerful</div>
-            </div>
-        </div>
-
-        <div class="callout important">
-            <strong>Website → Depop (For Now)</strong>
-            Your website doesn't need to sell anything directly yet. Use it as a lookbook/gallery that links to Depop for purchases. When you're ready for direct sales, add Shopify or Snipcart later.
         </div>
     </section>
 
     <div class="divider"></div>
 
-    <!-- ===== 05. TIMELINE ===== -->
+    <!-- ===== 05. ACTION TIMELINE ===== -->
     <section class="section" id="timeline">
-        <div class="section-number">05</div>
-        <h2>Action Plan</h2>
-        <p class="section-lead">Click items to check them off as you go. Your first 60 days.</p>
+        <span class="section-number">05</span>
+        <h2>Execution Timeline</h2>
+        <p class="section-lead">Tap items to mark as completed. Your checks are saved in real-time.</p>
 
         <div class="timeline">
             <div class="timeline-item">
-                <h4>Week 1–2 — Foundation</h4>
+                <h4>Phase 1: Lock the Foundation</h4>
                 <ul>
-                    <li onclick="this.classList.toggle('checked')">Decide on a name (or shortlist 3 and test with friends)</li>
-                    <li onclick="this.classList.toggle('checked')">Register an ABN as a partnership</li>
-                    <li onclick="this.classList.toggle('checked')">Open a business bank account</li>
-                    <li onclick="this.classList.toggle('checked')">Buy a domain (grab it before someone else does)</li>
-                    <li onclick="this.classList.toggle('checked')">Write a one-paragraph "about" statement</li>
-                    <li onclick="this.classList.toggle('checked')">Brief Lily — agree on timeline, number of pieces, visual direction</li>
+                    <li data-task="t1" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Settle on a brand name & buy matching domain</li>
+                    <li data-task="t2" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Align Instagram handle & Depop shop username</li>
+                    <li data-task="t3" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Open joint bank account & register free partnership ABN</li>
+                    <li data-task="t4" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Lock Shoot #1 date with Lily</li>
                 </ul>
             </div>
             <div class="timeline-item">
-                <h4>Week 3–4 — First Inventory</h4>
+                <h4>Phase 2: First Capsule (15 Pieces)</h4>
                 <ul>
-                    <li onclick="this.classList.toggle('checked')">Source your first 10–15 vintage pieces — curate tightly</li>
-                    <li onclick="this.classList.toggle('checked')">Photograph everything (phone photos fine for Depop)</li>
-                    <li onclick="this.classList.toggle('checked')">Write product descriptions — era, material, measurements, condition</li>
-                    <li onclick="this.classList.toggle('checked')">List on Depop — start generating sales and reviews</li>
-                    <li onclick="this.classList.toggle('checked')">Loren: photograph 3–5 chainmail pieces for soft launch</li>
-                    <li onclick="this.classList.toggle('checked')">Set up email collection on the website</li>
+                    <li data-task="t5" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Curate 8-10 vintage garments (steamed, measured, tagged)</li>
+                    <li data-task="t6" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Loren: complete 3-5 signature chainmail jewelry pieces</li>
+                    <li data-task="t7" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Sarah: prep 2-3 jewelry pieces or styled pairings</li>
+                    <li data-task="t8" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Execute masked editorial photoshoot with Lily's backdrop</li>
                 </ul>
             </div>
             <div class="timeline-item">
-                <h4>Month 2 — Build the Brand</h4>
+                <h4>Phase 3: Launch Drop & Orders</h4>
                 <ul>
-                    <li onclick="this.classList.toggle('checked')">Lily shoot — photograph hero pieces with backdrops + masks</li>
-                    <li onclick="this.classList.toggle('checked')">Populate the website lookbook with editorial imagery</li>
-                    <li onclick="this.classList.toggle('checked')">Start posting consistently on Instagram (3–5x/week)</li>
-                    <li onclick="this.classList.toggle('checked')">First email to your list — "We're live" announcement</li>
-                    <li onclick="this.classList.toggle('checked')">Research pricing — comparable sellers, factor in cost + time + fees</li>
-                    <li onclick="this.classList.toggle('checked')">Sarah: begin experimenting with first jewelry designs</li>
-                </ul>
-            </div>
-            <div class="timeline-item">
-                <h4>Month 3+ — Grow</h4>
-                <ul>
-                    <li onclick="this.classList.toggle('checked')">Launch chainmail jewelry as a distinct product line</li>
-                    <li onclick="this.classList.toggle('checked')">Consider markets/pop-ups for in-person sales</li>
-                    <li onclick="this.classList.toggle('checked')">Add direct checkout to website (Shopify Lite / Snipcart)</li>
-                    <li onclick="this.classList.toggle('checked')">Build a content calendar across Instagram + TikTok</li>
-                    <li onclick="this.classList.toggle('checked')">First collaboration or cross-promotion with another seller</li>
+                    <li data-task="t9" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Upload lookbook photos to website skeleton</li>
+                    <li data-task="t10" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> Post preview teasers on Instagram (masked models, sound clips)</li>
+                    <li data-task="t11" onclick="toggleTask(this)"><span class="timeline-checkbox">✓</span> First drop goes live on Depop & Website</li>
                 </ul>
             </div>
         </div>
@@ -932,79 +1275,30 @@
 
     <!-- ===== 06. BLIND SPOTS ===== -->
     <section class="section" id="blind-spots">
-        <div class="section-number">06</div>
-        <h2>Things You Might Not Have Thought About</h2>
-        <p class="section-lead">The unsexy stuff that makes or breaks a small business.</p>
+        <span class="section-number">06</span>
+        <h2>Blind Spots to Pre-empt</h2>
+        <p class="section-lead">Things that surprise new vintage & jewelry sellers.</p>
 
         <div class="question-card">
             <div class="question-header" onclick="toggleCard(this)">
-                <h3>Sourcing & Storage</h3>
+                <h3>📦 Measuring, Storage & Care</h3>
                 <span class="icon">+</span>
             </div>
             <div class="question-body">
                 <div class="question-body-inner">
-                    <ul>
-                        <li>Where are you sourcing? Op shops, estate sales, online auctions, overseas?</li>
-                        <li>Is one of you better at sourcing and the other at styling/photographing/listing?</li>
-                        <li>Do you have storage space? Vintage inventory takes up room fast</li>
-                        <li>Will you source on behalf of customers? (Personal shopping = another revenue stream)</li>
-                        <li>For jewelry materials — Loren, where are you getting chainmail rings? Bulk suppliers?</li>
-                    </ul>
+                    <p>Vintage sizing tags (e.g. "Vintage Size 12") mean nothing today. Always provide exact flat measurements: bust, waist, hips, length. For chainmail jewelry, note the circumference and whether it has an adjustable extender chain.</p>
                 </div>
             </div>
         </div>
 
         <div class="question-card">
             <div class="question-header" onclick="toggleCard(this)">
-                <h3>Shipping & Packaging</h3>
+                <h3>⚖️ Custom Chainmail Orders</h3>
                 <span class="icon">+</span>
             </div>
             <div class="question-body">
                 <div class="question-body-inner">
-                    <ul>
-                        <li>Flat rate or weight-based shipping?</li>
-                        <li>Packaging — does it need to feel special? (It should. Unboxing is marketing)</li>
-                        <li>Returns policy — vintage is typically no-returns, but what's your stance?</li>
-                        <li>International shipping — worth it from Day 1 or add later?</li>
-                        <li>Jewelry needs different packaging than clothing — plan for both</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="question-card">
-            <div class="question-header" onclick="toggleCard(this)">
-                <h3>Legal & IP</h3>
-                <span class="icon">+</span>
-            </div>
-            <div class="question-body">
-                <div class="question-body-inner">
-                    <ul>
-                        <li>Be careful using designer names in listings — some brands are aggressive about trademark</li>
-                        <li>If Lily's making art for the brand, who owns the IP? Discuss now</li>
-                        <li>If you're both making jewelry and selling under one brand, who owns the designs?</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="question-card">
-            <div class="question-header" onclick="toggleCard(this)">
-                <h3>Content Ideas You Could Film Right Now</h3>
-                <span class="icon">+</span>
-            </div>
-            <div class="question-body">
-                <div class="question-body-inner">
-                    <ul>
-                        <li>"What era is this from?" guessing games</li>
-                        <li>Sourcing trips / op shop hauls</li>
-                        <li>Styling vintage pieces into modern outfits</li>
-                        <li>The story behind a piece (provenance, historical context)</li>
-                        <li>Behind the scenes of Lily making the masks/backdrops</li>
-                        <li>Loren making chainmail — process videos are hypnotic</li>
-                        <li>"How to spot quality vintage" educational content</li>
-                        <li>The sustainability angle — vintage is circular fashion, lean into it genuinely</li>
-                    </ul>
+                    <p>People will inevitably ask Loren: <em>"Can you make this chainmail collar in gold or custom size for my neck?"</em> Decide now if you offer made-to-order sizing (great markup opportunity) and require 50% deposit upfront.</p>
                 </div>
             </div>
         </div>
@@ -1012,184 +1306,363 @@
 
     <div class="divider"></div>
 
-    <!-- ===== 07. REVENUE ===== -->
+    <!-- ===== 07. REVENUE BENCHMARKS ===== -->
     <section class="section" id="revenue">
-        <div class="section-number">07</div>
-        <h2>Revenue Projections</h2>
-        <p class="section-lead">Rough guide to what's realistic for a side business. Split between two people.</p>
+        <span class="section-number">07</span>
+        <h2>Financial Projections</h2>
+        <p class="section-lead">Why mixing jewelry with vintage clothing makes this business model so strong.</p>
 
-        <h3 style="font-family:'Playfair Display',serif; font-weight:400; font-size:1.1rem; margin-bottom:1rem; color:var(--accent);">Vintage Resale</h3>
+        <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--accent); margin-bottom:0.5rem;">Vintage Resale (Margin ~55%)</h3>
         <table class="revenue-table">
             <thead>
-                <tr>
-                    <th>Scenario</th>
-                    <th>Items/mo</th>
-                    <th>Avg Price</th>
-                    <th>Revenue</th>
-                    <th>Fees ~13%</th>
-                    <th>COGS ~30%</th>
-                    <th>Net</th>
-                </tr>
+                <tr><th>Stage</th><th>Sales / Mo</th><th>Avg Ticket</th><th>Gross Rev</th><th>Fees & COGS</th><th>Net Profit</th></tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="scenario">Starting out</td>
-                    <td>5</td>
-                    <td>$80</td>
-                    <td>$400</td>
-                    <td>$52</td>
-                    <td>$120</td>
-                    <td class="net">~$228</td>
-                </tr>
-                <tr>
-                    <td class="scenario">Building</td>
-                    <td>15</td>
-                    <td>$100</td>
-                    <td>$1,500</td>
-                    <td>$195</td>
-                    <td>$450</td>
-                    <td class="net">~$855</td>
-                </tr>
-                <tr>
-                    <td class="scenario">Established</td>
-                    <td>30</td>
-                    <td>$120</td>
-                    <td>$3,600</td>
-                    <td>$468</td>
-                    <td>$1,080</td>
-                    <td class="net">~$2,052</td>
-                </tr>
+                <tr><td class="scenario">Drop 1–2</td><td>6 items</td><td>$85</td><td>$510</td><td>~$220</td><td class="net">+$290</td></tr>
+                <tr><td class="scenario">Consistent Drops</td><td>18 items</td><td>$110</td><td>$1,980</td><td>~$850</td><td class="net">+$1,130</td></tr>
+                <tr><td class="scenario">Thriving</td><td>35 items</td><td>$135</td><td>$4,725</td><td>~$1,980</td><td class="net">+$2,745</td></tr>
             </tbody>
         </table>
 
-        <h3 style="font-family:'Playfair Display',serif; font-weight:400; font-size:1.1rem; margin:2rem 0 1rem; color:var(--purple);">Original Jewelry (Higher Margins)</h3>
+        <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--purple); margin-bottom:0.5rem;">Handmade Chainmail & Jewelry (Margin ~80%)</h3>
         <table class="revenue-table">
             <thead>
-                <tr>
-                    <th>Scenario</th>
-                    <th>Pieces/mo</th>
-                    <th>Avg Price</th>
-                    <th>Revenue</th>
-                    <th>Materials ~15%</th>
-                    <th>Platform ~5%</th>
-                    <th>Net</th>
-                </tr>
+                <tr><th>Stage</th><th>Pieces / Mo</th><th>Avg Ticket</th><th>Gross Rev</th><th>Materials & Rings</th><th>Net Profit</th></tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="scenario">Soft launch</td>
-                    <td>5</td>
-                    <td>$60</td>
-                    <td>$300</td>
-                    <td>$45</td>
-                    <td>$15</td>
-                    <td class="net">~$240</td>
-                </tr>
-                <tr>
-                    <td class="scenario">Growing</td>
-                    <td>15</td>
-                    <td>$80</td>
-                    <td>$1,200</td>
-                    <td>$180</td>
-                    <td>$60</td>
-                    <td class="net">~$960</td>
-                </tr>
-                <tr>
-                    <td class="scenario">Established</td>
-                    <td>30</td>
-                    <td>$100</td>
-                    <td>$3,000</td>
-                    <td>$450</td>
-                    <td>$150</td>
-                    <td class="net">~$2,400</td>
-                </tr>
+                <tr><td class="scenario">Soft Launch</td><td>4 pieces</td><td>$75</td><td>$300</td><td>~$50</td><td class="net">+$250</td></tr>
+                <tr><td class="scenario">Signature Drops</td><td>12 pieces</td><td>$95</td><td>$1,140</td><td>~$180</td><td class="net">+$960</td></tr>
+                <tr><td class="scenario">Statement Orders</td><td>25 pieces</td><td>$130</td><td>$3,250</td><td>~$480</td><td class="net">+$2,770</td></tr>
             </tbody>
         </table>
 
-        <div class="callout tip" style="margin-top:2rem;">
-            <strong>Notice the Difference</strong>
-            Jewelry you make yourselves nets ~80% margins vs ~57% for vintage resale. At the same volume, original jewelry earns more. And if you sell through your own website instead of Depop, you keep even more.
+        <div class="callout tip">
+            <strong>Key Insight</strong>
+            Selling 15 vintage pieces + 10 chainmail pieces in a month nets over <strong>$2,000 clean profit</strong>, split between two best friends as a fun side hustle.
         </div>
     </section>
 
     <div class="divider"></div>
 
-    <!-- ===== 08. GAPS ===== -->
+    <!-- ===== 08. GAPS & NEXT MOVES ===== -->
     <section class="section" id="gaps">
-        <div class="section-number">08</div>
-        <h2>Gaps to Close</h2>
-        <p class="section-lead">These are the things that could trip you up if you don't address them.</p>
+        <span class="section-number">08</span>
+        <h2>The 5 Bottlenecks to Clear</h2>
+        <p class="section-lead">Clear these in order, and you are live.</p>
 
         <div class="gap-list">
-            <div class="gap-item">
-                <div class="gap-number">1</div>
-                <p><strong>No name = no brand.</strong> Everything is on hold until this is sorted. Give yourselves a hard deadline — this weekend.</p>
-            </div>
-            <div class="gap-item">
-                <div class="gap-number">2</div>
-                <p><strong>Depop fees eat margins.</strong> Depop takes ~10% + payment processing. Factor this into pricing. Your own website with direct payment keeps more profit — especially important for jewelry.</p>
-            </div>
-            <div class="gap-item">
-                <div class="gap-number">3</div>
-                <p><strong>Two founders, no written agreement.</strong> Even best friends need to write down who does what, who owns what, and what happens if someone leaves. Do this before your first $1.</p>
-            </div>
-            <div class="gap-item">
-                <div class="gap-number">4</div>
-                <p><strong>No pricing strategy.</strong> Research what comparable items sell for. Underpricing loses money, overpricing kills early momentum. Especially for handmade jewelry — price your time, not just materials.</p>
-            </div>
-            <div class="gap-item">
-                <div class="gap-number">5</div>
-                <p><strong>Photography is your bottleneck.</strong> Have a fast, good-enough phone photo workflow for Depop listings. Save the Lily shoots for the website editorial content.</p>
-            </div>
-            <div class="gap-item">
-                <div class="gap-number">6</div>
-                <p><strong>No email list yet.</strong> Start collecting emails from Day 1. Social media algorithms change; your email list is the only channel you actually own.</p>
-            </div>
-            <div class="gap-item">
-                <div class="gap-number">7</div>
-                <p><strong>Jewelry IP ownership.</strong> Both of you making jewelry under one brand — who owns the chainmail designs? Who owns Sarah's designs? Agree now. Keep it simple and fair.</p>
-            </div>
+            <div class="gap-item"><div class="gap-number">01</div><p><strong>Name lock-in:</strong> Type candidate names into the Brand Studio above until you both say "yes".</p></div>
+            <div class="gap-item"><div class="gap-number">02</div><p><strong>Shoot 1 date:</strong> Text Lily tonight and lock in a Sunday afternoon for shooting the first 12 pieces.</p></div>
+            <div class="gap-item"><div class="gap-number">03</div><p><strong>Inventory staging:</strong> Lay out the 10 vintage garments and Loren's first 5 chainmail creations on one rack.</p></div>
+            <div class="gap-item"><div class="gap-number">04</div><p><strong>Sound effect pick:</strong> Pick a tactile click/cash register sound (like WHM) to drop into <code>assets/sounds/</code>.</p></div>
+            <div class="gap-item"><div class="gap-number">05</div><p><strong>Joint bank card:</strong> Put $200 each into a shared account to buy mailers, tags, and domain.</p></div>
         </div>
     </section>
 
     <div class="divider"></div>
 
-    <!-- ===== FOOTER ===== -->
-    <div class="plan-footer">
-        Made with <span class="heart">♥</span> for Loren & Sarah<br>
-        <span style="color:var(--text-dim);">September 2026</span>
-    </div>
+    <!-- ===== 09. SCRATCHPAD & SHARED NOTES ===== -->
+    <section class="section" id="notes">
+        <span class="section-number">09</span>
+        <h2>Notes & Conversation Log</h2>
+        <p class="section-lead">Private notes area for both of you. Everything saves automatically.</p>
 
-    <!-- ===== SCRIPTS ===== -->
+        <div class="notes-grid">
+            <div class="field-group">
+                <div class="field-label"><span>Loren's Scratchpad</span></div>
+                <textarea class="textarea-input" style="min-height:160px;" data-key="notes-loren" placeholder="Loren: notes on chainmail weaves, vintage finds, shoot ideas..."></textarea>
+            </div>
+            <div class="field-group">
+                <div class="field-label"><span>Sarah's Scratchpad</span></div>
+                <textarea class="textarea-input" style="min-height:160px;" data-key="notes-sarah" placeholder="Sarah: notes on jewelry tools, packaging, pricing, trade ideas..."></textarea>
+            </div>
+        </div>
+
+        <div class="field-group" style="margin-top:1.2rem;">
+            <div class="field-label"><span>Shared Decisions & Milestone Log</span></div>
+            <textarea class="textarea-input" style="min-height:140px;" data-key="notes-shared" placeholder="Log agreed decisions here with dates:&#10;e.g. Sept 5: Decided to do 50/50 profit split.&#10;Sept 6: Lily making 2 papier-mâché masks (one silver leaf, one plaster texture)."></textarea>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="plan-footer">
+        CRAFTED WITH <span class="heart">♥</span> FOR LOREN & SARAH<br>
+        <span style="color:var(--text-dim); margin-top:0.5rem; display:inline-block;">AUTOSAVING DECISION ENGINE • SEPTEMBER 2026</span>
+    </footer>
+
+    <!-- ===== LOGIC & SYNC ENGINE ===== -->
     <script>
-        // Accordion toggle
-        function toggleCard(header) {
-            const card = header.parentElement;
-            card.classList.toggle('open');
+        const STORAGE_KEY = 'loren-sarah-brand-studio-v2';
+
+        const INPUT_KEYS = [
+            'brand-name',
+            'name-status',
+            'name-shortlist',
+            'tagline',
+            'domain-target',
+            'instagram-handle',
+            'jewelry-chainmail',
+            'jewelry-sarah',
+            'vintage-eras',
+            'pricing-strategy',
+            'lily-masks',
+            'lily-backdrops',
+            'shoot-schedule',
+            'lily-credit',
+            'partnership-terms',
+            'roles-division',
+            'abn-bank-status',
+            'packaging-vision',
+            'notes-loren',
+            'notes-sarah',
+            'notes-shared'
+        ];
+
+        function loadData() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            } catch(e) {
+                return {};
+            }
         }
 
-        // Scroll reveal
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showSaveIndicator();
+            renderLivePreviews(data);
+            updateDashboard(data);
+        }
+
+        function showSaveIndicator() {
+            const el = document.getElementById('save-indicator');
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 1200);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg || '✓ Copied to clipboard';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function renderLivePreviews(data) {
+            const brandName = (data['brand-name'] || '').trim();
+            const tagline = (data['tagline'] || '').trim();
+            const status = data['name-status'] || 'brainstorming';
+
+            // Hero updates
+            const heroTitle = document.getElementById('hero-title');
+            const previewLogo = document.getElementById('preview-logo-text');
+            const previewTagline = document.getElementById('preview-tagline-text');
+            const heroTaglinePreview = document.getElementById('hero-tagline-preview');
+            const statusChip = document.getElementById('status-name-chip');
+
+            if (brandName.length > 0) {
+                heroTitle.textContent = brandName;
+                previewLogo.textContent = brandName.toUpperCase();
+                document.title = brandName + ' — Business Plan & Brand Studio';
+            } else {
+                heroTitle.innerHTML = 'Loren <span class="accent">&</span> Sarah';
+                previewLogo.textContent = '[ YOUR BRAND NAME ]';
+                document.title = 'Business Plan & Brand Studio — Loren & Sarah';
+            }
+
+            if (tagline.length > 0) {
+                previewTagline.textContent = tagline;
+                heroTaglinePreview.textContent = '"' + tagline + '"';
+                heroTaglinePreview.classList.add('active');
+            } else {
+                previewTagline.textContent = 'Curated Vintage & Handmade Armor Jewelry';
+                heroTaglinePreview.textContent = '"Curated historical eras & handmade armor jewelry"';
+                heroTaglinePreview.classList.remove('active');
+            }
+
+            // Name status buttons
+            document.querySelectorAll('.chip-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.status === status);
+            });
+
+            if (statusChip) {
+                if (status === 'locked' && brandName) {
+                    statusChip.textContent = 'Locked: ' + brandName;
+                    statusChip.className = 'status done';
+                } else if (status === 'shortlist') {
+                    statusChip.textContent = 'Shortlist Stage';
+                    statusChip.className = 'status progress';
+                } else {
+                    statusChip.textContent = 'Decide This Week';
+                    statusChip.className = 'status tbd';
+                }
+            }
+        }
+
+        function updateDashboard(data) {
+            const nameVal = (data['brand-name'] || '').trim();
+            const tagVal = (data['tagline'] || '').trim();
+            const priceVal = (data['pricing-strategy'] || '').trim();
+            const lilyVal = ((data['lily-masks'] || '') + (data['lily-backdrops'] || '')).trim();
+            const jewelryVal = ((data['jewelry-chainmail'] || '') + (data['jewelry-sarah'] || '')).trim();
+            const partnerVal = (data['partnership-terms'] || '').trim();
+
+            setDashCard('dash-name', nameVal ? '✓' : '?', nameVal ? (data['name-status'] === 'locked' ? 'decided' : 'progress') : 'pending');
+            setDashCard('dash-tagline', tagVal ? '✓' : '?', tagVal ? 'decided' : 'pending');
+            setDashCard('dash-pricing', priceVal ? '✓' : '?', priceVal ? 'decided' : 'pending');
+            setDashCard('dash-lily', lilyVal ? '✓' : '?', lilyVal ? 'decided' : 'pending');
+            setDashCard('dash-jewelry', jewelryVal ? '✓' : '?', jewelryVal ? 'decided' : 'pending');
+            setDashCard('dash-structure', partnerVal ? '✓' : '?', partnerVal ? 'decided' : 'pending');
+        }
+
+        function setDashCard(id, val, state) {
+            const card = document.getElementById(id);
+            if (!card) return;
+            card.className = 'dash-card ' + state;
+            card.querySelector('.dash-value').textContent = val;
+        }
+
+        function setNameStatus(status) {
+            const d = loadData();
+            d['name-status'] = status;
+            saveData(d);
+        }
+
+        function initInputs() {
+            const data = loadData();
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.dataset.key;
+                if (data[key] !== undefined) {
+                    el.value = data[key];
+                }
+
+                let timeout;
+                el.addEventListener('input', function() {
+                    const d = loadData();
+                    d[key] = this.value;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => saveData(d), 300);
+                });
+            });
+        }
+
+        function initTasks() {
+            const data = loadData();
+            document.querySelectorAll('[data-task]').forEach(li => {
+                const key = 'task-' + li.dataset.task;
+                if (data[key]) li.classList.add('checked');
+            });
+        }
+
+        function toggleTask(el) {
+            el.classList.toggle('checked');
+            const data = loadData();
+            data['task-' + el.dataset.task] = el.classList.contains('checked');
+            saveData(data);
+        }
+
+        function toggleCard(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        function copySummary() {
+            const d = loadData();
+            const brand = d['brand-name'] || 'TBD (Loren & Sarah)';
+            const status = d['name-status'] || 'Brainstorming';
+            const tagline = d['tagline'] || 'Curated vintage & handmade chainmail armor';
+            const chainmail = d['jewelry-chainmail'] || 'Handmade pieces by Loren';
+            const sarahJewelry = d['jewelry-sarah'] || 'Jewelry collection by Sarah';
+            const vintage = d['vintage-eras'] || 'Selected eras & archival garments';
+            const lily = (d['lily-masks'] || '') + ' / ' + (d['lily-backdrops'] || '');
+            const pricing = d['pricing-strategy'] || 'TBD';
+            const domain = d['domain-target'] || 'TBD';
+            const ig = d['instagram-handle'] || 'TBD';
+            const partnership = d['partnership-terms'] || '50/50 partnership';
+
+            const text = 
+`✦ LOREN & SARAH — BRAND BLUEPRINT ✦
+─────────────────────────────────────
+• BRAND NAME: ${brand} [Status: ${status}]
+• TAGLINE: ${tagline}
+• INSTAGRAM: ${ig}
+• DOMAIN: ${domain}
+
+• LOREN'S CHAINMAIL:
+${chainmail}
+
+• SARAH'S JEWELRY:
+${sarahJewelry}
+
+• VINTAGE ERAS:
+${vintage}
+
+• LILY'S ART & EDITORIAL:
+${lily.trim() || 'Paper-mâché masks + handmade textured backdrops'}
+
+• PRICING STRATEGY:
+${pricing}
+
+• PARTNERSHIP AGREEMENT:
+${partnership}
+─────────────────────────────────────
+Live Blueprint: https://loren-sarah-vintage.vercel.app/business-plan.html`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✓ Blueprint copied to clipboard!');
+            }).catch(() => {
+                showToast('Press Cmd+C to copy');
+            });
+        }
+
+        function downloadSummary() {
+            const d = loadData();
+            const brand = d['brand-name'] || 'loren-sarah-vintage';
+            const content = JSON.stringify(d, null, 2);
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${brand.toLowerCase().replace(/\\s+/g, '-')}-brand-blueprint.json`;
+            a.click();
+            showToast('✓ Downloaded blueprint backup');
+        }
+
+        function clearAll() {
+            if (confirm('Clear all your answers and start fresh? This cannot be undone.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                document.querySelectorAll('[data-key]').forEach(el => el.value = '');
+                document.querySelectorAll('[data-task]').forEach(el => el.classList.remove('checked'));
+                const empty = {};
+                renderLivePreviews(empty);
+                updateDashboard(empty);
+                showToast('All answers cleared');
+            }
+        }
+
+        // Scroll observer
         const sections = document.querySelectorAll('.section');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('visible');
             });
-        }, { threshold: 0.1 });
-
+        }, { threshold: 0.08 });
         sections.forEach(s => observer.observe(s));
 
-        // Smooth scroll for nav links
-        document.querySelectorAll('.plan-nav a').forEach(link => {
+        // Smooth scroll for nav
+        document.querySelectorAll('.plan-nav a, .hero-actions a').forEach(link => {
             link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(targetId);
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
+
+        // Initialize on page load
+        initInputs();
+        initTasks();
+        const initialData = loadData();
+        renderLivePreviews(initialData);
+        updateDashboard(initialData);
     </script>
 </body>
 </html>
