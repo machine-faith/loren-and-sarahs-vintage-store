@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>YOUR STORE NAME</title>
+    <link rel="stylesheet" href="assets/css/site.css">
+    <meta name="theme-color" content="#000">
+    <meta name="description" content="Curated vintage clothing and objects — by Loren & Sarah">
+    <style>
+        header { display: none; }
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            cursor: pointer;
+        }
+        #logo {
+            text-align: center;
+            user-select: none;
+        }
+        #logo .placeholder-logo {
+            font-size: 2.5rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #fff;
+            font-family: serif;
+            margin-bottom: 1rem;
+        }
+        #logo p {
+            margin: 6px 0 0;
+            font-size: 10px;
+            text-align: center;
+            color: #999;
+            letter-spacing: 0.15em;
+        }
+        /* When you have a real logo image, uncomment below and remove .placeholder-logo */
+        /*
+        #logo img {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            max-width: 400px;
+        }
+        @media only screen and (max-width: 900px) {
+            #logo img { width: 90%; }
+        }
+        */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <main>
+            <div id="logo">
+                <!-- REPLACE THIS with your actual logo image:
+                     <img src="assets/images/logo.gif" alt="Enter [Your Store Name]"> -->
+                <div class="placeholder-logo">[ Your Store Name ]</div>
+                <p>click to enter</p>
+            </div>
+
+            <!-- REPLACE with your own sound file -->
+            <audio id="audio" src="assets/sounds/enter.mp3" preload></audio>
+
+            <script>
+                const audio = document.getElementById('audio');
+
+                document.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    audio.play();
+
+                    // If audio can't play (no file yet, or blocked), just redirect
+                    if (audio.paused || audio.error) {
+                        window.location = '/home.html';
+                    }
+                });
+
+                audio.addEventListener('ended', function() {
+                    window.location = '/home.html';
+                });
+
+                // Fun cursor toggle — swap between two custom cursors
+                // Replace cursor images with your own in assets/images/
+                // var sw = true;
+                // var cur = document.querySelector('html');
+                // setInterval(function() {
+                //     if (sw) {
+                //         cur.style.cursor = 'url(assets/images/cursor1.png) 0 0, auto';
+                //     } else {
+                //         cur.style.cursor = 'url(assets/images/cursor2.png) 0 0, auto';
+                //     }
+                //     sw = !sw;
+                // }, 700);
+            </script>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lookbook : YOUR STORE NAME</title>
+    <link rel="stylesheet" href="assets/css/site.css">
+    <meta name="theme-color" content="#000">
+    <meta name="description" content="Editorial lookbook — styled vintage pieces">
+</head>
+<body>
+    <div class="container">
+
+        <!-- ========== NAVIGATION ========== -->
+        <header>
+            <nav>
+                <div class="row">
+                    <a href="shop.html" title="Shop">Shop</a>
+                    <a href="lookbook.html" title="Lookbook" class="current-section">Lookbook</a>
+                    <a href="about.html" title="About">About</a>
+                </div>
+                <div class="row">
+                    <a href="contact.html" title="Contact">Contact</a>
+                    <a href="#" title="Instagram" target="_blank" rel="noopener">Instagram</a>
+                    <a href="#" title="Depop" target="_blank" rel="noopener">Depop</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- ========== LOOKBOOK ========== -->
+        <main>
+            <h1>Lookbook</h1>
+
+            <section class="content-page" style="max-width:1024px;">
+                <!--
+                    This page is for Lily's editorial photography —
+                    the masked model shoots with papier-mâché and handmade backdrops.
+
+                    This is your brand's "gallery" — the art side of the business.
+                    Think of it like WHM's "Collections" or "Exhibitions" pages.
+
+                    Layout options:
+                    1. Full-width single images stacked vertically (most dramatic)
+                    2. Grid layout like the shop (good for showing many pieces)
+                    3. Slideshow (like the home page)
+
+                    Below is the full-width stacked layout. Adjust as you like.
+                -->
+
+                <div style="margin-bottom:3rem;">
+                    <!--
+                        LOOKBOOK ENTRY — repeat this block for each shoot/collection.
+                        Replace the placeholder with a real image.
+                    -->
+                    <div style="width:100%; aspect-ratio:3/2; background:#111; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em; margin-bottom:0.5rem;">
+                        EDITORIAL IMAGE — Lily's shoot #1
+                    </div>
+                    <p class="text-center" style="color:#555; font-size:0.75rem; letter-spacing:0.15em;">
+                        <!-- Caption — item name, collection name, or leave empty -->
+                        Collection Title or Item Description
+                    </p>
+                </div>
+
+                <div style="margin-bottom:3rem;">
+                    <div style="width:100%; aspect-ratio:3/2; background:#0a0a0a; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em; margin-bottom:0.5rem;">
+                        EDITORIAL IMAGE — Lily's shoot #2
+                    </div>
+                    <p class="text-center" style="color:#555; font-size:0.75rem; letter-spacing:0.15em;">
+                        Collection Title or Item Description
+                    </p>
+                </div>
+
+                <div style="margin-bottom:3rem;">
+                    <div style="width:100%; aspect-ratio:3/2; background:#111; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em; margin-bottom:0.5rem;">
+                        EDITORIAL IMAGE — Lily's shoot #3
+                    </div>
+                    <p class="text-center" style="color:#555; font-size:0.75rem; letter-spacing:0.15em;">
+                        Collection Title or Item Description
+                    </p>
+                </div>
+
+                <div style="margin-bottom:3rem;">
+                    <div style="width:100%; aspect-ratio:3/2; background:#0a0a0a; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em; margin-bottom:0.5rem;">
+                        EDITORIAL IMAGE — Lily's shoot #4
+                    </div>
+                    <p class="text-center" style="color:#555; font-size:0.75rem; letter-spacing:0.15em;">
+                        Collection Title or Item Description
+                    </p>
+                </div>
+
+                <!--
+                    When you have real images, replace placeholders with:
+                    <img src="assets/images/lookbook/shoot-01.jpg" alt="Description">
+                -->
+
+            </section>
+        </main>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="mt-8">
+            <nav>
+                <div class="row">
+                    <a href="shop.html">Shop</a>
+                    <a href="lookbook.html">Lookbook</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+            </nav>
+        </footer>
+    </div>
+
+    <audio id="click-sound" src="assets/sounds/click.mp3" preload></audio>
+    <script>
+        document.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                var sound = document.getElementById('click-sound');
+                if (sound) { sound.currentTime = 0; sound.play().catch(function() {}); }
+            });
+        });
+    </script>
+</body>
+</html>

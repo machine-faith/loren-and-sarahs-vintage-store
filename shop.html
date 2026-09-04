@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shop : YOUR STORE NAME</title>
+    <link rel="stylesheet" href="assets/css/site.css">
+    <meta name="theme-color" content="#000">
+    <meta name="description" content="Shop curated vintage clothing, accessories, and objects">
+</head>
+<body>
+    <div class="container">
+
+        <!-- ========== NAVIGATION ========== -->
+        <header>
+            <nav>
+                <div class="row">
+                    <a href="shop.html" title="Shop" class="current-section">Shop</a>
+                    <a href="lookbook.html" title="Lookbook">Lookbook</a>
+                    <a href="about.html" title="About">About</a>
+                </div>
+                <div class="row">
+                    <a href="contact.html" title="Contact">Contact</a>
+                    <a href="#" title="Instagram" target="_blank" rel="noopener">Instagram</a>
+                    <a href="#" title="Depop" target="_blank" rel="noopener">Depop</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- ========== SHOP ========== -->
+        <main>
+            <h1>Shop</h1>
+
+            <!-- Sub-navigation -->
+            <ul class="subpages">
+                <li><a href="shop.html">All</a></li>
+                <li><a href="#">Clothing</a></li>
+                <li><a href="#">Accessories</a></li>
+                <li><a href="#">Objects</a></li>
+                <li><a href="#">Sold</a></li>
+            </ul>
+
+            <section class="shop-grid">
+                <ul class="items">
+
+                    <!--
+                        ==========================================
+                        PRODUCT ITEM TEMPLATE
+                        ==========================================
+                        Copy this <li> block for each product.
+                        Replace:
+                          - href with a link to the product page or your Depop listing
+                          - img src with your product photo
+                          - alt text with a description
+                          - Item name text
+                          - Price
+
+                        For SOLD items, add class="sold" to the <li>
+                        For SALE items, add class="on-sale" to the <li>
+                    -->
+
+                    <li>
+                        <a href="#" title="Item Name">
+                            <!-- PLACEHOLDER — replace with product image -->
+                            <div style="width:100%; aspect-ratio:3/4; background:#111; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.7rem; letter-spacing:0.1em;">
+                                PRODUCT IMAGE
+                            </div>
+                            <p class="item-name">Item Name — Era / Designer</p>
+                        </a>
+                        <div class="pricing">
+                            <div class="price">$000</div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <a href="#" title="Item Name">
+                            <div style="width:100%; aspect-ratio:3/4; background:#0a0a0a; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.7rem; letter-spacing:0.1em;">
+                                PRODUCT IMAGE
+                            </div>
+                            <p class="item-name">Item Name — Era / Designer</p>
+                        </a>
+                        <div class="pricing">
+                            <div class="price">$000</div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <a href="#" title="Item Name">
+                            <div style="width:100%; aspect-ratio:3/4; background:#111; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.7rem; letter-spacing:0.1em;">
+                                PRODUCT IMAGE
+                            </div>
+                            <p class="item-name">Item Name — Era / Designer</p>
+                        </a>
+                        <div class="pricing">
+                            <div class="price">$000</div>
+                        </div>
+                    </li>
+
+                    <!-- Example: SALE item -->
+                    <li class="on-sale">
+                        <a href="#" title="Sale Item">
+                            <div style="width:100%; aspect-ratio:3/4; background:#0a0a0a; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.7rem; letter-spacing:0.1em;">
+                                PRODUCT IMAGE
+                            </div>
+                            <p class="item-name">Sale Item Name</p>
+                        </a>
+                        <div class="pricing">
+                            <div class="price-change">
+                                <div class="old-price">$200</div>
+                                <div class="new-price">$100</div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Example: SOLD item -->
+                    <li>
+                        <a href="#" title="Sold Item">
+                            <div style="width:100%; aspect-ratio:3/4; background:#111; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.7rem; letter-spacing:0.1em; position:relative;">
+                                PRODUCT IMAGE
+                                <span class="sold-out-badge">Sold</span>
+                            </div>
+                            <p class="item-name">Previously Sold Item</p>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" title="Item Name">
+                            <div style="width:100%; aspect-ratio:3/4; background:#0a0a0a; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.7rem; letter-spacing:0.1em;">
+                                PRODUCT IMAGE
+                            </div>
+                            <p class="item-name">Item Name — Era / Designer</p>
+                        </a>
+                        <div class="pricing">
+                            <div class="price">$000</div>
+                        </div>
+                    </li>
+
+                </ul>
+            </section>
+        </main>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="mt-8">
+            <nav>
+                <div class="row">
+                    <a href="shop.html">Shop</a>
+                    <a href="lookbook.html">Lookbook</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+            </nav>
+        </footer>
+    </div>
+
+    <!-- ========== CLICK SOUND (optional) ========== -->
+    <!--
+        To add a click sound on navigation (like WHM), uncomment this:
+    -->
+    <audio id="click-sound" src="assets/sounds/click.mp3" preload></audio>
+    <script>
+        // Play a subtle sound when clicking any link
+        document.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                var sound = document.getElementById('click-sound');
+                if (sound) {
+                    sound.currentTime = 0;
+                    sound.play().catch(function() {}); // Silently fail if no file
+                }
+            });
+        });
+    </script>
+</body>
+</html>

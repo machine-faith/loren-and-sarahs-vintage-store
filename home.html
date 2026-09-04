@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home : YOUR STORE NAME</title>
+    <link rel="stylesheet" href="assets/css/site.css">
+    <meta name="theme-color" content="#000">
+    <meta name="description" content="Curated vintage clothing and objects — by Loren & Sarah">
+</head>
+<body>
+    <div class="container">
+
+        <!-- ========== NAVIGATION ========== -->
+        <header>
+            <nav>
+                <div class="row">
+                    <!-- Change these links and labels to match your actual pages -->
+                    <a href="shop.html" title="Shop">Shop</a>
+                    <a href="lookbook.html" title="Lookbook">Lookbook</a>
+                    <a href="about.html" title="About">About</a>
+                </div>
+                <div class="row">
+                    <a href="contact.html" title="Contact">Contact</a>
+                    <!-- Link to your external platforms -->
+                    <a href="#" title="Instagram" target="_blank" rel="noopener">Instagram</a>
+                    <a href="#" title="Depop" target="_blank" rel="noopener">Depop</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- ========== HOME — IMAGE SLIDESHOW ========== -->
+        <main>
+            <section class="slides">
+                <!--
+                    REPLACE these placeholder figures with your actual images.
+                    Each <figure> is one slide. The slideshow auto-rotates.
+                    Use images from Lily's shoots, or product photos.
+
+                    Recommended image size: at least 1024px wide, landscape orientation.
+                    Format: JPG or PNG.
+                -->
+
+                <figure class="active">
+                    <!-- PLACEHOLDER — replace src with your image path -->
+                    <div style="width:100%; aspect-ratio:16/9; background:#111; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em;">
+                        SLIDE 1 — Replace with your image
+                    </div>
+                </figure>
+
+                <figure>
+                    <div style="width:100%; aspect-ratio:16/9; background:#0a0a0a; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em;">
+                        SLIDE 2 — Replace with your image
+                    </div>
+                </figure>
+
+                <figure>
+                    <div style="width:100%; aspect-ratio:16/9; background:#111; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em;">
+                        SLIDE 3 — Replace with your image
+                    </div>
+                </figure>
+
+                <figure>
+                    <div style="width:100%; aspect-ratio:16/9; background:#0a0a0a; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em;">
+                        SLIDE 4 — Replace with your image
+                    </div>
+                </figure>
+
+                <!--
+                    To add more slides, copy a <figure> block and change the content.
+                    When you have real images:
+                    <figure>
+                        <img src="assets/images/slide-01.jpg" alt="Description of the image">
+                    </figure>
+                -->
+            </section>
+
+            <!-- ========== EMAIL SIGNUP ========== -->
+            <section class="email-signup">
+                <p>Be the first to know about new arrivals</p>
+                <!--
+                    REPLACE this form action with your email service provider
+                    (Mailchimp, ConvertKit, Buttondown, etc.)
+                -->
+                <form action="#" method="post">
+                    <input type="email" name="email" placeholder="your@email.com" required>
+                    <button type="submit">Join</button>
+                </form>
+            </section>
+
+            <!-- ========== SLIDESHOW SCRIPT ========== -->
+            <script>
+                'use strict';
+
+                const slideshow = document.querySelector('.slides');
+                const slides = slideshow.querySelectorAll('figure');
+                const slideDuration = 1500; // milliseconds per slide — adjust to taste
+
+                slides[0].classList.add('active');
+
+                let slideshowTimer;
+
+                // Hold initial image a little longer before starting rotation
+                setTimeout(startSlideshow, 1200);
+
+                function startSlideshow() {
+                    slideshowTimer = window.setInterval(function() {
+                        const activeSlide = slideshow.querySelector('.active');
+                        nextSlide(activeSlide, slides);
+                    }, slideDuration);
+                }
+
+                function nextSlide(activeSlide, slides) {
+                    const slideArray = Array.from(slides);
+                    const activeIndex = slideArray.indexOf(activeSlide);
+                    const remainingSlides = slideArray.slice(activeIndex + 1);
+
+                    const next = remainingSlides[0] || slides[0];
+
+                    if (!next) return;
+
+                    next.classList.add('active');
+                    activeSlide.classList.remove('active');
+                }
+            </script>
+        </main>
+    </div>
+</body>
+</html>

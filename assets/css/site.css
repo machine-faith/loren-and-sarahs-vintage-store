@@ -1,0 +1,425 @@
+/* ======================================
+   SITE-WIDE STYLES
+   Your Store Name — Skeleton Stylesheet
+   ====================================== */
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #000;
+    color: #fff;
+    /* CHANGE THIS to your chosen font — e.g. 'Your Font Name', serif */
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+ul {
+    list-style: none;
+}
+
+h1, h2, h3 {
+    /* CHANGE THIS to your title font */
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: 1.8rem;
+    margin: 2rem 1rem;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.3rem;
+    margin: 2rem 1rem 1rem;
+}
+
+.container {
+    max-width: 100%;
+    min-height: 100vh;
+}
+
+
+/* --- Navigation --- */
+header nav {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #222;
+}
+
+header nav .row {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+header nav a {
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    transition: opacity 0.2s;
+    color: #888;
+}
+
+header nav a:hover,
+header nav a.current-section {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* If you use image-based nav links like WHM, uncomment:
+header nav a img {
+    height: 20px;
+    image-rendering: pixelated;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+header nav a:hover img,
+header nav a.current-section img {
+    opacity: 1;
+}
+*/
+
+
+/* --- Slideshow (Home Page) --- */
+.slides {
+    width: 100%;
+    max-width: 1024px;
+    margin: 0 auto 2rem;
+    position: relative;
+    user-select: none;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    min-height: 50vh;
+}
+
+.slides figure {
+    display: block;
+    margin: 0 auto 2rem;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    transition: opacity 0.5s steps(3, start);
+}
+
+.slides figure img {
+    width: 100%;
+    margin: 0 auto 5rem;
+    display: block;
+}
+
+.slides figure.active {
+    opacity: 1;
+}
+
+@media only screen and (max-width: 900px) {
+    .slides {
+        width: calc(100% - 2rem);
+    }
+    .slides figure img {
+        object-fit: cover;
+        aspect-ratio: 1.2 / 1;
+    }
+}
+
+
+/* --- Shop / Product Grid --- */
+.shop-grid {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.shop-grid .items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+}
+
+.shop-grid .items li {
+    width: 100%;
+    position: relative;
+}
+
+.shop-grid .items li a {
+    display: block;
+}
+
+.shop-grid .items li img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+}
+
+.shop-grid .items li .item-name {
+    text-align: center;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    color: #ccc;
+}
+
+.shop-grid .items li .pricing {
+    text-align: center;
+    color: #999;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* Sold out overlay */
+.shop-grid .items li .sold-out-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0.5rem 1rem;
+    pointer-events: none;
+}
+
+/* Sale badge */
+.shop-grid .items li.on-sale::after {
+    content: "SALE";
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: red;
+    background: #000;
+    padding: 0.2rem 0.5rem;
+    pointer-events: none;
+}
+
+.price-change {
+    display: flex;
+    justify-content: center;
+    gap: 0.33em;
+}
+
+.price-change .old-price {
+    color: red;
+    text-decoration: line-through;
+}
+
+/* Sub-navigation within shop pages */
+.subpages {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    margin: 0 1rem 2rem;
+    align-items: flex-start;
+    justify-content: left;
+}
+
+.subpages a {
+    color: #888;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+}
+
+.subpages a:hover {
+    color: #fff;
+}
+
+@media only screen and (max-width: 900px) {
+    .shop-grid .items {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .shop-grid .items {
+        gap: 1rem;
+    }
+    .subpages {
+        justify-content: space-around;
+    }
+}
+
+
+/* --- About / Content Pages --- */
+.content-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.content-page p {
+    margin-bottom: 1.2rem;
+    color: #ccc;
+    line-height: 1.8;
+}
+
+
+/* --- Contact Page --- */
+.contact-page {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.contact-page .email-link {
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    display: inline-block;
+    margin: 1rem 0;
+    border-bottom: 1px solid #555;
+    padding-bottom: 2px;
+}
+
+.contact-page .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.contact-page .social-links a {
+    color: #888;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+
+/* --- Email Signup --- */
+.email-signup {
+    max-width: 400px;
+    margin: 3rem auto;
+    text-align: center;
+    padding: 2rem 1rem;
+    border: 1px solid #333;
+}
+
+.email-signup p {
+    color: #999;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+}
+
+.email-signup form {
+    display: flex;
+    gap: 0;
+}
+
+.email-signup input[type="email"] {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.85rem;
+}
+
+.email-signup input[type="email"]::placeholder {
+    color: #555;
+}
+
+.email-signup button {
+    padding: 0.6rem 1.2rem;
+    background: #fff;
+    color: #000;
+    border: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.email-signup button:hover {
+    background: #ccc;
+}
+
+
+/* --- Footer --- */
+footer {
+    margin-top: 4rem;
+    padding: 2rem 1rem;
+    border-top: 1px solid #222;
+    text-align: center;
+}
+
+footer nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+footer nav .row {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+footer nav a {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #555;
+}
+
+footer nav a:hover {
+    color: #fff;
+}
+
+
+/* --- Utility --- */
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2rem; }
+.mt-4 { margin-top: 4rem; }
+.mt-8 { margin-top: 8rem; }
+.block { display: block; }
+
+
+/* --- Sound feedback indicator --- */
+.click-sound-indicator {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 0.65rem;
+    color: #333;
+    letter-spacing: 0.1em;
+}

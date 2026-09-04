@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About : YOUR STORE NAME</title>
+    <link rel="stylesheet" href="assets/css/site.css">
+    <meta name="theme-color" content="#000">
+    <meta name="description" content="About Loren & Sarah — curators of vintage clothing and objects">
+</head>
+<body>
+    <div class="container">
+
+        <!-- ========== NAVIGATION ========== -->
+        <header>
+            <nav>
+                <div class="row">
+                    <a href="shop.html" title="Shop">Shop</a>
+                    <a href="lookbook.html" title="Lookbook">Lookbook</a>
+                    <a href="about.html" title="About" class="current-section">About</a>
+                </div>
+                <div class="row">
+                    <a href="contact.html" title="Contact">Contact</a>
+                    <a href="#" title="Instagram" target="_blank" rel="noopener">Instagram</a>
+                    <a href="#" title="Depop" target="_blank" rel="noopener">Depop</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- ========== ABOUT ========== -->
+        <main>
+            <h1>About</h1>
+
+            <section class="content-page">
+                <!--
+                    WRITE YOUR STORY HERE.
+                    This is where your personality comes through.
+
+                    Some prompts:
+                    - How did you and Sarah meet?
+                    - What draws you both to vintage?
+                    - What eras/materials/aesthetics are you drawn to?
+                    - What does curation mean to you?
+                    - What role does Lily's art play in the brand?
+                    - Why the masks? What does the anonymity represent?
+
+                    Keep it genuine. The best "About" pages read like a
+                    conversation, not a corporate bio.
+                -->
+
+                <p>
+                    <!-- YOUR STORY GOES HERE -->
+                    [Write your story here — who you are, why you started this,
+                    what you love about vintage clothing and objects from the past.
+                    Be yourselves.]
+                </p>
+
+                <p>
+                    <!-- THE ART / LILY -->
+                    [Write about your collaboration with Lily — the handmade
+                    backdrops, the papier-mâché masks, the anonymity, what it
+                    all means to you.]
+                </p>
+
+                <p>
+                    <!-- THE PHILOSOPHY -->
+                    [What guides your curation? What makes a piece worthy of
+                    your collection? What do you want people to feel when they
+                    wear something you've found?]
+                </p>
+
+                <!-- Optional: About image placeholder -->
+                <div style="width:100%; aspect-ratio:4/3; background:#111; display:flex; align-items:center; justify-content:center; color:#333; font-size:0.8rem; letter-spacing:0.1em; margin:2rem 0;">
+                    ABOUT IMAGE — A photo of you two (masked?), or one of Lily's pieces
+                </div>
+
+                <!--
+                    CREDITS — acknowledge your collaborators
+                -->
+                <p style="color:#555; font-size:0.8rem; margin-top:3rem; text-align:center; letter-spacing:0.1em;">
+                    Art direction & masks — Lily [surname]<br>
+                    Curation — Loren & Sarah
+                </p>
+            </section>
+        </main>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="mt-8">
+            <nav>
+                <div class="row">
+                    <a href="shop.html">Shop</a>
+                    <a href="lookbook.html">Lookbook</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+            </nav>
+        </footer>
+    </div>
+
+    <audio id="click-sound" src="assets/sounds/click.mp3" preload></audio>
+    <script>
+        document.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                var sound = document.getElementById('click-sound');
+                if (sound) { sound.currentTime = 0; sound.play().catch(function() {}); }
+            });
+        });
+    </script>
+</body>
+</html>
