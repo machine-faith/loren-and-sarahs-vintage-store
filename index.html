@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>YOUR STORE NAME</title>
     <link rel="stylesheet" href="assets/css/site.css">
     <meta name="theme-color" content="#000">
@@ -14,69 +14,75 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            height: 100dvh;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            padding: 1.5rem;
+            text-align: center;
         }
         #logo {
             text-align: center;
             user-select: none;
+            -webkit-user-select: none;
         }
         #logo .placeholder-logo {
-            font-size: 2.5rem;
-            letter-spacing: 0.3em;
+            font-size: clamp(1.8rem, 7vw, 2.6rem);
+            letter-spacing: 0.25em;
             text-transform: uppercase;
             color: #fff;
             font-family: serif;
             margin-bottom: 1rem;
+            word-break: break-word;
         }
         #logo p {
-            margin: 6px 0 0;
-            font-size: 10px;
+            margin: 8px 0 0;
+            font-size: 11px;
             text-align: center;
-            color: #999;
-            letter-spacing: 0.15em;
+            color: #888;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
         }
-        /* When you have a real logo image, uncomment below and remove .placeholder-logo */
-        /*
-        #logo img {
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            max-width: 400px;
-        }
-        @media only screen and (max-width: 900px) {
-            #logo img { width: 90%; }
-        }
-        */
     </style>
 </head>
 <body>
     <div class="container">
         <main>
             <div id="logo">
-                <!-- REPLACE THIS with your actual logo image:
-                     <img src="assets/images/logo.gif" alt="Enter [Your Store Name]"> -->
                 <div class="placeholder-logo">[ Your Store Name ]</div>
-                <p>click to enter</p>
+                <p>tap to enter</p>
             </div>
 
-            <!-- REPLACE with your own sound file -->
             <audio id="audio" src="assets/sounds/enter.mp3" preload></audio>
 
             <script>
                 const audio = document.getElementById('audio');
+                let redirected = false;
 
-                document.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    audio.play();
-
-                    // If audio can't play (no file yet, or blocked), just redirect
-                    if (audio.paused || audio.error) {
-                        window.location = '/home.html';
+                function enterSite() {
+                    if (redirected) return;
+                    redirected = true;
+                    try {
+                        const playPromise = audio.play();
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                audio.addEventListener('ended', function() {
+                                    window.location.href = 'home.html';
+                                });
+                            }).catch(() => {
+                                window.location.href = 'home.html';
+                            });
+                        }
+                    } catch(e) {
+                        window.location.href = 'home.html';
                     }
-                });
+                    setTimeout(function() {
+                        window.location.href = 'home.html';
+                    }, 400);
+                }
 
-                audio.addEventListener('ended', function() {
-                    window.location = '/home.html';
-                });
+                document.addEventListener('click', enterSite);
+                document.addEventListener('touchend', enterSite, { passive: true });
+            </script>
 
                 // Fun cursor toggle — swap between two custom cursors
                 // Replace cursor images with your own in assets/images/

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Business Plan & Brand Studio — Loren & Sarah</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
@@ -820,6 +820,206 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        /* ===== RESPONSIVE & MOBILE-FIRST OPTIMIZATION ===== */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 1rem 0 2rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 2px;
+        }
+
+        .table-responsive .revenue-table {
+            margin: 0;
+            min-width: 580px;
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                font-size: 14.5px;
+                -webkit-text-size-adjust: 100%;
+            }
+
+            /* Prevent iOS Safari from auto-zooming into inputs on tap */
+            input, textarea, select {
+                font-size: 16px !important;
+            }
+
+            .hero {
+                min-height: 75vh;
+                padding: 2.8rem 1.25rem 2rem;
+            }
+
+            .hero h1 {
+                font-size: clamp(2rem, 9vw, 3rem);
+                line-height: 1.15;
+            }
+
+            .hero .subtitle {
+                font-size: 0.8rem;
+                letter-spacing: 0.2em;
+            }
+
+            .hero-tagline-preview {
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.6rem;
+            }
+
+            .hero-actions .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 0.8rem;
+                min-height: 44px;
+            }
+
+            /* Smooth horizontal swipe menu on mobile */
+            .plan-nav {
+                justify-content: flex-start;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding: 0.55rem 0.8rem;
+                gap: 0.35rem;
+            }
+
+            .plan-nav::-webkit-scrollbar {
+                display: none;
+            }
+
+            .plan-nav a {
+                padding: 0.4rem 0.65rem;
+                font-size: 0.64rem;
+            }
+
+            .section {
+                padding: 3rem 1.15rem;
+            }
+
+            .section h2 {
+                font-size: 1.75rem;
+            }
+
+            .section-lead {
+                font-size: 0.88rem;
+            }
+
+            /* Clean 3x2 app-style dashboard */
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.5rem;
+            }
+
+            .dash-card {
+                padding: 0.75rem 0.4rem;
+            }
+
+            .dash-card .dash-value {
+                font-size: 1.25rem;
+            }
+
+            .dash-card .dash-label {
+                font-size: 0.55rem;
+                letter-spacing: 0.08em;
+            }
+
+            /* Workspace card adjustments */
+            .workspace-card {
+                padding: 1.25rem 1rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .workspace-header h3 {
+                font-size: 1.15rem;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+                gap: 0.9rem;
+            }
+
+            .name-hero-input {
+                font-size: 1.2rem !important;
+                padding: 0.75rem 0.85rem;
+            }
+
+            .brand-preview-logo {
+                font-size: 1.4rem;
+                letter-spacing: 0.18em;
+            }
+
+            .chip-btn {
+                padding: 0.45rem 0.7rem;
+                min-height: 38px;
+            }
+
+            .foundation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-lines {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .channels {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline {
+                padding-left: 1.5rem;
+            }
+
+            .timeline-item li {
+                font-size: 0.84rem;
+                padding: 0.45rem 0;
+            }
+
+            /* Floating mobile save & action indicator */
+            .save-banner {
+                bottom: max(0.8rem, env(safe-area-inset-bottom));
+                right: max(0.8rem, env(safe-area-inset-right));
+                gap: 0.4rem;
+            }
+
+            .save-banner .btn {
+                padding: 0.5rem 0.7rem;
+                min-height: 38px;
+            }
+
+            .plan-footer {
+                padding-bottom: max(3rem, env(safe-area-inset-bottom));
+            }
+        }
+
+        @media screen and (max-width: 420px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .hero h1 {
+                font-size: 1.85rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1313,28 +1513,32 @@
         <p class="section-lead">Why mixing jewelry with vintage clothing makes this business model so strong.</p>
 
         <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--accent); margin-bottom:0.5rem;">Vintage Resale (Margin ~55%)</h3>
-        <table class="revenue-table">
-            <thead>
-                <tr><th>Stage</th><th>Sales / Mo</th><th>Avg Ticket</th><th>Gross Rev</th><th>Fees & COGS</th><th>Net Profit</th></tr>
-            </thead>
-            <tbody>
-                <tr><td class="scenario">Drop 1–2</td><td>6 items</td><td>$85</td><td>$510</td><td>~$220</td><td class="net">+$290</td></tr>
-                <tr><td class="scenario">Consistent Drops</td><td>18 items</td><td>$110</td><td>$1,980</td><td>~$850</td><td class="net">+$1,130</td></tr>
-                <tr><td class="scenario">Thriving</td><td>35 items</td><td>$135</td><td>$4,725</td><td>~$1,980</td><td class="net">+$2,745</td></tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="revenue-table">
+                <thead>
+                    <tr><th>Stage</th><th>Sales / Mo</th><th>Avg Ticket</th><th>Gross Rev</th><th>Fees & COGS</th><th>Net Profit</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="scenario">Drop 1–2</td><td>6 items</td><td>$85</td><td>$510</td><td>~$220</td><td class="net">+$290</td></tr>
+                    <tr><td class="scenario">Consistent Drops</td><td>18 items</td><td>$110</td><td>$1,980</td><td>~$850</td><td class="net">+$1,130</td></tr>
+                    <tr><td class="scenario">Thriving</td><td>35 items</td><td>$135</td><td>$4,725</td><td>~$1,980</td><td class="net">+$2,745</td></tr>
+                </tbody>
+            </table>
+        </div>
 
         <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--purple); margin-bottom:0.5rem;">Handmade Chainmail & Jewelry (Margin ~80%)</h3>
-        <table class="revenue-table">
-            <thead>
-                <tr><th>Stage</th><th>Pieces / Mo</th><th>Avg Ticket</th><th>Gross Rev</th><th>Materials & Rings</th><th>Net Profit</th></tr>
-            </thead>
-            <tbody>
-                <tr><td class="scenario">Soft Launch</td><td>4 pieces</td><td>$75</td><td>$300</td><td>~$50</td><td class="net">+$250</td></tr>
-                <tr><td class="scenario">Signature Drops</td><td>12 pieces</td><td>$95</td><td>$1,140</td><td>~$180</td><td class="net">+$960</td></tr>
-                <tr><td class="scenario">Statement Orders</td><td>25 pieces</td><td>$130</td><td>$3,250</td><td>~$480</td><td class="net">+$2,770</td></tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="revenue-table">
+                <thead>
+                    <tr><th>Stage</th><th>Pieces / Mo</th><th>Avg Ticket</th><th>Gross Rev</th><th>Materials & Rings</th><th>Net Profit</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="scenario">Soft Launch</td><td>4 pieces</td><td>$75</td><td>$300</td><td>~$50</td><td class="net">+$250</td></tr>
+                    <tr><td class="scenario">Signature Drops</td><td>12 pieces</td><td>$95</td><td>$1,140</td><td>~$180</td><td class="net">+$960</td></tr>
+                    <tr><td class="scenario">Statement Orders</td><td>25 pieces</td><td>$130</td><td>$3,250</td><td>~$480</td><td class="net">+$2,770</td></tr>
+                </tbody>
+            </table>
+        </div>
 
         <div class="callout tip">
             <strong>Key Insight</strong>
