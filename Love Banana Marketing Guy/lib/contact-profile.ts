@@ -32,6 +32,7 @@ export interface ContactProfile {
   angleDescription: string;
   greetingIntro: string;
   signoffLine: string;
+  subjectVariant: string;
 }
 
 const TEAM_KEYWORDS = [
@@ -203,17 +204,44 @@ export function getContactProfile(
     tier3_eclectic: { label: '📻 ECLECTIC / REGIONAL', bg: 'bg-[#00f044]/15', text: 'text-[#00f044]', border: 'border-[#00f044]/30' },
   }[affinityTier];
 
-  // Tailored story hook based on affinity tier (Wide Net approach)
+  // 5. Deterministic Seed Hashing & 5-Variant Story Hooks per Tier
+  const hash = Array.from(contact.id || contact.email || '').reduce((acc, c) => acc + c.charCodeAt(0), seedIndex);
+
+  const TIER1_HOOKS = [
+    "It's a fast, upbeat track about beach birds stealing your hot chips - recorded in Petersham and mastered by Owen Penglis (Straight Arrows).",
+    "Fast, scuzzy garage pop - recorded in Petersham, mastered by Owen Penglis (Straight Arrows). It's about seagulls nicking people's hot chips, if that tells you anything about the vibe.",
+    "Recorded in Petersham and mastered by Owen Penglis (Straight Arrows). Fast, catchy garage pop about seagulls nicking hot chips at the beach.",
+    "Upbeat garage rock with scuzzy guitars and group-vocal hooks, about beach birds making off with your hot chips. Mastered by Owen Penglis (Straight Arrows), tracked in Petersham.",
+    "Mastered by Owen Penglis (Straight Arrows). Fast garage pop, recorded in Petersham - it's about seagulls stealing hot chips, which sounds funny but lands as a genuinely catchy, high-energy track."
+  ];
+
+  const TIER2_HOOKS = [
+    "It's a fast, upbeat garage pop track with catchy group-vocal hooks and scuzzy guitars, off our upcoming debut LP 'Any Direction'.",
+    "Energetic garage pop with group-vocal choruses and scuzzy guitar work, from our upcoming debut LP 'Any Direction' on Ragnar Records.",
+    "Fast and catchy garage pop - group vocals, scuzzy guitars, the whole deal. Off our debut LP 'Any Direction', coming out on Ragnar Records.",
+    "It's from our debut LP 'Any Direction' - fast, guitar-forward garage pop with group vocal hooks. Mastered by Mikey Young.",
+    "Our debut LP 'Any Direction' is coming out on Ragnar Records, mastered by Mikey Young. 'Seagull' is the lead single - energetic, catchy, scuzzy guitars."
+  ];
+
+  const TIER3_HOOKS = [
+    'It\'s a fun, upbeat rock and roll track about beach birds making off with your hot chips - our debut 7" hit #3 on the Australian AIR indie charts.',
+    'Fast, energetic rock and roll - it\'s about seagulls stealing hot chips at the beach. Our debut 7" went to #3 on the Australian AIR indie charts.',
+    'Upbeat, guitar-driven rock and roll with a fun hook - our debut 7" recently hit #3 on the Australian Independent Record Labels (AIR) charts.',
+    'Catchy, fast rock and roll - our debut 7" went to #3 on the AIR charts and picked up community radio spins across Australia.',
+    'It\'s from our debut LP, coming out later this year. Fast, fun guitar pop - our debut 7" hit #3 on the Australian AIR indie charts.'
+  ];
+
   let storyHook = '';
+  const hookIndex = Math.abs(hash + 2) % 5;
   if (affinityTier === 'tier1_bullseye') {
-    storyHook = "It's a fast, upbeat track about local beach birds taking your hot chips, recorded in Petersham and mastered by Owen Penglis (Straight Arrows).";
+    storyHook = TIER1_HOOKS[hookIndex];
   } else if (affinityTier === 'tier2_indie') {
-    storyHook = "It's a fast, upbeat garage pop track with catchy group-vocal hooks and scuzzy guitars off our upcoming debut LP 'Any Direction'.";
+    storyHook = TIER2_HOOKS[hookIndex];
   } else {
-    storyHook = 'It\'s a fun, upbeat rock and roll track about local beach birds taking your hot chips, following our recent 7" which hit #3 on the Australian Independent Record Labels (AIR) charts.';
+    storyHook = TIER3_HOOKS[hookIndex];
   }
 
-  // 6. Context-aware ask phrase
+  // 6. Strict Context-Aware Ask Phrase Logic Tree
   let askPhrase = '';
   let angleDescription = '';
 
@@ -222,47 +250,71 @@ export function getContactProfile(
                                 cleanOutlet.toLowerCase().includes('community') ||
                                 (rawCategory.includes('radio') && (rawNotes.includes('rural') || rawNotes.includes('regional')));
 
-  if (outletType === 'Radio') {
+  const mode = (contact as any).contactMode;
+
+  if (mode === 'label_distro') {
+    askPhrase = "We'd love to know if you think the record could be a good fit for your roster. Give the stream a listen when you get a chance and let us know - no stress either way.";
+    angleDescription = 'Label Distro - Physical Release Partner';
+  } else if (mode === 'blog_feature' || outletType === 'Blog') {
+    askPhrase = "Would love to know your thoughts if you get a chance to give it a listen - happy to share any assets you need.";
+    angleDescription = 'Blog / Webzine - Track Feature or Write-up';
+  } else if (mode === 'magazine_review' || outletType === 'Magazine' || outletType === 'Writer/Critic') {
+    askPhrase = "Happy to send through a full advance stream, hi-res press shots, or a physical copy if any of that is useful for a review or feature.";
+    angleDescription = 'Magazine / Press - Album Review or Feature';
+  } else if (mode === 'playlist_curator' || outletType === 'Curator') {
+    askPhrase = "Thought it might be a good fit for one of your playlists if you get a chance to check it out.";
+    angleDescription = 'Playlist Curator';
+  } else if (outletType === 'Radio') {
     if (locationCategory === 'sydney') {
-      askPhrase = "We'd love for you to give this new one a spin if you feel it fits any of your programming, and we'd also love to be considered for any in-studio chats or interviews!";
+      askPhrase = "Would love for you to give it a spin if you feel it fits any of your shows, and we'd love to come in for an in-studio chat if you're up for it!";
       angleDescription = 'Radio Airplay + Local In-Studio Chats';
-    } else if (isGrassrootsCommunity || affinityTier === 'tier3_eclectic') {
-      askPhrase = "We're huge supporters of grassroots community radio, and we'd be stoked if you gave this new one a spin if you feel it fits any of your shows!";
+    } else if (affinityTier === 'tier3_eclectic' || isGrassrootsCommunity) {
+      askPhrase = "We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows.";
       angleDescription = 'Grassroots Community Radio Airplay';
     } else {
-      askPhrase = "We'd love for you to give this new one a spin if you feel it fits any of your programming and we'd also love to be considered for any interviews!";
-      angleDescription = 'Radio Airplay + Remote/Phone Interview';
+      askPhrase = "Would love for you to give it a spin if you feel it fits any of your programming.";
+      angleDescription = 'Radio Airplay Consideration';
     }
-  } else if (outletType === 'Blog') {
-    askPhrase = "We'd love for you to give it a listen and see if you might be interested in featuring or reviewing the track, or premiering the video/album stream down the line.";
-    angleDescription = 'Blog Feature / Video Premiere (Radio spin wording removed)';
-  } else if (outletType === 'Magazine' || outletType === 'Writer/Critic') {
-    askPhrase = "Thought you might like to give it a listen for any upcoming reviews, album roundups, or features you're working on.";
-    angleDescription = 'Editorial Review / Album Roundup';
-  } else if (outletType === 'Curator') {
-    askPhrase = "Thought it might be a good fit for any of your indie or garage playlists if you get a chance to check it out.";
-    angleDescription = 'Playlist Placement Consideration';
   } else {
-    askPhrase = "We'd love for you to give this new one a spin if you feel it fits your shows, and we'd also love to be considered for any interviews!";
-    angleDescription = 'Airplay & Music Consideration';
+    askPhrase = "Would love for you to give it a listen and let us know what you think.";
+    angleDescription = 'Music Consideration';
   }
 
-  // 7. Natural Human Micro-Variations (breaches spam filter duplicate-body hashing)
-  const hash = Array.from(contact.id || contact.email || '').reduce((acc, c) => acc + c.charCodeAt(0), seedIndex);
-
-  const intros = [
+  // 7. Expanded 8x8 Natural Human Micro-Variations & Subject Line Pool
+  const INTROS = [
     "Hope you're well!",
-    "Hope you're having a good week!",
-    "Hope you're doing well!"
-  ];
-  const signoffs = [
-    "Let us know if you need anything else from us!",
-    "Let me know if you need anything else from our end!",
-    "If you need anything else from us, just shout!"
+    "Hope you're having a good one!",
+    "Hope this finds you well!",
+    "Hope you're having a solid week!",
+    "Hope things are going well your end!",
+    "Hope you're not too buried in promo at the moment!",
+    "Hope your week is going well.",
+    "Hope you're doing well."
   ];
 
-  const greetingIntro = intros[hash % intros.length];
-  const signoffLine = signoffs[(hash + 1) % signoffs.length];
+  const SIGNOFFS = [
+    "Let me know if you need anything else from our end!",
+    "If you need anything else from us, just shout.",
+    "Happy to send through anything else you need.",
+    "Let us know if there's anything else useful we can send through.",
+    "Feel free to reach out if you need any other assets.",
+    "No stress either way - really appreciate your time.",
+    "Cheers for taking the time to have a read.",
+    "Really appreciate you taking the time."
+  ];
+
+  const SUBJECTS = [
+    'New music from Sydney: Love Banana - "Seagull"',
+    `Love Banana - "Seagull" (for ${shortBrand || 'you'})`,
+    `Australian garage pop for ${shortBrand || 'you'}: Love Banana`,
+    'New single from Sydney - Love Banana, "Seagull"',
+    'Love Banana - debut single "Seagull" (Sydney garage pop)',
+    `For ${shortBrand || 'you'}: Love Banana - "Seagull" (Mastered by Mikey Young)`
+  ];
+
+  const greetingIntro = INTROS[Math.abs(hash) % INTROS.length];
+  const signoffLine = SIGNOFFS[Math.abs(hash + 3) % SIGNOFFS.length];
+  const subjectVariant = SUBJECTS[Math.abs(hash) % SUBJECTS.length];
 
   return {
     name: rawName,
@@ -281,8 +333,72 @@ export function getContactProfile(
     askPhrase,
     angleDescription,
     greetingIntro,
-    signoffLine
+    signoffLine,
+    subjectVariant
   };
+}
+
+export function shuffleLinks(links: string[], hash: number): string[] {
+  if (!links || links.length <= 1) return links;
+  const offset = Math.abs(hash) % links.length;
+  return [...links.slice(offset), ...links.slice(0, offset)];
+}
+
+export function rotateLinkLinesInBody(bodyText: string, hash: number): string {
+  const lines = bodyText.split('\n');
+  const resultLines: string[] = [];
+  let linkChunk: string[] = [];
+
+  const isLinkLine = (line: string) => {
+    const trimmed = line.trim();
+    if (!trimmed) return false;
+    const hasUrlOrTag = (
+      trimmed.includes('{{wav_url}}') ||
+      trimmed.includes('{{epk_url}}') ||
+      trimmed.includes('{{album_url}}') ||
+      trimmed.includes('{{artwork_url}}') ||
+      trimmed.includes('{{spotify_url}}') ||
+      trimmed.includes('{{bandcamp_url}}') ||
+      trimmed.includes('http://') ||
+      trimmed.includes('https://')
+    );
+    const hasBulletOrEmoji = (
+      trimmed.startsWith('•') ||
+      trimmed.startsWith('-') ||
+      trimmed.startsWith('*') ||
+      trimmed.startsWith('🎧') ||
+      trimmed.startsWith('🎨') ||
+      trimmed.startsWith('📖') ||
+      trimmed.startsWith('🎵') ||
+      trimmed.startsWith('💿') ||
+      trimmed.startsWith('📻')
+    );
+    return hasUrlOrTag && hasBulletOrEmoji;
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (isLinkLine(line)) {
+      linkChunk.push(line);
+    } else {
+      if (linkChunk.length > 1) {
+        resultLines.push(...shuffleLinks(linkChunk, hash));
+        linkChunk = [];
+      } else if (linkChunk.length === 1) {
+        resultLines.push(linkChunk[0]);
+        linkChunk = [];
+      }
+      resultLines.push(line);
+    }
+  }
+
+  if (linkChunk.length > 1) {
+    resultLines.push(...shuffleLinks(linkChunk, hash));
+  } else if (linkChunk.length === 1) {
+    resultLines.push(linkChunk[0]);
+  }
+
+  return resultLines.join('\n');
 }
 
 export function renderPitchClient({
@@ -304,19 +420,39 @@ export function renderPitchClient({
     city?: string;
     country?: string;
     genre_fit?: string;
+    contactMode?: string;
   };
   settings?: any;
   seedIndex?: number;
 }) {
   const profile = getContactProfile(contact, seedIndex);
+  const hash = Array.from(contact.id || contact.email || '').reduce((acc, c) => acc + c.charCodeAt(0), seedIndex);
 
-  let subject = templateSubject || 'Love Banana — "Seagull"';
+  let subject = templateSubject || profile.subjectVariant || 'Love Banana - "Seagull"';
   let body = templateBody || '';
 
-  // Smart protection against "spin on air" for Blogs & Magazines:
-  if (profile.outletType === 'Blog' || profile.outletType === 'Magazine' || profile.outletType === 'Writer/Critic') {
+  // Subject variant resolution
+  if (subject.includes('{{subject_variant}}')) {
+    subject = subject.replace(/\{\{subject_variant\}\}/g, profile.subjectVariant);
+  } else if (!templateSubject || templateSubject === 'Love Banana — "Seagull"' || templateSubject === 'Love Banana - "Seagull"') {
+    subject = profile.subjectVariant;
+  }
+
+  // Smart protection against "spin on air" for non-radio contexts:
+  if (
+    profile.outletType === 'Blog' || 
+    profile.outletType === 'Magazine' || 
+    profile.outletType === 'Writer/Critic' || 
+    (contact as any).contactMode === 'label_distro' ||
+    (contact as any).contactMode === 'blog_feature' ||
+    (contact as any).contactMode === 'magazine_review'
+  ) {
     body = body.replace(
       /We'd love for you to give this new one a spin[^\n\r]+(\n\r?|\r)?/gi,
+      `${profile.askPhrase}\n\n`
+    );
+    body = body.replace(
+      /give this new one a spin[^\n\r]+(\n\r?|\r)?/gi,
       `${profile.askPhrase}\n\n`
     );
   }
@@ -348,6 +484,7 @@ export function renderPitchClient({
     '{{ask_phrase}}': profile.askPhrase,
     '{{greeting_intro}}': profile.greetingIntro,
     '{{signoff_line}}': profile.signoffLine,
+    '{{subject_variant}}': profile.subjectVariant,
     '{{genre_fit}}': contact.genre_fit || 'garage pop / rock and roll',
     '{{band_name}}': s.bandName || 'Love Banana',
     '{{contact_name}}': activeSenderName,
@@ -372,10 +509,17 @@ export function renderPitchClient({
     body = body.replace(regex, val);
   }
 
+  // Rotate asset link lines to break duplicate body hashing
+  body = rotateLinkLinesInBody(body, hash);
+
   // Format opening greeting cleanly
   if (body.startsWith('Hey ') || body.startsWith('Hi ')) {
     body = body.replace(/^(Hey|Hi)\s+[^,\n]+,/i, profile.greeting);
   }
+
+  // Clean any stray em dashes
+  subject = subject.replace(/—/g, '-');
+  body = body.replace(/—/g, '-');
 
   return { subject, body, profile };
 }

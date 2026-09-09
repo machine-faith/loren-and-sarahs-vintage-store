@@ -43,7 +43,7 @@ export default function TemplatesView({ templates, settings, onSaveTemplate }: T
       id: '',
       name: 'New Custom Pitch',
       target_category: 'Radio',
-      subject: 'New Music: Love Banana — "Seagull"',
+      subject: 'New Music: Love Banana - "Seagull"',
       body: `Hey {{first_name}},\n\nHope you're having a great week! Reaching out from Sydney...\n\nCheers,\nHenry`,
       created_at: new Date().toISOString()
     };

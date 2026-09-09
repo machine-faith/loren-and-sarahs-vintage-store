@@ -37,6 +37,20 @@ export interface Contact {
   created_at: string;
   affinityTier?: AffinityTier;
   decision_record?: DecisionRecord;
+  contactMode?: 'radio_airplay' | 'blog_feature' | 'magazine_review' | 'playlist_curator' | 'label_distro';
+}
+
+export interface DispatchState {
+  current_stage: 1 | 2 | 3 | 4;
+  stage_start_date: string;       // ISO date "2026-09-09"
+  daily_cap: number;
+  sent_today: number;
+  sent_today_date: string;        // ISO date - if different from today, reset sent_today to 0
+  bounced_today: number;
+  bounced_total: number;
+  sent_total: number;
+  last_batch_start_time: string | null;
+  status: 'healthy' | 'paused' | 'frozen';
 }
 
 export interface PitchTemplate {
@@ -145,6 +159,7 @@ interface DatabaseSchema {
   replies: ReplyItem[];
   leads?: DiscoveredLead[];
   settings: Record<string, string>;
+  dispatch_state?: DispatchState;
 }
 
 const IS_VERCEL = !!process.env.VERCEL;
@@ -161,7 +176,20 @@ function ensureDirectoryExists() {
 }
 
 function getDefaultData(): DatabaseSchema {
+  const todayStr = new Date().toISOString().split('T')[0];
   return {
+    dispatch_state: {
+      current_stage: 1,
+      stage_start_date: todayStr,
+      daily_cap: 25,
+      sent_today: 0,
+      sent_today_date: todayStr,
+      bounced_today: 0,
+      bounced_total: 0,
+      sent_total: 0,
+      last_batch_start_time: null,
+      status: 'healthy'
+    },
     settings: {
       bandName: "Love Banana",
       contactName: "Henry Collins",
@@ -190,9 +218,9 @@ function getDefaultData(): DatabaseSchema {
     templates: [
       {
         id: "tpl-1",
-        name: `"Seagull" — European Indie Radio Pitch`,
+        name: `"Seagull" - European Indie Radio Pitch`,
         target_category: "Radio",
-        subject: `New Music from Sydney: Love Banana — "Seagull" (Mastered by Mikey Young)`,
+        subject: `{{subject_variant}}`,
         body: `Hey {{first_name}},
 
 Hope you're well! Reaching out from Sydney, Australia. I play guitar and sing in a garage pop / rock and roll five-piece called Love Banana.
@@ -215,9 +243,9 @@ Love Banana
       },
       {
         id: "tpl-2",
-        name: `"Seagull" & Album Feature — Music Blog / Webzine`,
+        name: `"Seagull" & Album Feature - Music Blog / Webzine`,
         target_category: "Blog",
-        subject: `Feature / Premiere: Love Banana — "Seagull" (Debut LP 'Any Direction')`,
+        subject: `{{subject_variant}}`,
         body: `Hi {{first_name}},
 
 Long-time reader of {{outlet}}. I'm Henry from the Sydney garage pop outfit Love Banana.
@@ -796,6 +824,41 @@ class Store {
     Object.assign(this.data.settings, updates);
     this.persist();
     return this.getSettings();
+  }
+
+  // Dispatch State
+  getDispatchState(): DispatchState {
+    const today = new Date().toISOString().split('T')[0];
+    if (!this.data.dispatch_state) {
+      this.data.dispatch_state = {
+        current_stage: 1,
+        stage_start_date: today,
+        daily_cap: 25,
+        sent_today: 0,
+        sent_today_date: today,
+        bounced_today: 0,
+        bounced_total: 0,
+        sent_total: 0,
+        last_batch_start_time: null,
+        status: 'healthy'
+      };
+      this.persist();
+    }
+    // Auto reset daily counter if date rolled over
+    if (this.data.dispatch_state.sent_today_date !== today) {
+      this.data.dispatch_state.sent_today = 0;
+      this.data.dispatch_state.sent_today_date = today;
+      this.data.dispatch_state.bounced_today = 0;
+      this.persist();
+    }
+    return this.data.dispatch_state;
+  }
+
+  updateDispatchState(updates: Partial<DispatchState>): DispatchState {
+    const current = this.getDispatchState();
+    Object.assign(current, updates);
+    this.persist();
+    return current;
   }
 }
 

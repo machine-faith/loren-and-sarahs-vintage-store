@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Messenger Pigeon on Steroids — Love Banana PR & Radio Outreach",
+  title: "Messenger Pigeon on Steroids - Love Banana PR & Radio Outreach",
   description: "Messenger Pigeon on Steroids: High-velocity music industry PR & radio dispatch engine for Love Banana",
 };
 

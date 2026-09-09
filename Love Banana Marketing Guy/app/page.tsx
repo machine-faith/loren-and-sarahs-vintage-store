@@ -85,7 +85,7 @@ const PITCH_PRESETS = [
     label: '🦘 Sydney Local Pitch',
     sublabel: 'Says: "based here in Sydney" + in-studio chats',
     targetLoc: 'sydney',
-    subject: 'Love Banana — "Seagull"',
+    subject: '{{subject_variant}}',
     body: `Hey {{first_name}},
 
 Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band based here in Sydney.
@@ -109,7 +109,7 @@ https://love-banana-epk.vercel.app/epk.html`
     label: '🇦🇺 Australian National Pitch',
     sublabel: 'Says: "based in Sydney"',
     targetLoc: 'australia',
-    subject: 'Love Banana — "Seagull"',
+    subject: '{{subject_variant}}',
     body: `Hey {{first_name}},
 
 Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band based in Sydney.
@@ -133,7 +133,7 @@ https://love-banana-epk.vercel.app/epk.html`
     label: '📝 Blog & Press Pitch',
     sublabel: 'Asks for track features & reviews (no radio spin wording)',
     targetLoc: 'press',
-    subject: 'Love Banana — "Seagull" (Review / Feature consideration)',
+    subject: '{{subject_variant}}',
     body: `Hey {{first_name}},
 
 Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band based in Sydney.
@@ -157,7 +157,7 @@ https://love-banana-epk.vercel.app/epk.html`
     label: '🌏 Overseas / Europe Pitch',
     sublabel: 'Says: "based in Sydney, Australia"',
     targetLoc: 'international',
-    subject: 'Love Banana — "Seagull"',
+    subject: '{{subject_variant}}',
     body: `Hey {{first_name}},
 
 Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band based in Sydney, Australia.
@@ -227,6 +227,9 @@ export default function Home() {
   const [newContact, setNewContact] = useState({ name: '', email: '', outlet: '', category: 'Radio', city: '', country: '' });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Dispatch Warmup State
+  const [dispatchState, setDispatchState] = useState<any>(null);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -234,17 +237,23 @@ export default function Home() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [contactsRes, repliesRes, settingsRes] = await Promise.all([
+      const [contactsRes, repliesRes, settingsRes, dispatchRes] = await Promise.all([
         fetch('/api/contacts'),
         fetch('/api/replies'),
-        fetch('/api/settings')
+        fetch('/api/settings'),
+        fetch('/api/dispatch-state')
       ]);
 
-      const [contactsData, repliesData, settingsData] = await Promise.all([
+      const [contactsData, repliesData, settingsData, dispatchData] = await Promise.all([
         contactsRes.json(),
         repliesRes.json(),
-        settingsRes.json()
+        settingsRes.json(),
+        dispatchRes.json()
       ]);
+
+      if (dispatchData.state) {
+        setDispatchState(dispatchData.state);
+      }
 
       if (contactsData.contacts) {
         setContacts(contactsData.contacts);
@@ -496,14 +505,24 @@ export default function Home() {
           }
           throw new Error(draftData.error || 'Failed to create drafts in Gmail');
         }
+
+        // Refresh dispatch warmup counters
+        fetch('/api/dispatch-state')
+          .then(r => r.json())
+          .then(d => d.state && setDispatchState(d.state))
+          .catch(() => {});
+
+        const targetAccountDisplay = isSecondaryActive 
+          ? (settings?.secondaryGmailUser || 'Outreach Gmail') 
+          : (settings?.gmailUser || 'lovebananaband@gmail.com');
+
+        if (draftData.capped) {
+          setBannerMessage(`📥 Pushed ${draftData.draftedCount} drafts into ${targetAccountDisplay} Drafts folder (daily cap of ${draftData.draftedCount} reached)!`);
+        } else {
+          setBannerMessage(`📥 Pushed ${draftData.draftedCount || contactsToSend.length} drafts into ${targetAccountDisplay} Drafts folder!`);
+        }
+        setTimeout(() => setBannerMessage(null), 5000);
       }
-
-      const targetAccountDisplay = isSecondaryActive 
-        ? (settings?.secondaryGmailUser || 'Outreach Gmail') 
-        : (settings?.gmailUser || 'lovebananaband@gmail.com');
-
-      setBannerMessage(`📥 Pushed ${contactsToSend.length} drafts into ${targetAccountDisplay} Drafts folder!`);
-      setTimeout(() => setBannerMessage(null), 5000);
     } catch (e: any) {
       alert(`Draft error: ${e.message}`);
     } finally {
@@ -784,6 +803,35 @@ export default function Home() {
               </button>
             </div>
 
+            {/* Warmup Dispatch Safety Badge (Desktop) */}
+            {dispatchState && (
+              <div 
+                onClick={() => setShowGmailModal(true)}
+                className={`hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded text-[10.5px] font-mono font-bold border cursor-pointer transition ${
+                  dispatchState.status === 'frozen'
+                    ? 'bg-[#ff3333]/15 text-[#ff3333] border-[#ff3333]/40'
+                    : dispatchState.status === 'paused'
+                    ? 'bg-[#ffd000]/15 text-[#ffd000] border-[#ffd000]/40'
+                    : 'bg-[#00f044]/10 text-[#00f044] border-[#00f044]/30'
+                }`}
+                title={`Warmup Stage ${dispatchState.current_stage} | Daily Cap: ${dispatchState.daily_cap} | Sent Today: ${dispatchState.sent_today} | Status: ${dispatchState.status.toUpperCase()}`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${
+                  dispatchState.status === 'frozen'
+                    ? 'bg-[#ff3333] animate-ping'
+                    : dispatchState.status === 'paused'
+                    ? 'bg-[#ffd000]'
+                    : 'bg-[#00f044]'
+                }`} />
+                <span>WARMUP S{dispatchState.current_stage}</span>
+                <span className="text-[#a6abb8]">|</span>
+                <span>{dispatchState.sent_today}/{dispatchState.daily_cap} TODAY</span>
+                <span className="text-[9px] uppercase px-1 rounded bg-[#121316] font-extrabold ml-0.5">
+                  {dispatchState.status}
+                </span>
+              </div>
+            )}
+
             {/* Desktop Channel Strip Switcher & Controls (Only on screens >= md) */}
             <div className="hidden md:flex items-center space-x-2 shrink-0">
               <div className="flex items-center bg-[#1c1e24] border border-[#3e424f] rounded p-0.5 text-xs">
@@ -850,6 +898,19 @@ export default function Home() {
 
             {/* Mobile Top-Right Controls (Only on screens < md) */}
             <div className="flex md:hidden items-center space-x-1.5 shrink-0">
+              {/* Compact Warmup Pill */}
+              {dispatchState && (
+                <div 
+                  className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${
+                    dispatchState.status === 'frozen'
+                      ? 'bg-[#ff3333]/20 text-[#ff3333] border-[#ff3333]/40'
+                      : 'bg-[#1c1e24] text-[#00f044] border-[#3e424f]'
+                  }`}
+                  title={`Stage ${dispatchState.current_stage}: ${dispatchState.sent_today}/${dispatchState.daily_cap} sent today`}
+                >
+                  S{dispatchState.current_stage}:{dispatchState.sent_today}/{dispatchState.daily_cap}
+                </div>
+              )}
               {/* Compact Channel Badge */}
               <button
                 type="button"
@@ -1352,6 +1413,9 @@ export default function Home() {
                     <span className="px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold border border-[#ffd000]/40 bg-[#ffd000]/15 text-[#ffd000]">
                       {preview.profile.outletType}
                     </span>
+                    <span className="px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold border border-[#00f044]/40 bg-[#00f044]/15 text-[#00f044]" title={preview.profile.angleDescription}>
+                      {preview.profile.angleDescription}
+                    </span>
                     <span className="px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold border border-[#434754] bg-[#1a1c22] text-[#d6d9e0]">
                       {preview.profile.locationBadge.label}
                     </span>
@@ -1367,11 +1431,13 @@ export default function Home() {
                       <span className="text-white font-semibold truncate">{preview.profile.outletName || 'Independent'}</span>
                     </div>
                     <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0 ${
-                      preview.profile.outletType === 'Blog' || preview.profile.outletType === 'Magazine'
+                      preview.profile.angleDescription.includes('Label')
+                        ? 'bg-[#00d4ff]/20 text-[#00d4ff]'
+                        : preview.profile.outletType === 'Blog' || preview.profile.outletType === 'Magazine'
                         ? 'bg-[#00f044]/20 text-[#00f044]'
                         : 'bg-[#50a8ff]/20 text-[#50a8ff]'
                     }`}>
-                      {preview.profile.outletType === 'Blog' || preview.profile.outletType === 'Magazine' ? 'PRESS ASK' : 'AIRPLAY ASK'}
+                      {preview.profile.angleDescription}
                     </span>
                   </div>
 
@@ -1764,7 +1830,7 @@ export default function Home() {
                         <tr key={c.id} className="hover:bg-[#343844] transition font-medium">
                           <td className="p-3 font-bold text-white">{c.name}</td>
                           <td className="p-3 text-[#ffa020] font-mono text-[11px]">{c.email}</td>
-                          <td className="p-3 font-semibold text-[#e1e4ed]">{c.outlet || '—'}</td>
+                          <td className="p-3 font-semibold text-[#e1e4ed]">{c.outlet || '-'}</td>
                           <td className="p-3">
                             <span className="px-2 py-0.5 rounded text-[9.5px] font-mono font-bold border border-[#ffd000]/40 bg-[#ffd000]/15 text-[#ffd000]">
                               {prof.outletBadge.label}

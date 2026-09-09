@@ -268,16 +268,21 @@ export async function appendBatchDraftsImap({
     let state: 'WAIT_GREETING' | 'LOGGING_IN' | 'WAIT_APPEND_PROMPT' | 'WAIT_APPEND_RESULT' | 'LOGGING_OUT' = 'WAIT_GREETING';
     const results: DraftResult[] = [];
 
-    const timeout = setTimeout(() => {
-      socket.destroy();
-      for (let i = currentDraftIndex; i < drafts.length; i++) {
-        results.push({ id: drafts[i].id, success: false, error: 'IMAP connection timed out' });
-      }
-      resolve(results);
-    }, 35000);
+    let activityTimeout: NodeJS.Timeout;
+    const resetActivityTimeout = (ms = 240000) => {
+      if (activityTimeout) clearTimeout(activityTimeout);
+      activityTimeout = setTimeout(() => {
+        socket.destroy();
+        for (let i = currentDraftIndex; i < drafts.length; i++) {
+          results.push({ id: drafts[i].id, success: false, error: 'IMAP connection timed out' });
+        }
+        resolve(results);
+      }, ms);
+    };
+    resetActivityTimeout();
 
     const cleanup = (err?: Error) => {
-      clearTimeout(timeout);
+      if (activityTimeout) clearTimeout(activityTimeout);
       socket.destroy();
       if (err) {
         for (let i = currentDraftIndex; i < drafts.length; i++) {
@@ -288,6 +293,7 @@ export async function appendBatchDraftsImap({
     };
 
     socket.on('data', (chunk) => {
+      resetActivityTimeout();
       buffer += chunk;
 
       if (state === 'WAIT_GREETING' && buffer.includes('* OK')) {
@@ -312,7 +318,7 @@ export async function appendBatchDraftsImap({
           results.push({ id: drafts[currentDraftIndex].id, success: false, error: buffer.trim() });
           currentDraftIndex++;
           buffer = '';
-          startNextDraft();
+          queueNextDraft();
         }
       } else if (state === 'WAIT_APPEND_RESULT') {
         const tag = `A${cmdIndex - 1}`;
@@ -322,19 +328,37 @@ export async function appendBatchDraftsImap({
           results.push({ id: drafts[currentDraftIndex].id, success: true, draftId: uid });
           currentDraftIndex++;
           buffer = '';
-          startNextDraft();
+          queueNextDraft();
         } else if (buffer.includes(`${tag} NO`) || buffer.includes(`${tag} BAD`)) {
           results.push({ id: drafts[currentDraftIndex].id, success: false, error: buffer.trim() });
           currentDraftIndex++;
           buffer = '';
-          startNextDraft();
+          queueNextDraft();
         }
       } else if (state === 'LOGGING_OUT') {
-        clearTimeout(timeout);
+        if (activityTimeout) clearTimeout(activityTimeout);
         socket.end();
         resolve(results);
       }
     });
+
+    function queueNextDraft() {
+      if (currentDraftIndex < drafts.length) {
+        // Humanized randomized delay between draft appends (4-18s)
+        let delayMs = Math.floor(Math.random() * 14000) + 4000;
+        // Mid-batch split pause after 10 drafts (1-3 minutes)
+        if (currentDraftIndex === 10) {
+          delayMs = Math.floor(Math.random() * 120000) + 60000;
+        }
+        resetActivityTimeout(delayMs + 60000);
+        setTimeout(() => {
+          startNextDraft();
+        }, delayMs);
+      } else {
+        state = 'LOGGING_OUT';
+        socket.write(`A${cmdIndex++} LOGOUT\r\n`);
+      }
+    }
 
     function startNextDraft() {
       if (currentDraftIndex < drafts.length) {
