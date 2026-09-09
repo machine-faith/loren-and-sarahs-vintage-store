@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #25272d;
+  --foreground: #d6d9e0;
+  --card: #31343c;
+  --card-border: #444752;
+  --card-header: #292b31;
+  --ableton-orange: #ff761a;
+  --ableton-orange-hover: #ff8b38;
+  --ableton-green: #00f044;
+  --ableton-yellow: #ffd000;
+  --ableton-cyan: #50a8ff;
+  --ableton-purple: #9d72ff;
+  --ableton-inset: #1a1b1f;
+  --ableton-text-dark: #121316;
+}
+
+body {
+  color: #d6d9e0;
+  background-color: #24262c;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ableton-style tactile scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #1a1b1f;
+}
+::-webkit-scrollbar-thumb {
+  background: #474b57;
+  border-radius: 2px;
+  border: 1px solid #282a32;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff761a;
+}
+
+/* Ableton Hardware Aesthetic Utilities */
+.ableton-device {
+  background-color: #2e3138;
+  border: 1px solid #434754;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.ableton-device-header {
+  background-color: #383c46;
+  border-bottom: 1px solid #454957;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ableton-inset {
+  background-color: #1a1c21;
+  border: 1px solid #383b46;
+  border-radius: 5px;
+}
+
+.ableton-lcd {
+  background-color: #141519;
+  border: 1px solid #353844;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #ffa020;
+}
+
+.ableton-btn {
+  background-color: #383c46;
+  border: 1px solid #4e5362;
+  color: #d6d9e2;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transition: all 0.12s ease;
+}
+.ableton-btn:hover {
+  background-color: #424754;
+  border-color: #5d6375;
+  color: #ffffff;
+}
+.ableton-btn-active {
+  background-color: #ff761a !important;
+  border-color: #ff761a !important;
+  color: #121316 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 1px 3px rgba(255, 118, 26, 0.3);
+}
+
+.ableton-btn-green-active {
+  background-color: #00f044 !important;
+  border-color: #00f044 !important;
+  color: #121316 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 8px rgba(0, 240, 68, 0.4);
+}
+
+.led-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.led-orange {
+  background-color: #ff761a;
+  box-shadow: 0 0 6px #ff761a;
+}
+.led-green {
+  background-color: #00f044;
+  box-shadow: 0 0 6px #00f044;
+}
+.led-off {
+  background-color: #434652;
+}
+
