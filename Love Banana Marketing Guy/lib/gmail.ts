@@ -344,12 +344,8 @@ export async function appendBatchDraftsImap({
 
     function queueNextDraft() {
       if (currentDraftIndex < drafts.length) {
-        // Humanized randomized delay between draft appends (4-18s)
-        let delayMs = Math.floor(Math.random() * 14000) + 4000;
-        // Mid-batch split pause after 10 drafts (1-3 minutes)
-        if (currentDraftIndex === 10) {
-          delayMs = Math.floor(Math.random() * 120000) + 60000;
-        }
+        // Fast, polite delay between draft appends (150-250ms) to prevent socket saturation while executing smoothly
+        const delayMs = Math.floor(Math.random() * 100) + 150;
         resetActivityTimeout(delayMs + 60000);
         setTimeout(() => {
           startNextDraft();

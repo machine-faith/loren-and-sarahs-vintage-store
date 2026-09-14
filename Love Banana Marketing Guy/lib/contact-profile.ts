@@ -256,23 +256,23 @@ export function getContactProfile(
     askPhrase = "We'd love to know if you think the record could be a good fit for your roster. Give the stream a listen when you get a chance and let us know - no stress either way.";
     angleDescription = 'Label Distro - Physical Release Partner';
   } else if (mode === 'blog_feature' || outletType === 'Blog') {
-    askPhrase = "Would love to know your thoughts if you get a chance to give it a listen - happy to share any assets you need.";
-    angleDescription = 'Blog / Webzine - Track Feature or Write-up';
+    askPhrase = "Would you be interested in featuring the track or doing a quick Q&A / interview around the single? Happy to send through a full advance stream, hi-res photos, or anything else you need.";
+    angleDescription = 'Blog / Webzine - Track Feature or Interview';
   } else if (mode === 'magazine_review' || outletType === 'Magazine' || outletType === 'Writer/Critic') {
-    askPhrase = "Happy to send through a full advance stream, hi-res press shots, or a physical copy if any of that is useful for a review or feature.";
-    angleDescription = 'Magazine / Press - Album Review or Feature';
+    askPhrase = "Would you be interested in a feature, review, or a short Q&A / interview around the single? Happy to send through a full advance stream, hi-res press shots, or a physical copy if any of that is useful.";
+    angleDescription = 'Magazine / Press - Album Review, Feature or Interview';
   } else if (mode === 'playlist_curator' || outletType === 'Curator') {
     askPhrase = "Thought it might be a good fit for one of your playlists if you get a chance to check it out.";
     angleDescription = 'Playlist Curator';
   } else if (outletType === 'Radio') {
     if (locationCategory === 'sydney') {
-      askPhrase = "Would love for you to give it a spin if you feel it fits any of your shows, and we'd love to come in for an in-studio chat if you're up for it!";
+      askPhrase = "Would love for you to give it a spin if you feel it fits any of your shows, and we'd love to come in for an in-studio chat or interview if you're up for it!";
       angleDescription = 'Radio Airplay + Local In-Studio Chats';
     } else if (affinityTier === 'tier3_eclectic' || isGrassrootsCommunity) {
-      askPhrase = "We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows.";
+      askPhrase = "We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows. Also more than happy to record a station shoutout or do a quick phone interview if you're keen!";
       angleDescription = 'Grassroots Community Radio Airplay';
     } else {
-      askPhrase = "Would love for you to give it a spin if you feel it fits any of your programming.";
+      askPhrase = "Would love for you to give it a spin if you feel it fits any of your programming. Also happy to record an exclusive station ident or do a quick chat if you'd like!";
       angleDescription = 'Radio Airplay Consideration';
     }
   } else {

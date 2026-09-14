@@ -677,22 +677,35 @@ export default function Home() {
       const ids: string[] = (stageData.created || []).map((o: any) => o.id).filter(Boolean);
 
       if (ids.length > 0) {
-        const draftRes = await fetch('/api/outbox/draft-in-gmail', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            outboxIds: ids,
-            channel: isSecondaryActive ? 'secondary' : 'primary',
-            secondaryGmailUser: settings?.secondaryGmailUser || secondaryGmailUser,
-            secondaryGmailAppPassword: settings?.secondaryGmailAppPassword || secondaryGmailAppPassword
-          })
-        });
-        const draftData = await draftRes.json();
-        if (!draftRes.ok) {
-          if (draftData.needsConfig) {
-            setShowGmailModal(true);
+        const BATCH_SIZE = 15;
+        let totalDrafted = 0;
+        const targetAccountDisplay = isSecondaryActive 
+          ? (settings?.secondaryGmailUser || secondaryGmailUser || 'Outreach Gmail') 
+          : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
+
+        for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+          const chunk = ids.slice(i, i + BATCH_SIZE);
+          const currentProgress = Math.min(i + chunk.length, ids.length);
+          setBannerMessage(`📥 Pushing drafts to ${targetAccountDisplay}: ${currentProgress} of ${ids.length}...`);
+
+          const draftRes = await fetch('/api/outbox/draft-in-gmail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              outboxIds: chunk,
+              channel: isSecondaryActive ? 'secondary' : 'primary',
+              secondaryGmailUser: settings?.secondaryGmailUser || secondaryGmailUser,
+              secondaryGmailAppPassword: settings?.secondaryGmailAppPassword || secondaryGmailAppPassword
+            })
+          });
+          const draftData = await draftRes.json();
+          if (!draftRes.ok) {
+            if (draftData.needsConfig) {
+              setShowGmailModal(true);
+            }
+            throw new Error(draftData.error || 'Failed to create drafts in Gmail');
           }
-          throw new Error(draftData.error || 'Failed to create drafts in Gmail');
+          totalDrafted += (draftData.draftedCount || chunk.length);
         }
 
         // Refresh dispatch warmup counters
@@ -701,16 +714,8 @@ export default function Home() {
           .then(d => d.state && setDispatchState(d.state))
           .catch(() => {});
 
-        const targetAccountDisplay = isSecondaryActive 
-          ? (settings?.secondaryGmailUser || secondaryGmailUser || 'Outreach Gmail') 
-          : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
-
-        if (draftData.capped) {
-          setBannerMessage(`📥 Pushed ${draftData.draftedCount} drafts into ${targetAccountDisplay} Drafts folder (daily cap of ${draftData.draftedCount} reached)!`);
-        } else {
-          setBannerMessage(`📥 Pushed ${draftData.draftedCount || contactsToSend.length} drafts into ${targetAccountDisplay} Drafts folder!`);
-        }
-        setTimeout(() => setBannerMessage(null), 5000);
+        setBannerMessage(`📥 Successfully pushed all ${totalDrafted} drafts into ${targetAccountDisplay} Drafts folder!`);
+        setTimeout(() => setBannerMessage(null), 6000);
       } else {
         throw new Error('No outbox items were staged. Check that contacts are selected and try again.');
       }

@@ -488,19 +488,19 @@ One of the most frequent errors in automated PR is asking a blogger or zine edit
    `"We'd love to know if you think the record could be a good fit for your roster. Give the stream a listen when you get a chance and let us know - no stress either way."`
 2. **Music Blog / Online Zine:**  
    *(All radio spin wording is scrubbed)*  
-   `"Would love to know your thoughts if you get a chance to give it a listen - happy to share any assets you need."`
+   `"Would you be interested in featuring the track or doing a quick Q&A / interview around the single? Happy to send through a full advance stream, hi-res photos, or anything else you need."`
 3. **Print Magazine / Senior Music Critic:**  
    *(Editorial and long-form review framing)*  
-   `"Happy to send through a full advance stream, hi-res press shots, or a physical copy if any of that is useful for a review or feature."`
+   `"Would you be interested in a feature, review, or a short Q&A / interview around the single? Happy to send through a full advance stream, hi-res press shots, or a physical copy if any of that is useful."`
 4. **Playlist Curator:**  
    *(Streaming playlist placement framing)*  
    `"Thought it might be a good fit for one of your playlists if you get a chance to check it out."`
 5. **Community Radio (Local Sydney):**  
-   `"Would love for you to give it a spin if you feel it fits any of your shows, and we'd love to come in for an in-studio chat if you're up for it!"`
+   `"Would love for you to give it a spin if you feel it fits any of your shows, and we'd love to come in for an in-studio chat or interview if you're up for it!"`
 6. **Community Radio (Grassroots / Regional / National):**  
-   `"We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows."`
+   `"We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows. Also more than happy to record a station shoutout or do a quick phone interview if you're keen!"`
 7. **Broadcast Radio (General Indie / College):**  
-   `"Would love for you to give it a spin if you feel it fits any of your programming."`
+   `"Would love for you to give it a spin if you feel it fits any of your programming. Also happy to record an exclusive station ident or do a quick chat if you'd like!"`
 
 ---
 
