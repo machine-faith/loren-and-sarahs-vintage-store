@@ -1708,17 +1708,35 @@ export default function Home() {
                           CLEAR
                         </button>
                         {draftedContactIds.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const remaining = contacts.filter(c => c.stage !== 'bounced' && !draftedContactIds.includes(c.id)).map(c => c.id);
-                              setSelectedContactIds(remaining);
-                            }}
-                            className="px-2.5 py-1 rounded text-[10.5px] font-bold bg-[#ffd000]/20 hover:bg-[#ffd000]/30 text-[#ffd000] border border-[#ffd000]/50 transition font-mono uppercase"
-                            title={`${draftedContactIds.length} already drafted in Gmail. Click to select only un-drafted contacts.`}
-                          >
-                            REMAINING ONLY ({Math.max(0, contacts.filter(c => c.stage !== 'bounced').length - draftedContactIds.length)})
-                          </button>
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const remaining = contacts.filter(c => c.stage !== 'bounced' && !draftedContactIds.includes(c.id)).map(c => c.id);
+                                setSelectedContactIds(remaining);
+                              }}
+                              className="px-2.5 py-1 rounded text-[10.5px] font-bold bg-[#ffd000]/20 hover:bg-[#ffd000]/30 text-[#ffd000] border border-[#ffd000]/50 transition font-mono uppercase"
+                              title={`${draftedContactIds.length} already drafted in Gmail. Click to select only un-drafted contacts.`}
+                            >
+                              REMAINING ONLY ({Math.max(0, contacts.filter(c => c.stage !== 'bounced').length - draftedContactIds.length)})
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm("Reset draft tracker? This allows you to re-draft all active contacts if you deleted/cleared your Gmail drafts folder.")) {
+                                  localStorage.removeItem('lb_drafted_contact_ids');
+                                  setDraftedContactIds([]);
+                                  setSelectedContactIds(contacts.filter(c => c.stage !== 'bounced').map(c => c.id));
+                                  setBannerMessage('Draft tracker reset. All active contacts selected for drafting.');
+                                  setTimeout(() => setBannerMessage(null), 3500);
+                                }
+                              }}
+                              className="px-2 py-1 rounded text-[10px] font-bold bg-[#383c46] hover:bg-red-500/20 text-[#9ca0ae] hover:text-red-400 border border-[#484c5b] hover:border-red-500/40 transition font-mono uppercase"
+                              title="Clear drafted history if you deleted drafts from Gmail and want to push fresh"
+                            >
+                              RESET TRACKER
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
