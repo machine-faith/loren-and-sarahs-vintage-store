@@ -31,6 +31,7 @@ import { parseContactsCsv } from '@/lib/csv-importer';
 import { getContactProfile, renderPitchClient, ContactProfile } from '@/lib/contact-profile';
 import DiscoveryView from '@/components/DiscoveryView';
 import LabelDistroView from '@/components/LabelDistroView';
+import MasterTemplatesView, { TemplateChannel, ChannelTemplateData } from '@/components/MasterTemplatesView';
 
 // Location classifier helper
 function getLocationCategory(contact: Contact): 'sydney' | 'australia' | 'international' {
@@ -79,117 +80,143 @@ function getLocationBadge(contact: Contact) {
   return { label: `🇪🇺 ${contact.country || 'Europe'}`, bg: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' };
 }
 
-const PITCH_PRESETS = [
-  {
-    id: 'sydney',
-    label: '🦘 Sydney Local Pitch',
-    sublabel: 'Says: "based here in Sydney" + in-studio chats',
-    targetLoc: 'sydney',
-    subject: '{{subject_variant}}',
-    body: `Hey {{first_name}},
+const DEFAULT_RADIO_TEMPLATE: ChannelTemplateData = {
+  subject: '{{subject_variant}}',
+  body: `{{greeting}}
 
-Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band based here in Sydney.
+{{greeting_intro}} My name's Henry, from Love Banana, a five-piece garage pop band {{location_phrase}}.
 
-We're putting out the single "Seagull" on September 16. It's from our debut album 'Any Direction' (coming out on Ragnar Records).
+We've just put out our debut single "Seagull" - it's a fast, upbeat track about beach birds stealing hot chips, recorded in Petersham and mastered by Owen Penglis (Straight Arrows). Off our debut LP 'Any Direction', coming out on Ragnar Records later this year.
 
-We'd love for you to give this new one a spin if you feel it fits any of your programming, and we'd also love to be considered for any in-studio chats or interviews!
+{{story_hook}}
 
-Here are Single Wav File and Art Downloads:
-https://love-banana-epk.vercel.app/album.html
+• WAV Master ("Seagull"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html
+• Album Stream & WAV Downloads: https://love-banana-epk.vercel.app/album.html
 
-Let us know if you need anything else from us!
+{{ask_phrase}}
+
+{{signoff_line}}
 
 Cheers,
 Henry Collins
 Love Banana
-https://love-banana-epk.vercel.app/epk.html`
-  },
-  {
-    id: 'australia',
-    label: '🇦🇺 Australian National Pitch',
-    sublabel: 'Says: "based in Sydney"',
-    targetLoc: 'australia',
-    subject: '{{subject_variant}}',
-    body: `Hey {{first_name}},
+{{from_email}}`
+};
 
-Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band based in Sydney.
+const DEFAULT_BLOG_TEMPLATE: ChannelTemplateData = {
+  subject: '{{subject_variant}}',
+  body: `{{greeting}}
 
-We're putting out the single "Seagull" on September 16. It's from our debut album 'Any Direction' (coming out on Ragnar Records).
+{{greeting_intro}} My name's Henry, from Love Banana, a five-piece garage pop band {{location_phrase}}.
 
-We'd love for you to give this new one a spin if you feel it fits any of your programming and we'd also love to be considered for any interviews!
+We've put out our debut single "Seagull" - fast, scuzzy garage pop about beach birds making off with your hot chips. Recorded in Petersham, mastered by Owen Penglis (Straight Arrows). It's the lead single off our debut LP 'Any Direction', coming out on Ragnar Records.
 
-Here are Single Wav File and Art Downloads:
-https://love-banana-epk.vercel.app/album.html
+{{story_hook}}
 
-Let us know if you need anything else from us!
+• WAV Master ("Seagull"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html
+• Album Stream & WAV Downloads: https://love-banana-epk.vercel.app/album.html
 
-Cheers,
-Henry Collins
-Love Banana
-https://love-banana-epk.vercel.app/epk.html`
-  },
-  {
-    id: 'press',
-    label: '📝 Blog & Press Pitch',
-    sublabel: 'Asks for track features & reviews (no radio spin wording)',
-    targetLoc: 'press',
-    subject: '{{subject_variant}}',
-    body: `Hey {{first_name}},
+{{ask_phrase}}
 
-Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band based in Sydney.
-
-We're putting out our single "Seagull" on September 16. It's from our debut album 'Any Direction' (coming out on Ragnar Records).
-
-We'd love for you to give it a listen and see if you might be interested in featuring or reviewing the track, or premiering the video/album stream down the line.
-
-Here are Single Wav File and Art Downloads:
-https://love-banana-epk.vercel.app/album.html
-
-Let us know if you need anything else from us!
+{{signoff_line}}
 
 Cheers,
 Henry Collins
 Love Banana
-https://love-banana-epk.vercel.app/epk.html`
-  },
-  {
-    id: 'overseas',
-    label: '🌏 Overseas / Europe Pitch',
-    sublabel: 'Says: "based in Sydney, Australia"',
-    targetLoc: 'international',
-    subject: '{{subject_variant}}',
-    body: `Hey {{first_name}},
+{{from_email}}`
+};
 
-Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band based in Sydney, Australia.
+const DEFAULT_LABEL_TEMPLATE: ChannelTemplateData = {
+  subject: "Love Banana / debut LP (Michael Barker recommended we get in touch)",
+  body: `{{salutation}}
 
-We're putting out the single "Seagull" on September 16. It's from our debut album 'Any Direction' (coming out on Ragnar Records).
+Hope you're doing well. Reaching out from Sydney, Australia. I sing and play guitar in a garage pop / rock & roll five-piece called Love Banana.
 
-We'd love for you to give this new one a spin if you feel it fits any of your programming and we'd also love to be considered for any interviews or station idents!
+{{connection_line}}
 
-Here are Single Wav File and Art Downloads:
-https://love-banana-epk.vercel.app/album.html
+We're doing our digital release ourselves, but we're looking for an indie label partner to team up on a physical release (vinyl / tape) over your way. In Australia, Michael is pressing the records, sorting us with band copies for shows, and keeping the sales from the run. We'd love to do something similar over there to get the record into local shops and into people's hands.
 
-Let us know if you need anything else from us!
+The album has 13 tracks and was mastered by Mikey Young. We don't have a locked release date for the full album yet because we want to coordinate with our physical partners. The digital rollout starts with our first single "Seagull" dropping on September 16, followed by our second single "Fit For Motion" alongside an official music video.
+
+On the live side, we're taking this global to back the record: we've already begun booking a European tour for October 2027, and we're currently putting together an American tour as well. Over here in Australia we've supported Ty Segall, Babe Rainbow, and Bananagun, and our debut 7" went to #3 on the Australian AIR indie charts.
+
+You can stream the unreleased record and check out our links here:
+
+Advance LP Stream: https://love-banana-epk.vercel.app/album.html
+Lead Single ("Seagull" WAV Master): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+Band EPK: https://love-banana-epk.vercel.app/epk.html
+Bandcamp: https://lovebanana.bandcamp.com/
+Instagram: https://www.instagram.com/lovebanarna/
+
+Give the album stream a listen when you have a minute and let us know if you think this could be a fit for your roster. No stress either way, really appreciate your time.
 
 Cheers,
 Henry Collins
 Love Banana
-https://love-banana-epk.vercel.app/epk.html`
-  }
-];
+lovebananaband@gmail.com`
+};
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'send' | 'labels' | 'discovery' | 'replies' | 'contacts'>('send');
+  const [activeTab, setActiveTab] = useState<'send' | 'labels' | 'templates' | 'discovery' | 'replies' | 'contacts'>('send');
   const [loading, setLoading] = useState(true);
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [replies, setReplies] = useState<Array<ReplyItem & { contact?: Contact | null }>>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
 
+  // Master Channel Templates
+  const [radioTemplate, setRadioTemplate] = useState<ChannelTemplateData>(DEFAULT_RADIO_TEMPLATE);
+  const [blogTemplate, setBlogTemplate] = useState<ChannelTemplateData>(DEFAULT_BLOG_TEMPLATE);
+  const [labelTemplate, setLabelTemplate] = useState<ChannelTemplateData>(DEFAULT_LABEL_TEMPLATE);
+
+  // Dynamic presets derived from Master Templates
+  const dynamicPresets = React.useMemo(() => [
+    {
+      id: 'sydney' as const,
+      label: '🦘 Sydney Local Pitch',
+      sublabel: 'Says: "based here in Sydney" + in-studio chats',
+      targetLoc: 'sydney',
+      subject: radioTemplate.subject,
+      body: radioTemplate.body
+    },
+    {
+      id: 'australia' as const,
+      label: '🇦🇺 Australian National Pitch',
+      sublabel: 'Says: "based in Sydney"',
+      targetLoc: 'australia',
+      subject: radioTemplate.subject,
+      body: radioTemplate.body.includes('based here in Sydney')
+        ? radioTemplate.body.replace('based here in Sydney', 'based in Sydney')
+        : radioTemplate.body
+    },
+    {
+      id: 'press' as const,
+      label: '📝 Blog & Press Pitch',
+      sublabel: 'Asks for track features & reviews (no radio spin wording)',
+      targetLoc: 'press',
+      subject: blogTemplate.subject,
+      body: blogTemplate.body
+    },
+    {
+      id: 'overseas' as const,
+      label: '🌏 Overseas / Europe Pitch',
+      sublabel: 'Says: "based in Sydney, Australia"',
+      targetLoc: 'international',
+      subject: radioTemplate.subject,
+      body: radioTemplate.body.includes('based here in Sydney')
+        ? radioTemplate.body.replace('based here in Sydney', 'based in Sydney, Australia')
+        : radioTemplate.body.includes('based in Sydney')
+        ? radioTemplate.body.replace('based in Sydney', 'based in Sydney, Australia')
+        : radioTemplate.body
+    }
+  ], [radioTemplate, blogTemplate]);
+
   // Pitch Blaster state
   const [activePresetId, setActivePresetId] = useState<'overseas' | 'sydney' | 'australia' | 'press' | 'custom'>('sydney');
-  const [subject, setSubject] = useState(PITCH_PRESETS[0].subject);
-  const [body, setBody] = useState(PITCH_PRESETS[0].body);
+  const [subject, setSubject] = useState(DEFAULT_RADIO_TEMPLATE.subject);
+  const [body, setBody] = useState(DEFAULT_RADIO_TEMPLATE.body);
   const [selectedContactIds, setSelectedContactIds] = useState<string[]>([]);
   const [locationFilter, setLocationFilter] = useState<'all' | 'sydney' | 'australia' | 'press' | 'international'>('all');
   const [contactSearch, setContactSearch] = useState('');
@@ -220,6 +247,8 @@ export default function Home() {
   const [secondaryAccountLabel, setSecondaryAccountLabel] = useState('Henry (Outreach Email)');
   const [savingGmail, setSavingGmail] = useState(false);
 
+  const SETTINGS_STORAGE_KEY = 'love_banana_crm_settings';
+
   // Contacts / Import state
   const [csvText, setCsvText] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -231,24 +260,40 @@ export default function Home() {
   const [dispatchState, setDispatchState] = useState<any>(null);
 
   useEffect(() => {
+    // 1. Immediately hydrate from localStorage so connection state is preserved across refresh
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.secondaryGmailUser) setSecondaryGmailUser(parsed.secondaryGmailUser);
+          if (parsed.secondaryGmailAppPassword) setSecondaryGmailAppPassword(parsed.secondaryGmailAppPassword);
+          if (parsed.activeGmailAccount) setActiveGmailAccount(parsed.activeGmailAccount);
+          if (parsed.secondaryContactName) setSecondaryContactName(parsed.secondaryContactName);
+          if (parsed.secondaryAccountLabel) setSecondaryAccountLabel(parsed.secondaryAccountLabel);
+        }
+      } catch (e) {}
+    }
     fetchData();
   }, []);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [contactsRes, repliesRes, settingsRes, dispatchRes] = await Promise.all([
+      const [contactsRes, repliesRes, settingsRes, dispatchRes, templatesRes] = await Promise.all([
         fetch('/api/contacts'),
         fetch('/api/replies'),
         fetch('/api/settings'),
-        fetch('/api/dispatch-state')
+        fetch('/api/dispatch-state'),
+        fetch('/api/templates')
       ]);
 
-      const [contactsData, repliesData, settingsData, dispatchData] = await Promise.all([
+      const [contactsData, repliesData, settingsData, dispatchData, templatesData] = await Promise.all([
         contactsRes.json(),
         repliesRes.json(),
         settingsRes.json(),
-        dispatchRes.json()
+        dispatchRes.json(),
+        templatesRes.json()
       ]);
 
       if (dispatchData.state) {
@@ -269,10 +314,60 @@ export default function Home() {
         if (repliesData.replies.length > 0) setSelectedReply(repliesData.replies[0]);
       }
 
+      if (templatesData.templates && Array.isArray(templatesData.templates)) {
+        const tpls: any[] = templatesData.templates;
+        const rTpl = tpls.find(t => t.target_category === 'Radio' || t.id === 'tpl-syd');
+        const bTpl = tpls.find(t => t.target_category === 'Blog' || t.id === 'tpl-press');
+        const lTpl = tpls.find(t => t.target_category === 'Label' || t.id === 'tpl-label-distro');
+        if (rTpl?.body) {
+          setRadioTemplate({ subject: rTpl.subject, body: rTpl.body });
+          setSubject(rTpl.subject);
+          setBody(rTpl.body);
+        }
+        if (bTpl?.body) setBlogTemplate({ subject: bTpl.subject, body: bTpl.body });
+        if (lTpl?.body) setLabelTemplate({ subject: lTpl.subject, body: lTpl.body });
+      }
+
       if (settingsData.settings) {
-        const s = settingsData.settings;
+        let s = settingsData.settings;
+
+        // Check if localStorage has stored secondary credentials that server lost (e.g. Vercel cold restart)
+        let localCached: any = null;
+        if (typeof window !== 'undefined') {
+          try {
+            const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+            if (raw) localCached = JSON.parse(raw);
+          } catch (e) {}
+        }
+
+        if (localCached?.secondaryGmailUser && !s.secondaryGmailUser) {
+          s = {
+            ...s,
+            secondaryGmailUser: localCached.secondaryGmailUser,
+            secondaryGmailAppPassword: localCached.secondaryGmailAppPassword || '',
+            activeGmailAccount: localCached.activeGmailAccount || 'secondary',
+            secondaryContactName: localCached.secondaryContactName || s.secondaryContactName || 'Henry Collins',
+            secondaryAccountLabel: localCached.secondaryAccountLabel || s.secondaryAccountLabel || 'Henry (Outreach Email)'
+          };
+
+          // Automatically re-hydrate server so backend APIs have the credentials too
+          fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              secondaryGmailUser: localCached.secondaryGmailUser,
+              secondaryGmailAppPassword: localCached.secondaryGmailAppPassword || '',
+              activeGmailAccount: localCached.activeGmailAccount || 'secondary',
+              secondaryContactName: localCached.secondaryContactName || 'Henry Collins',
+              secondaryAccountLabel: localCached.secondaryAccountLabel || 'Henry (Outreach Email)'
+            })
+          }).catch(() => {});
+        }
+
         setSettings(s);
-        setActiveGmailAccount(s.activeGmailAccount || 'primary');
+        // If secondary email is configured, prioritize secondary as active channel
+        const resolvedActive = (localCached?.activeGmailAccount) || s.activeGmailAccount || (s.secondaryGmailUser ? 'secondary' : 'primary');
+        setActiveGmailAccount(resolvedActive);
         setGmailUser(s.gmailUser || s.fromEmail || 'lovebananaband@gmail.com');
         setGmailAppPassword(s.gmailAppPassword || '');
         setPrimaryContactName(s.contactName || 'Henry Collins');
@@ -315,9 +410,56 @@ export default function Home() {
   // Contacts actually marked to be sent
   const contactsToSend = contacts.filter(c => selectedContactIds.includes(c.id));
 
+  // Save Master Template handler (Updates DB, state, Send Blaster & Label Distro)
+  const handleSaveMasterTemplate = async (channel: TemplateChannel, templateData: ChannelTemplateData) => {
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          channel,
+          subject: templateData.subject,
+          body: templateData.body
+        })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to save template');
+      }
+
+      if (channel === 'radio') {
+        setRadioTemplate(templateData);
+        if (activePresetId === 'sydney') {
+          setSubject(templateData.subject);
+          setBody(templateData.body);
+        } else if (activePresetId === 'australia') {
+          setSubject(templateData.subject);
+          setBody(templateData.body.includes('based here in Sydney') ? templateData.body.replace('based here in Sydney', 'based in Sydney') : templateData.body);
+        } else if (activePresetId === 'overseas') {
+          setSubject(templateData.subject);
+          setBody(templateData.body.replace('based here in Sydney', 'based in Sydney, Australia'));
+        }
+      } else if (channel === 'blog') {
+        setBlogTemplate(templateData);
+        if (activePresetId === 'press') {
+          setSubject(templateData.subject);
+          setBody(templateData.body);
+        }
+      } else if (channel === 'label') {
+        setLabelTemplate(templateData);
+      }
+
+      setBannerMessage(`✅ Master ${channel.toUpperCase()} template saved! All active drafts & subsequent emails have been updated.`);
+      setTimeout(() => setBannerMessage(null), 5000);
+    } catch (e: any) {
+      console.error(e);
+      throw e;
+    }
+  };
+
   // Switch template preset
   const handleSelectPreset = (presetId: 'overseas' | 'sydney' | 'australia' | 'press') => {
-    const preset = PITCH_PRESETS.find(p => p.id === presetId);
+    const preset = dynamicPresets.find(p => p.id === presetId);
     if (!preset) return;
 
     setActivePresetId(presetId);
@@ -467,7 +609,8 @@ export default function Home() {
     }
 
     // If using outreach channel, ensure secondary outreach account is linked
-    if (isSecondaryActive && !settings?.secondaryGmailUser) {
+    const hasSecUser = Boolean(settings?.secondaryGmailUser || secondaryGmailUser);
+    if (isSecondaryActive && !hasSecUser) {
       setShowGmailModal(true);
       setBannerMessage('⚠️ Please configure your separate outreach Gmail address below first.');
       return;
@@ -475,7 +618,8 @@ export default function Home() {
 
     setIsDrafting(true);
     try {
-      await fetch('/api/outbox', {
+      // Stage the outbox items — use the returned IDs directly (don't re-fetch globally)
+      const stageRes = await fetch('/api/outbox', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -484,10 +628,8 @@ export default function Home() {
           body 
         })
       });
-
-      const outRes = await fetch('/api/outbox?status=draft');
-      const outData = await outRes.json();
-      const ids = (outData.outbox || []).map((o: any) => o.id);
+      const stageData = await stageRes.json();
+      const ids: string[] = (stageData.created || []).map((o: any) => o.id).filter(Boolean);
 
       if (ids.length > 0) {
         const draftRes = await fetch('/api/outbox/draft-in-gmail', {
@@ -495,7 +637,9 @@ export default function Home() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             outboxIds: ids,
-            channel: isSecondaryActive ? 'secondary' : 'primary'
+            channel: isSecondaryActive ? 'secondary' : 'primary',
+            secondaryGmailUser: settings?.secondaryGmailUser || secondaryGmailUser,
+            secondaryGmailAppPassword: settings?.secondaryGmailAppPassword || secondaryGmailAppPassword
           })
         });
         const draftData = await draftRes.json();
@@ -522,6 +666,8 @@ export default function Home() {
           setBannerMessage(`📥 Pushed ${draftData.draftedCount || contactsToSend.length} drafts into ${targetAccountDisplay} Drafts folder!`);
         }
         setTimeout(() => setBannerMessage(null), 5000);
+      } else {
+        throw new Error('No outbox items were staged. Check that contacts are selected and try again.');
       }
     } catch (e: any) {
       alert(`Draft error: ${e.message}`);
@@ -579,6 +725,14 @@ export default function Home() {
   // Quick switch active sending account
   const handleQuickSwitchAccount = async (targetAccount: 'primary' | 'secondary') => {
     setActiveGmailAccount(targetAccount);
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : {};
+        parsed.activeGmailAccount = targetAccount;
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(parsed));
+      } catch (e) {}
+    }
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
@@ -587,7 +741,7 @@ export default function Home() {
       });
       const data = await res.json();
       if (data.settings) setSettings(data.settings);
-      setBannerMessage(`Switched sending account to ${targetAccount === 'secondary' ? 'Secondary Safe Account' : 'Main Band Account'}`);
+      setBannerMessage(`Switched sending account to ${targetAccount === 'secondary' ? "Henry's Outreach Account (Channel 2)" : 'Main Band Account (Channel 1)'}`);
       setTimeout(() => setBannerMessage(null), 3000);
     } catch (e: any) {
       console.error('Error switching account:', e);
@@ -598,28 +752,49 @@ export default function Home() {
   const handleSaveGmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingGmail(true);
+    // If user filled in secondary Gmail, activate secondary channel as active outreach pathway
+    const resolvedActive = secondaryGmailUser.trim() ? activeGmailAccount : 'primary';
+
+    const payload = {
+      activeGmailAccount: resolvedActive,
+      gmailUser,
+      gmailAppPassword,
+      contactName: primaryContactName,
+      primaryAccountLabel,
+      secondaryGmailUser: secondaryGmailUser.trim(),
+      secondaryGmailAppPassword: secondaryGmailAppPassword.trim(),
+      secondaryContactName,
+      secondaryAccountLabel,
+      simulationMode: (gmailAppPassword.trim() || secondaryGmailAppPassword.trim()) ? 'false' : 'true'
+    };
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {}
+    }
+
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          activeGmailAccount,
-          gmailUser,
-          gmailAppPassword,
-          contactName: primaryContactName,
-          primaryAccountLabel,
-          secondaryGmailUser,
-          secondaryGmailAppPassword,
-          secondaryContactName,
-          secondaryAccountLabel,
-          simulationMode: (gmailAppPassword.trim() || secondaryGmailAppPassword.trim()) ? 'false' : 'true'
-        })
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
-      if (data.settings) setSettings(data.settings);
+      if (data.settings) {
+        setSettings(data.settings);
+        // Sync local state from returned settings so the header badge updates immediately
+        setActiveGmailAccount(data.settings.activeGmailAccount || resolvedActive);
+        setGmailUser(data.settings.gmailUser || gmailUser);
+        setSecondaryGmailUser(data.settings.secondaryGmailUser || secondaryGmailUser);
+        setSecondaryGmailAppPassword(data.settings.secondaryGmailAppPassword || secondaryGmailAppPassword);
+      }
       setShowGmailModal(false);
-      setBannerMessage('✅ Gmail accounts saved successfully!');
-      setTimeout(() => setBannerMessage(null), 4000);
+      setBannerMessage(resolvedActive === 'secondary' && secondaryGmailUser.trim()
+        ? `✅ Saved! Dispatches now routed through Henry's Outreach Account (${secondaryGmailUser.trim()}).`
+        : '✅ Gmail accounts saved successfully!'
+      );
+      setTimeout(() => setBannerMessage(null), 6000);
     } catch (e: any) {
       alert(`Save error: ${e.message}`);
     } finally {
@@ -692,7 +867,7 @@ export default function Home() {
   const unreadReplies = replies.filter(r => !r.is_read).length;
   const preview = renderPreview();
 
-  const isSecondaryActive = (settings?.activeGmailAccount || activeGmailAccount) === 'secondary';
+  const isSecondaryActive = activeGmailAccount === 'secondary';
   const currentSenderEmail = isSecondaryActive 
     ? (settings?.secondaryGmailUser || secondaryGmailUser || 'lovebananapress@gmail.com')
     : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
@@ -701,7 +876,10 @@ export default function Home() {
     : (settings?.contactName || primaryContactName || 'Henry Collins');
   const isSecondaryConnected = Boolean(
     (settings?.secondaryGmailAppPassword && settings?.secondaryGmailUser) ||
-    (settings?.secondaryGmailUser && settings?.gmailAppPassword)
+    (secondaryGmailAppPassword && secondaryGmailUser) ||
+    (settings?.secondaryGmailUser && settings?.gmailAppPassword) ||
+    secondaryGmailUser ||
+    settings?.secondaryGmailUser
   );
   const isPrimaryConnected = Boolean(settings?.gmailAppPassword && settings?.gmailUser);
   const isGmailConnected = isSecondaryActive ? isSecondaryConnected : isPrimaryConnected;
@@ -759,6 +937,18 @@ export default function Home() {
               >
                 <Disc className="w-3.5 h-3.5" />
                 <span>LABEL DISTRO</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('templates')}
+                className={`flex items-center space-x-1.5 px-3 py-1 rounded text-xs font-bold transition tracking-wide ${
+                  activeTab === 'templates'
+                    ? 'bg-[#ffd000] text-[#121316] shadow-sm font-extrabold'
+                    : 'text-[#a6abb8] hover:text-white hover:bg-[#2b2d35]'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>MASTER TEMPLATES</span>
               </button>
 
               <button
@@ -956,12 +1146,12 @@ export default function Home() {
 
           </div>
 
-          {/* Mobile 5-Tab Segmented Rack (Only visible on screens < md) */}
+          {/* Mobile 6-Tab Segmented Rack (Only visible on screens < md) */}
           <div className="md:hidden pb-2.5 pt-1">
-            <div className="grid grid-cols-5 bg-[#1c1e24] p-1 rounded-md border border-[#3e424f] gap-1 text-center shadow-inner">
+            <div className="grid grid-cols-6 bg-[#1c1e24] p-1 rounded-md border border-[#3e424f] gap-0.5 text-center shadow-inner">
               <button
                 onClick={() => setActiveTab('send')}
-                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10.5px] font-mono font-bold transition truncate ${
+                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10px] font-mono font-bold transition truncate ${
                   activeTab === 'send'
                     ? 'bg-[#ff761a] text-[#121316] shadow-sm font-black'
                     : 'text-[#a6abb8] hover:text-white'
@@ -973,7 +1163,7 @@ export default function Home() {
 
               <button
                 onClick={() => setActiveTab('labels')}
-                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10.5px] font-mono font-bold transition truncate ${
+                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10px] font-mono font-bold transition truncate ${
                   activeTab === 'labels'
                     ? 'bg-[#00d4ff] text-[#121316] shadow-sm font-black'
                     : 'text-[#a6abb8] hover:text-white'
@@ -984,8 +1174,20 @@ export default function Home() {
               </button>
 
               <button
+                onClick={() => setActiveTab('templates')}
+                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10px] font-mono font-bold transition truncate ${
+                  activeTab === 'templates'
+                    ? 'bg-[#ffd000] text-[#121316] shadow-sm font-black'
+                    : 'text-[#a6abb8] hover:text-white'
+                }`}
+              >
+                <FileText className="w-3 h-3 shrink-0" />
+                <span className="truncate">TPL</span>
+              </button>
+
+              <button
                 onClick={() => setActiveTab('replies')}
-                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10.5px] font-mono font-bold transition truncate relative ${
+                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10px] font-mono font-bold transition truncate relative ${
                   activeTab === 'replies'
                     ? 'bg-[#00f044] text-[#121316] shadow-sm font-black'
                     : 'text-[#a6abb8] hover:text-white'
@@ -994,7 +1196,7 @@ export default function Home() {
                 <Inbox className="w-3 h-3 shrink-0" />
                 <span className="truncate">INBOX</span>
                 {unreadReplies > 0 && (
-                  <span className="ml-0.5 bg-[#ff3333] text-white text-[8.5px] font-black px-1 rounded-full">
+                  <span className="ml-0.5 bg-[#ff3333] text-white text-[8px] font-black px-1 rounded-full">
                     {unreadReplies}
                   </span>
                 )}
@@ -1002,7 +1204,7 @@ export default function Home() {
 
               <button
                 onClick={() => setActiveTab('discovery')}
-                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10.5px] font-mono font-bold transition truncate ${
+                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10px] font-mono font-bold transition truncate ${
                   activeTab === 'discovery'
                     ? 'bg-[#ffd000] text-[#121316] shadow-sm font-black'
                     : 'text-[#a6abb8] hover:text-white'
@@ -1014,7 +1216,7 @@ export default function Home() {
 
               <button
                 onClick={() => setActiveTab('contacts')}
-                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10.5px] font-mono font-bold transition truncate ${
+                className={`flex items-center justify-center space-x-1 py-1.5 px-0.5 rounded text-[10px] font-mono font-bold transition truncate ${
                   activeTab === 'contacts'
                     ? 'bg-[#50a8ff] text-[#121316] shadow-sm font-black'
                     : 'text-[#a6abb8] hover:text-white'
@@ -1059,13 +1261,13 @@ export default function Home() {
                   </span>
                 </div>
                 <span className="text-[10px] font-mono text-[#a6abb8] uppercase hidden sm:inline">
-                  ACTIVE: {PITCH_PRESETS.find(p => p.id === activePresetId)?.label}
+                  ACTIVE: {dynamicPresets.find(p => p.id === activePresetId)?.label}
                 </span>
               </div>
 
               {/* Ableton Session View Clip Slots */}
               <div className="p-2.5 grid grid-cols-2 lg:grid-cols-4 gap-2 bg-[#24262c]">
-                {PITCH_PRESETS.map((preset) => {
+                {dynamicPresets.map((preset) => {
                   const isActive = activePresetId === preset.id;
                   const clipBorderColor = 
                     preset.id === 'sydney' ? 'border-l-[#ff761a]' :
@@ -1876,6 +2078,33 @@ export default function Home() {
           <LabelDistroView
             senderEmail={currentSenderEmail}
             senderName={currentSenderName}
+            masterTemplate={labelTemplate}
+            onNavigateToTemplates={() => setActiveTab('templates')}
+          />
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 6: MASTER EMAIL TEMPLATES & MULTI-CHANNEL TONE STUDIO */}
+        {/* ========================================================= */}
+        {activeTab === 'templates' && (
+          <MasterTemplatesView
+            radioTemplate={radioTemplate}
+            blogTemplate={blogTemplate}
+            labelTemplate={labelTemplate}
+            contacts={contacts}
+            settings={settings ? {
+              ...settings,
+              activeGmailAccount,
+              secondaryGmailUser: secondaryGmailUser || settings.secondaryGmailUser,
+              secondaryGmailAppPassword: secondaryGmailAppPassword || settings.secondaryGmailAppPassword,
+              secondaryContactName: secondaryContactName || settings.secondaryContactName
+            } : null}
+            onSaveMasterTemplate={handleSaveMasterTemplate}
+            defaultTemplates={{
+              radio: DEFAULT_RADIO_TEMPLATE,
+              blog: DEFAULT_BLOG_TEMPLATE,
+              label: DEFAULT_LABEL_TEMPLATE
+            }}
           />
         )}
 
@@ -2120,8 +2349,29 @@ export default function Home() {
                   </a>{' '}
                   while logged into that account.
                 </p>
-                <p>2. Enter "Messenger Pigeon on Steroids" as the App Name, click Create, and paste the 16 characters above.</p>
+                <p>2. Enter &quot;Messenger Pigeon on Steroids&quot; as the App Name, click Create, and paste the 16 characters above.</p>
               </div>
+
+              {/* Vercel Persistence Notice */}
+              <div className="bg-[#1a1008] border border-[#ffa020]/40 rounded p-3 text-[10.5px] space-y-1.5 font-sans">
+                <span className="font-bold text-[#ffa020] block font-mono text-[10px]">⚠️ IMPORTANT: CREDENTIALS RESET ON REFRESH?</span>
+                <p className="text-[#c9a060]">
+                  If your saved email resets every time the app refreshes, it&apos;s because Vercel&apos;s server storage is temporary. To make credentials stick permanently, add them as <strong className="text-white">Environment Variables</strong> in the Vercel dashboard:
+                </p>
+                <div className="bg-[#141519] border border-[#383b48] rounded p-2 font-mono text-[9.5px] text-[#d6d9e0] space-y-0.5">
+                  <div><span className="text-[#ffa020]">GMAIL_USER</span> = {gmailUser || 'lovebananaband@gmail.com'}</div>
+                  <div><span className="text-[#ffa020]">GMAIL_APP_PASSWORD</span> = (your 16-char app password)</div>
+                  {secondaryGmailUser && <div><span className="text-[#00f044]">SECONDARY_GMAIL_USER</span> = {secondaryGmailUser}</div>}
+                  {secondaryGmailUser && <div><span className="text-[#00f044]">SECONDARY_GMAIL_APP_PASSWORD</span> = (outreach app password)</div>}
+                  {secondaryGmailUser && <div><span className="text-[#00f044]">ACTIVE_GMAIL_ACCOUNT</span> = {activeGmailAccount}</div>}
+                </div>
+                <p className="text-[#8e93a2]">
+                  Go to{' '}
+                  <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="text-[#ffa020] underline">vercel.com/dashboard</a>
+                  {' '}→ your project → Settings → Environment Variables → add those above → Redeploy once. Done — credentials will never reset again.
+                </p>
+              </div>
+
 
               <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#3e424f]">
                 <button

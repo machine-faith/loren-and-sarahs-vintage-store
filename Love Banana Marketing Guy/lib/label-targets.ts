@@ -368,16 +368,53 @@ export const INITIAL_LABEL_TARGETS: LabelTarget[] = [
   }
 ];
 
-export function buildLabelPitch(target: LabelTarget): { subject: string; body: string } {
+export function buildLabelPitch(
+  target: LabelTarget,
+  customMaster?: { subject?: string; body?: string }
+): { subject: string; body: string } {
   const isGeeTeeLabel = Boolean(target.hasReleasedGeeTee);
 
-  const subject = isGeeTeeLabel
+  const defaultSubject = isGeeTeeLabel
     ? `Love Banana / debut LP (Michael Barker recommended we get in touch)`
     : `Love Banana / debut LP 'Any Direction' (Sydney garage pop)`;
 
   const connectionLine = isGeeTeeLabel
     ? `Michael Barker (Gee Tee / RMFC) is putting out our debut album 'Any Direction' here in Australia on his label Ragnar Records, and he pointed us in your direction to see if you'd be interested in teaming up on an overseas physical release.`
     : `Our debut album 'Any Direction' is coming out here in Australia on Ragnar Records (run by Michael Barker of Gee Tee / RMFC), and we're getting in touch to see if you might be interested in hearing the tunes for your label.`;
+
+  const firstName = target.name.split(' ')[0] || target.name;
+
+  if (customMaster && (customMaster.body || customMaster.subject)) {
+    let sub = customMaster.subject || defaultSubject;
+    let b = customMaster.body || '';
+
+    // Replace common label tokens
+    const replacements: Record<string, string> = {
+      '{{salutation}}': target.salutation,
+      '{{label_name}}': target.labelName,
+      '{{outlet}}': target.labelName,
+      '{{name}}': target.name,
+      '{{first_name}}': firstName,
+      '{{connection_line}}': connectionLine,
+      '{{connection}}': target.connection,
+      '{{location}}': target.location,
+      '{{territory}}': target.territory,
+      '{{city}}': target.location.split(',')[0].trim(),
+      '{{country}}': target.location.split(',').pop()?.trim() || target.territory,
+    };
+
+    for (const [token, val] of Object.entries(replacements)) {
+      sub = sub.split(token).join(val);
+      b = b.split(token).join(val);
+    }
+
+    // If template starts with a standard salutation placeholder, format nicely
+    if (b.startsWith('Hey ') || b.startsWith('Hi ')) {
+      b = b.replace(/^(Hey|Hi)\s+[^,\n]+,/i, target.salutation);
+    }
+
+    return { subject: sub, body: b };
+  }
 
   const body = `${target.salutation}
 
@@ -406,5 +443,5 @@ Henry Collins
 Love Banana
 lovebananaband@gmail.com`;
 
-  return { subject, body };
+  return { subject: defaultSubject, body };
 }

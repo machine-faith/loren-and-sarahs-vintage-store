@@ -24,11 +24,15 @@ import { LabelTarget, INITIAL_LABEL_TARGETS, buildLabelPitch } from '@/lib/label
 interface LabelDistroViewProps {
   senderEmail?: string;
   senderName?: string;
+  masterTemplate?: { subject: string; body: string };
+  onNavigateToTemplates?: () => void;
 }
 
 export default function LabelDistroView({
   senderEmail = 'lovebananaband@gmail.com',
-  senderName = 'Henry Collins'
+  senderName = 'Henry Collins',
+  masterTemplate,
+  onNavigateToTemplates
 }: LabelDistroViewProps) {
   const [labels, setLabels] = useState<LabelTarget[]>(INITIAL_LABEL_TARGETS);
   const [selectedId, setSelectedId] = useState<string>(INITIAL_LABEL_TARGETS[0].id);
@@ -41,10 +45,23 @@ export default function LabelDistroView({
   const [customDrafts, setCustomDrafts] = useState<Record<string, { subject: string; body: string }>>(() => {
     const initial: Record<string, { subject: string; body: string }> = {};
     INITIAL_LABEL_TARGETS.forEach(l => {
-      initial[l.id] = buildLabelPitch(l);
+      initial[l.id] = buildLabelPitch(l, masterTemplate);
     });
     return initial;
   });
+
+  // Re-sync all drafts when masterTemplate changes
+  React.useEffect(() => {
+    if (masterTemplate && (masterTemplate.body || masterTemplate.subject)) {
+      setCustomDrafts(() => {
+        const updated: Record<string, { subject: string; body: string }> = {};
+        INITIAL_LABEL_TARGETS.forEach(l => {
+          updated[l.id] = buildLabelPitch(l, masterTemplate);
+        });
+        return updated;
+      });
+    }
+  }, [masterTemplate]);
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isBatchDrafting, setIsBatchDrafting] = useState(false);
@@ -55,7 +72,7 @@ export default function LabelDistroView({
     return labels.find(l => l.id === selectedId) || labels[0];
   }, [labels, selectedId]);
 
-  const currentPitch = customDrafts[selectedTarget.id] || buildLabelPitch(selectedTarget);
+  const currentPitch = customDrafts[selectedTarget.id] || buildLabelPitch(selectedTarget, masterTemplate);
 
   const filteredLabels = useMemo(() => {
     return labels.filter(l => {
@@ -268,6 +285,16 @@ export default function LabelDistroView({
           </div>
 
           <div className="hidden sm:flex items-center space-x-2 shrink-0">
+            {onNavigateToTemplates && (
+              <button
+                type="button"
+                onClick={onNavigateToTemplates}
+                className="px-3 py-1.5 rounded border border-[#434754] bg-[#2e3138] hover:bg-[#383c46] text-[#a6abb8] hover:text-white font-mono font-bold text-xs transition flex items-center space-x-1.5 uppercase"
+                title="Edit the master label pitch template"
+              >
+                <span>EDIT MASTER TPL</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={handlePushBatchDrafts}

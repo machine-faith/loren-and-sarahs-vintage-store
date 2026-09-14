@@ -6,16 +6,25 @@ import { evaluateStageAdvancement } from '@/lib/dispatch-state';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let { outboxIds, channel } = body;
+    let { outboxIds, channel, secondaryGmailUser, secondaryGmailAppPassword } = body;
 
     if (!Array.isArray(outboxIds) || outboxIds.length === 0) {
       return NextResponse.json({ error: 'outboxIds array required' }, { status: 400 });
     }
 
     const store = getStore();
-    const settings = store.getSettings();
+    let settings = store.getSettings();
 
-    // 1. Dispatch State & Warmup Safety Gate
+    // If client supplied secondary credentials and server is missing them, persist immediately
+    if (secondaryGmailUser && (!settings.secondaryGmailUser || !settings.secondaryGmailAppPassword)) {
+      settings = store.updateSettings({
+        secondaryGmailUser,
+        secondaryGmailAppPassword: secondaryGmailAppPassword || settings.secondaryGmailAppPassword || '',
+        activeGmailAccount: channel || 'secondary'
+      });
+    }
+
+    // Evaluate warmup stage advancement
     let state = store.getDispatchState();
     state = evaluateStageAdvancement(state);
     store.updateDispatchState(state);
@@ -47,7 +56,7 @@ export async function POST(request: Request) {
     const requestedCount = outboxIds.length;
     outboxIds = outboxIds.slice(0, remainingToday);
 
-    const targetChannel: 'primary' | 'secondary' = channel || (settings.activeGmailAccount === 'primary' ? 'secondary' : 'secondary');
+    const targetChannel: 'primary' | 'secondary' = channel || (settings.activeGmailAccount as 'primary' | 'secondary') || (settings.secondaryGmailUser ? 'secondary' : 'primary');
 
     // Protect lovebananaband@gmail.com by verifying secondary account config
     if (targetChannel === 'secondary' && !settings.secondaryGmailUser) {

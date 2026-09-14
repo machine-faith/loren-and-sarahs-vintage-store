@@ -816,8 +816,25 @@ class Store {
   }
 
   // Settings
+  // On Vercel, /tmp is wiped on cold starts — env vars are the persistent source of truth
+  // for credentials. getSettings() merges stored settings with env var overrides.
   getSettings(): Settings {
-    return this.data.settings as unknown as Settings;
+    const stored = this.data.settings as unknown as Settings;
+    if (!IS_VERCEL) return stored;
+
+    // Env var overrides — set these in Vercel Dashboard > Project Settings > Environment Variables
+    const envOverrides: Partial<Settings> = {};
+    if (process.env.GMAIL_USER)                    envOverrides.gmailUser = process.env.GMAIL_USER;
+    if (process.env.GMAIL_APP_PASSWORD)            envOverrides.gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+    if (process.env.SECONDARY_GMAIL_USER)          envOverrides.secondaryGmailUser = process.env.SECONDARY_GMAIL_USER;
+    if (process.env.SECONDARY_GMAIL_APP_PASSWORD)  envOverrides.secondaryGmailAppPassword = process.env.SECONDARY_GMAIL_APP_PASSWORD;
+    if (process.env.SECONDARY_FROM_EMAIL)          envOverrides.secondaryFromEmail = process.env.SECONDARY_FROM_EMAIL;
+    if (process.env.SECONDARY_CONTACT_NAME)        envOverrides.secondaryContactName = process.env.SECONDARY_CONTACT_NAME;
+    if (process.env.ACTIVE_GMAIL_ACCOUNT)          envOverrides.activeGmailAccount = process.env.ACTIVE_GMAIL_ACCOUNT as 'primary' | 'secondary';
+    if (process.env.REPLY_TO_EMAIL)                envOverrides.replyToEmail = process.env.REPLY_TO_EMAIL;
+    if (process.env.SIMULATION_MODE)               envOverrides.simulationMode = process.env.SIMULATION_MODE as 'true' | 'false';
+
+    return { ...stored, ...envOverrides };
   }
 
   updateSettings(updates: Partial<Settings>) {

@@ -284,7 +284,7 @@ export function getContactProfile(
   const INTROS = [
     "Hope you're well!",
     "Hope you're having a good one!",
-    "Hope this finds you well!",
+    "Hope things are good your end!",
     "Hope you're having a solid week!",
     "Hope things are going well your end!",
     "Hope you're not too buried in promo at the moment!",
