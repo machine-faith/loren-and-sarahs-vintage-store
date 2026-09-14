@@ -33,7 +33,7 @@ export interface Contact {
   city: string;
   genre_fit: string;
   notes: string;
-  stage: 'lead' | 'drafted' | 'awaiting_approval' | 'sent' | 'replied' | 'won' | 'follow_up';
+  stage: 'lead' | 'drafted' | 'awaiting_approval' | 'sent' | 'replied' | 'won' | 'follow_up' | 'bounced';
   last_contacted_at: string | null;
   created_at: string;
   affinityTier?: AffinityTier;

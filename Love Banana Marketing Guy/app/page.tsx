@@ -211,7 +211,7 @@ export default function Home() {
   const [subject, setSubject] = useState(DEFAULT_RADIO_TEMPLATE.subject);
   const [body, setBody] = useState(DEFAULT_RADIO_TEMPLATE.body);
   const [selectedContactIds, setSelectedContactIds] = useState<string[]>([]);
-  const [locationFilter, setLocationFilter] = useState<'all' | 'sydney' | 'australia' | 'press' | 'international'>('all');
+  const [locationFilter, setLocationFilter] = useState<'all' | 'sydney' | 'australia' | 'press' | 'international' | 'bounced'>('all');
   const [contactSearch, setContactSearch] = useState('');
   const [previewContactId, setPreviewContactId] = useState<string | null>(null);
 
@@ -589,6 +589,12 @@ export default function Home() {
 
   // Filter contacts visible in checklist
   const visibleContacts = contacts.filter(c => {
+    if (locationFilter === 'bounced') {
+      return c.stage === 'bounced';
+    }
+    // Automatically hide dead/bounced contacts from normal active outreach
+    if (c.stage === 'bounced') return false;
+
     const prof = getContactProfile(c);
     if (locationFilter === 'press') {
       if (prof.outletType === 'Radio') return false;
@@ -610,8 +616,37 @@ export default function Home() {
     return true;
   });
 
-  // Contacts actually marked to be sent
-  const contactsToSend = contacts.filter(c => selectedContactIds.includes(c.id));
+  // Contacts actually marked to be sent (strictly immune to dead/bounced contacts)
+  const contactsToSend = contacts.filter(c => selectedContactIds.includes(c.id) && c.stage !== 'bounced');
+
+  // Toggle bounced status for an individual contact
+  const handleToggleBounce = async (contactId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const contact = contacts.find(c => c.id === contactId);
+    if (!contact) return;
+    const isCurrentlyBounced = contact.stage === 'bounced';
+    const newStage = isCurrentlyBounced ? 'lead' : 'bounced';
+
+    setContacts(prev => prev.map(c => c.id === contactId ? { ...c, stage: newStage } : c));
+    if (!isCurrentlyBounced) {
+      setSelectedContactIds(prev => prev.filter(id => id !== contactId));
+    }
+
+    try {
+      await fetch(`/api/contacts/${contactId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stage: newStage,
+          notes: isCurrentlyBounced 
+            ? (contact.notes || '').replace(/ • Address inactive[^\n]*/g, '').replace(/ • Bounced[^\n]*/g, '')
+            : `${contact.notes || ''} • Bounced (Address not found / inactive inbox)`
+        })
+      });
+      setBannerMessage(isCurrentlyBounced ? `Restored ${contact.name || contact.outlet} to active list.` : `Marked ${contact.name || contact.outlet} as Bounced & excluded from drafts.`);
+      setTimeout(() => setBannerMessage(null), 3500);
+    } catch (err) {}
+  };
 
   // Save Master Template handler (Updates DB, state, Send Blaster & Label Distro)
   const handleSaveMasterTemplate = async (channel: TemplateChannel, templateData: ChannelTemplateData) => {
@@ -673,18 +708,19 @@ export default function Home() {
     let matching: Contact[] = [];
     if (presetId === 'press') {
       matching = contacts.filter(c => {
+        if (c.stage === 'bounced') return false;
         const prof = getContactProfile(c);
         return prof.outletType === 'Blog' || prof.outletType === 'Magazine' || prof.outletType === 'Writer/Critic' || prof.outletType === 'Curator';
       });
       setLocationFilter('press');
     } else if (presetId === 'sydney') {
-      matching = contacts.filter(c => getLocationCategory(c) === 'sydney');
+      matching = contacts.filter(c => c.stage !== 'bounced' && getLocationCategory(c) === 'sydney');
       setLocationFilter('sydney');
     } else if (presetId === 'australia') {
-      matching = contacts.filter(c => getLocationCategory(c) === 'australia');
+      matching = contacts.filter(c => c.stage !== 'bounced' && getLocationCategory(c) === 'australia');
       setLocationFilter('australia');
     } else if (presetId === 'overseas') {
-      matching = contacts.filter(c => getLocationCategory(c) === 'international');
+      matching = contacts.filter(c => c.stage !== 'bounced' && getLocationCategory(c) === 'international');
       setLocationFilter('international');
     }
 
@@ -705,7 +741,7 @@ export default function Home() {
   };
 
   const handleSelectAllVisible = () => {
-    const visibleIds = visibleContacts.map(c => c.id);
+    const visibleIds = visibleContacts.filter(c => c.stage !== 'bounced').map(c => c.id);
     setSelectedContactIds(prev => Array.from(new Set([...prev, ...visibleIds])));
   };
 
@@ -1650,13 +1686,13 @@ export default function Home() {
                           <button
                             type="button"
                             onClick={() => {
-                              const remaining = contacts.filter(c => !draftedContactIds.includes(c.id)).map(c => c.id);
+                              const remaining = contacts.filter(c => c.stage !== 'bounced' && !draftedContactIds.includes(c.id)).map(c => c.id);
                               setSelectedContactIds(remaining);
                             }}
                             className="px-2.5 py-1 rounded text-[10.5px] font-bold bg-[#ffd000]/20 hover:bg-[#ffd000]/30 text-[#ffd000] border border-[#ffd000]/50 transition font-mono uppercase"
                             title={`${draftedContactIds.length} already drafted in Gmail. Click to select only un-drafted contacts.`}
                           >
-                            REMAINING ONLY ({Math.max(0, contacts.length - draftedContactIds.length)})
+                            REMAINING ONLY ({Math.max(0, contacts.filter(c => c.stage !== 'bounced').length - draftedContactIds.length)})
                           </button>
                         )}
                       </div>
@@ -1665,11 +1701,12 @@ export default function Home() {
                     {/* Ableton Segmented Location & Channel Filters */}
                     <div className="flex items-center space-x-1 bg-[#1c1e24] p-1 rounded border border-[#383b46] text-[11px] overflow-x-auto">
                       {[
-                        { id: 'all', label: `ALL (${contacts.length})` },
+                        { id: 'all', label: `ACTIVE (${contacts.filter(c => c.stage !== 'bounced').length})` },
                         { id: 'sydney', label: '🦘 SYDNEY' },
                         { id: 'australia', label: '🇦🇺 AUSTRALIA' },
                         { id: 'press', label: '📝 PRESS & BLOGS' },
                         { id: 'international', label: '🌏 OVERSEAS' },
+                        { id: 'bounced', label: `⚠️ BOUNCED (${contacts.filter(c => c.stage === 'bounced').length})` },
                       ].map((f) => (
                         <button
                           key={f.id}
@@ -1677,7 +1714,7 @@ export default function Home() {
                           onClick={() => setLocationFilter(f.id as any)}
                           className={`px-2.5 py-1 rounded text-[10px] font-mono font-bold transition whitespace-nowrap ${
                             locationFilter === f.id
-                              ? 'bg-[#ff761a] text-[#121316]'
+                              ? f.id === 'bounced' ? 'bg-red-500 text-white' : 'bg-[#ff761a] text-[#121316]'
                               : 'text-[#9ca0ae] hover:text-white hover:bg-[#2e313a]'
                           }`}
                         >
@@ -1736,6 +1773,11 @@ export default function Home() {
                               </div>
 
                               <div className="flex items-center space-x-1.5 shrink-0">
+                                {contact.stage === 'bounced' && (
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold font-mono border border-red-500/50 bg-red-500/15 text-red-400" title={contact.notes}>
+                                    ⚠️ BOUNCED
+                                  </span>
+                                )}
                                 {draftedContactIds.includes(contact.id) && (
                                   <span className="px-1.5 py-0.5 rounded text-[9px] font-bold font-mono border border-[#ffd000]/50 bg-[#ffd000]/15 text-[#ffd000]">
                                     DRAFTED
@@ -1752,6 +1794,18 @@ export default function Home() {
                                 <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono border border-[#434754] bg-[#24262c] text-[#c6cad5]">
                                   {badge.label}
                                 </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleToggleBounce(contact.id, e)}
+                                  className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border transition ${
+                                    contact.stage === 'bounced'
+                                      ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/30'
+                                      : 'border-[#484c5b] bg-[#22242c] text-[#8e93a2] hover:text-red-400 hover:border-red-500/40'
+                                  }`}
+                                  title={contact.stage === 'bounced' ? 'Restore contact to active list' : 'Mark as bounced to exclude from future drafts'}
+                                >
+                                  {contact.stage === 'bounced' ? 'RESTORE' : 'BOUNCED?'}
+                                </button>
                               </div>
                             </div>
                           );
