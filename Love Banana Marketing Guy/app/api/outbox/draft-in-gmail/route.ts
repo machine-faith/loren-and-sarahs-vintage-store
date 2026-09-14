@@ -26,28 +26,34 @@ function parseCookiePayload(raw: string | undefined): any {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    let { outboxIds, drafts, channel, secondaryGmailUser, secondaryGmailAppPassword } = body;
+    let { outboxIds, drafts, channel, secondaryGmailUser, secondaryGmailAppPassword, gmailUser, gmailAppPassword } = body;
 
-    // Check cookie fallback if secondary credentials were not passed in body
+    // Check cookie fallback if credentials were not passed in body
     const cookieHeader = request.cookies.get('lb_crm_settings')?.value;
     const cookieSettings = parseCookiePayload(cookieHeader);
     if (cookieSettings && typeof cookieSettings === 'object') {
       if (!secondaryGmailUser && cookieSettings.secondaryGmailUser) secondaryGmailUser = cookieSettings.secondaryGmailUser;
       if (!secondaryGmailAppPassword && cookieSettings.secondaryGmailAppPassword) secondaryGmailAppPassword = cookieSettings.secondaryGmailAppPassword;
+      if (!gmailUser && cookieSettings.gmailUser) gmailUser = cookieSettings.gmailUser;
+      if (!gmailAppPassword && cookieSettings.gmailAppPassword) gmailAppPassword = cookieSettings.gmailAppPassword;
       if (!channel && cookieSettings.activeGmailAccount) channel = cookieSettings.activeGmailAccount;
     }
 
     const store = getStore();
     let settings = store.getSettings();
 
-    // If client or cookie supplied secondary credentials, persist immediately and ensure simulationMode is disabled if password present
-    if (secondaryGmailUser) {
-      settings = store.updateSettings({
-        secondaryGmailUser,
-        secondaryGmailAppPassword: secondaryGmailAppPassword || settings.secondaryGmailAppPassword || '',
-        activeGmailAccount: channel || 'secondary',
-        simulationMode: (secondaryGmailAppPassword || settings.secondaryGmailAppPassword) ? 'false' : settings.simulationMode
-      });
+    // Ensure store has the latest in-flight credentials for both channels
+    const updates: Partial<typeof settings> = {};
+    if (gmailUser) updates.gmailUser = gmailUser;
+    if (gmailAppPassword) updates.gmailAppPassword = gmailAppPassword;
+    if (secondaryGmailUser) updates.secondaryGmailUser = secondaryGmailUser;
+    if (secondaryGmailAppPassword !== undefined) updates.secondaryGmailAppPassword = secondaryGmailAppPassword;
+    if (channel) updates.activeGmailAccount = channel;
+    if (gmailAppPassword || secondaryGmailAppPassword || settings.gmailAppPassword || settings.secondaryGmailAppPassword) {
+      updates.simulationMode = 'false';
+    }
+    if (Object.keys(updates).length > 0) {
+      settings = store.updateSettings(updates);
     }
 
     // Evaluate warmup stage advancement for informational status
@@ -132,7 +138,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (targets.length > 0 && successCount === 0 && !batchRes.simulated) {
+    if (targets.length > 0 && successCount === 0) {
       const firstErr = batchRes.results.find(r => r.error)?.error || 'Failed to append drafts to Gmail. Please verify your Gmail App Password.';
       return NextResponse.json({
         error: firstErr,

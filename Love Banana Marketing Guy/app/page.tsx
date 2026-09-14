@@ -816,12 +816,14 @@ export default function Home() {
 
     try {
       const stored = getStoredSettings();
+      const priPass = settings?.gmailAppPassword || gmailAppPassword || stored?.gmailAppPassword || 'cgnj lder cgtq aclc';
+      const priUser = settings?.gmailUser || gmailUser || stored?.gmailUser || 'lovebananaband@gmail.com';
       const secPass = settings?.secondaryGmailAppPassword || secondaryGmailAppPassword || stored?.secondaryGmailAppPassword || '';
       const secUser = settings?.secondaryGmailUser || secondaryGmailUser || stored?.secondaryGmailUser || 'lovebananacomms@gmail.com';
       const targetChannel = isSecondaryActive ? 'secondary' : 'primary';
       const targetAccountDisplay = targetChannel === 'secondary'
         ? (secUser || 'Outreach Gmail') 
-        : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
+        : (priUser || 'lovebananaband@gmail.com');
 
       // Pre-render the pitches client-side so payload is 100% self-contained & immune to serverless cold starts
       const draftItems = contactsToSend.map((contact, idx) => {
@@ -873,6 +875,8 @@ export default function Home() {
               body: c.body
             })),
             channel: targetChannel,
+            gmailUser: priUser,
+            gmailAppPassword: priPass,
             secondaryGmailUser: secUser,
             secondaryGmailAppPassword: secPass
           })
@@ -901,7 +905,7 @@ export default function Home() {
           ? draftData.draftedCount 
           : confirmedInBatch.length;
 
-        if (batchSuccessCount === 0 && chunk.length > 0 && !draftData.simulated) {
+        if (batchSuccessCount === 0 && chunk.length > 0) {
           const firstErr = failedInBatch[0]?.error || draftData.error || 'IMAP failed to append drafts to Gmail. Please check your Gmail connection.';
           throw new Error(`${firstErr}. Successfully created ${totalDrafted} drafts before halting.`);
         }

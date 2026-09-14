@@ -480,16 +480,14 @@ export async function createBatchDraftsInGmail(
     }
   }
 
-  // 3. Fallback: Safe Simulation mode
-  await new Promise(r => setTimeout(r, 400));
+  // 3. Fallback: Refuse to pretend success without real credentials
   return {
-    success: true,
-    simulated: true,
+    success: false,
+    simulated: false,
     results: drafts.map(d => ({
       id: d.id,
-      success: true,
-      draftId: `sim-draft-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      error: undefined
+      success: false,
+      error: `No Gmail App Password or OAuth credentials found for ${authUser || 'Gmail'}. Please check your Gmail connection in Settings.`
     }))
   };
 }
