@@ -263,115 +263,57 @@ export async function appendBatchDraftsImap({
     socket.setEncoding('utf8');
 
     let buffer = '';
-    let cmdIndex = 1;
-    let currentDraftIndex = 0;
-    let state: 'WAIT_GREETING' | 'LOGGING_IN' | 'WAIT_APPEND_PROMPT' | 'WAIT_APPEND_RESULT' | 'LOGGING_OUT' = 'WAIT_GREETING';
-    const results: DraftResult[] = [];
-
-    let activityTimeout: NodeJS.Timeout;
-    const resetActivityTimeout = (ms = 240000) => {
-      if (activityTimeout) clearTimeout(activityTimeout);
-      activityTimeout = setTimeout(() => {
-        socket.destroy();
-        for (let i = currentDraftIndex; i < drafts.length; i++) {
-          results.push({ id: drafts[i].id, success: false, error: 'IMAP connection timed out' });
-        }
-        resolve(results);
-      }, ms);
-    };
-    resetActivityTimeout();
-
-    const cleanup = (err?: Error) => {
-      if (activityTimeout) clearTimeout(activityTimeout);
-      socket.destroy();
-      if (err) {
-        for (let i = currentDraftIndex; i < drafts.length; i++) {
-          results.push({ id: drafts[i].id, success: false, error: err.message });
-        }
-      }
-      resolve(results);
-    };
+    let dataListener: (() => void) | null = null;
+    let isClosed = false;
 
     socket.on('data', (chunk) => {
-      resetActivityTimeout();
       buffer += chunk;
-
-      if (buffer.includes('* BYE')) {
-        cleanup(new Error(`Gmail IMAP closed connection: ${buffer.trim()}`));
-        return;
-      }
-
-      if (state === 'WAIT_GREETING' && buffer.includes('* OK')) {
-        buffer = '';
-        state = 'LOGGING_IN';
-        socket.write(`A${cmdIndex++} LOGIN "${user}" "${cleanPass}"\r\n`);
-      } else if (state === 'LOGGING_IN') {
-        if (buffer.includes('OK') && buffer.includes('authenticated')) {
-          buffer = '';
-          startNextDraft();
-        } else if (buffer.includes('NO') || buffer.includes('BAD')) {
-          cleanup(new Error(`IMAP Login failed for ${user}: ${buffer.trim()}`));
-        }
-      } else if (state === 'WAIT_APPEND_PROMPT') {
-        if (buffer.includes('+')) {
-          buffer = '';
-          state = 'WAIT_APPEND_RESULT';
-          const draft = drafts[currentDraftIndex];
-          const rawMessage = buildMime(draft);
-          socket.write(rawMessage + '\r\n');
-        } else if (buffer.includes('NO') || buffer.includes('BAD')) {
-          results.push({ id: drafts[currentDraftIndex].id, success: false, error: buffer.trim() });
-          currentDraftIndex++;
-          buffer = '';
-          queueNextDraft();
-        }
-      } else if (state === 'WAIT_APPEND_RESULT') {
-        const tag = `A${cmdIndex - 1}`;
-        if (buffer.includes(`${tag} OK`)) {
-          const match = buffer.match(/APPENDUID\s+\d+\s+(\d+)/);
-          const uid = match ? match[1] : `draft-${Date.now()}`;
-          results.push({ id: drafts[currentDraftIndex].id, success: true, draftId: uid });
-          currentDraftIndex++;
-          buffer = '';
-          queueNextDraft();
-        } else if (buffer.includes(`${tag} NO`) || buffer.includes(`${tag} BAD`)) {
-          results.push({ id: drafts[currentDraftIndex].id, success: false, error: buffer.trim() });
-          currentDraftIndex++;
-          buffer = '';
-          queueNextDraft();
-        }
-      } else if (state === 'LOGGING_OUT') {
-        if (activityTimeout) clearTimeout(activityTimeout);
-        socket.end();
-        resolve(results);
-      }
+      if (dataListener) dataListener();
     });
 
-    function queueNextDraft() {
-      if (currentDraftIndex < drafts.length) {
-        // Fast, polite delay between draft appends (150-250ms) to prevent socket saturation while executing smoothly
-        const delayMs = Math.floor(Math.random() * 100) + 150;
-        resetActivityTimeout(delayMs + 60000);
-        setTimeout(() => {
-          startNextDraft();
-        }, delayMs);
-      } else {
-        state = 'LOGGING_OUT';
-        socket.write(`A${cmdIndex++} LOGOUT\r\n`);
-      }
-    }
+    const cleanup = (errorMsg?: string) => {
+      if (isClosed) return;
+      isClosed = true;
+      socket.destroy();
+      dataListener = null;
+    };
 
-    function startNextDraft() {
-      if (currentDraftIndex < drafts.length) {
-        state = 'WAIT_APPEND_PROMPT';
-        const draft = drafts[currentDraftIndex];
-        const rawMessage = buildMime(draft);
-        const byteLen = Buffer.byteLength(rawMessage, 'utf8');
-        socket.write(`A${cmdIndex++} APPEND "[Gmail]/Drafts" (\\Draft) {${byteLen}}\r\n`);
-      } else {
-        state = 'LOGGING_OUT';
-        socket.write(`A${cmdIndex++} LOGOUT\r\n`);
-      }
+    socket.on('error', (err) => {
+      cleanup(err.message);
+    });
+    socket.on('close', () => {
+      cleanup('Socket closed');
+    });
+    socket.on('end', () => {
+      cleanup('Socket ended');
+    });
+
+    function waitFor(predicate: (buf: string) => boolean, timeoutMs = 25000): Promise<string> {
+      return new Promise((res, rej) => {
+        if (isClosed) {
+          return rej(new Error('IMAP connection already closed'));
+        }
+
+        const timeout = setTimeout(() => {
+          dataListener = null;
+          rej(new Error(`IMAP response timeout (${timeoutMs}ms). Buffer: ${buffer.slice(0, 150)}`));
+        }, timeoutMs);
+
+        function check() {
+          if (predicate(buffer)) {
+            clearTimeout(timeout);
+            dataListener = null;
+            res(buffer);
+          } else if (buffer.includes('* BYE')) {
+            clearTimeout(timeout);
+            dataListener = null;
+            rej(new Error(`Gmail IMAP disconnected: ${buffer.trim()}`));
+          }
+        }
+
+        dataListener = check;
+        check();
+      });
     }
 
     function buildMime(d: DraftTarget) {
@@ -398,16 +340,77 @@ export async function appendBatchDraftsImap({
       return headers.join('\r\n');
     }
 
-    socket.on('error', (err) => cleanup(err));
-    socket.on('end', () => {
-      if (currentDraftIndex < drafts.length && state !== 'LOGGING_OUT') {
-        cleanup(new Error('IMAP connection ended unexpectedly by Gmail server'));
+    async function execute() {
+      const results: DraftResult[] = [];
+
+      // 1. Wait for greeting
+      await waitFor(b => b.includes('* OK'));
+      buffer = '';
+
+      // 2. Login
+      socket.write(`A1 LOGIN "${user}" "${cleanPass}"\r\n`);
+      await waitFor(b => b.includes('A1 OK') || b.includes('A1 NO') || b.includes('A1 BAD'));
+      if (!buffer.includes('A1 OK')) {
+        throw new Error(`IMAP Login failed for ${user}: ${buffer.trim()}`);
       }
-    });
-    socket.on('close', (hadError) => {
-      if (currentDraftIndex < drafts.length && state !== 'LOGGING_OUT') {
-        cleanup(new Error(`IMAP connection closed unexpectedly (hadError: ${hadError})`));
+      buffer = '';
+
+      // 3. Append each draft sequentially
+      for (let i = 0; i < drafts.length; i++) {
+        const draft = drafts[i];
+        const tag = `A${i + 2}`;
+        const raw = buildMime(draft);
+        const byteLen = Buffer.byteLength(raw, 'utf8');
+
+        try {
+          socket.write(`${tag} APPEND "[Gmail]/Drafts" (\\Draft) {${byteLen}}\r\n`);
+          await waitFor(b => b.includes('+') || b.includes(`${tag} NO`) || b.includes(`${tag} BAD`), 15000);
+          if (buffer.includes(`${tag} NO`) || buffer.includes(`${tag} BAD`)) {
+            results.push({ id: draft.id, success: false, error: buffer.trim() });
+            buffer = '';
+            continue;
+          }
+          buffer = '';
+
+          socket.write(raw + '\r\n');
+          await waitFor(b => b.includes(`${tag} OK`) || b.includes(`${tag} NO`) || b.includes(`${tag} BAD`), 20000);
+          if (!buffer.includes(`${tag} OK`)) {
+            results.push({ id: draft.id, success: false, error: buffer.trim() });
+            buffer = '';
+            continue;
+          }
+
+          const match = buffer.match(/APPENDUID\s+\d+\s+(\d+)/);
+          const uid = match ? match[1] : `draft-${Date.now()}`;
+          results.push({ id: draft.id, success: true, draftId: uid });
+          buffer = '';
+        } catch (draftErr: any) {
+          results.push({ id: draft.id, success: false, error: draftErr.message });
+          for (let j = i + 1; j < drafts.length; j++) {
+            results.push({ id: drafts[j].id, success: false, error: draftErr.message });
+          }
+          break;
+        }
       }
+
+      // 4. Logout gracefully
+      try {
+        socket.write(`A999 LOGOUT\r\n`);
+        await waitFor(b => b.includes('A999 OK') || b.includes('BYE'), 3000);
+      } catch (e) {}
+
+      cleanup();
+      resolve(results);
+    }
+
+    execute().catch(err => {
+      cleanup(err.message);
+      const results: DraftResult[] = drafts.map(d => ({
+        id: d.id,
+        success: false,
+        error: err.message
+      }));
+      resolve(results);
     });
   });
 }
