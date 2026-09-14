@@ -249,7 +249,7 @@ export default function Home() {
 
   const SETTINGS_STORAGE_KEY = 'love_banana_crm_settings';
 
-  // Multi-layer persistence across localStorage, sessionStorage, and 1-year cookies
+  // Multi-layer persistence across localStorage, sessionStorage, dedicated keys, and 1-year cookies
   const getStoredSettings = (): Record<string, any> => {
     if (typeof window === 'undefined') return {};
     let data: Record<string, any> = {};
@@ -264,7 +264,13 @@ export default function Home() {
       }
     };
 
-    // 1. Try localStorage
+    // 1. Dedicated Channel 2 key check first (immune to any object overwrite)
+    try {
+      const dedicatedPass = localStorage.getItem('lb_ch2_app_password') || sessionStorage.getItem('lb_ch2_app_password');
+      if (dedicatedPass) data.secondaryGmailAppPassword = dedicatedPass;
+    } catch (e) {}
+
+    // 2. Try localStorage
     try {
       const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
       if (raw) {
@@ -273,7 +279,7 @@ export default function Home() {
       }
     } catch (e) {}
 
-    // 2. Try sessionStorage
+    // 3. Try sessionStorage
     try {
       const raw = sessionStorage.getItem(SETTINGS_STORAGE_KEY);
       if (raw) {
@@ -282,18 +288,31 @@ export default function Home() {
       }
     } catch (e) {}
 
-    // 3. Try document.cookie
+    // 4. Try document.cookie with multi-layer decoding (handles raw, single, and double URL encoding)
     try {
       const match = document.cookie.match(/(?:^|;\s*)lb_crm_settings=([^;]*)/);
       if (match && match[1]) {
+        let val = match[1];
         let parsed: any = null;
-        try {
-          parsed = JSON.parse(decodeURIComponent(match[1]));
-        } catch {
-          parsed = JSON.parse(match[1]);
+        for (let i = 0; i < 3; i++) {
+          try {
+            parsed = JSON.parse(val);
+            if (parsed && typeof parsed === 'object') break;
+          } catch {}
+          try {
+            val = decodeURIComponent(val);
+          } catch {
+            break;
+          }
         }
         if (parsed && typeof parsed === 'object') safeMerge(parsed);
       }
+    } catch (e) {}
+
+    // Re-assert dedicated key so it is impossible to lose
+    try {
+      const dedicatedPass = localStorage.getItem('lb_ch2_app_password') || sessionStorage.getItem('lb_ch2_app_password');
+      if (dedicatedPass) data.secondaryGmailAppPassword = dedicatedPass;
     } catch (e) {}
 
     return data;
@@ -312,6 +331,20 @@ export default function Home() {
         merged[k] = v;
       }
     }
+
+    // Save dedicated Channel 2 key
+    if (merged.secondaryGmailAppPassword) {
+      try {
+        localStorage.setItem('lb_ch2_app_password', merged.secondaryGmailAppPassword);
+        sessionStorage.setItem('lb_ch2_app_password', merged.secondaryGmailAppPassword);
+      } catch (e) {}
+    } else if (partial._forceClear) {
+      try {
+        localStorage.removeItem('lb_ch2_app_password');
+        sessionStorage.removeItem('lb_ch2_app_password');
+      } catch (e) {}
+    }
+
     const str = JSON.stringify(merged);
     const encoded = encodeURIComponent(str);
 
@@ -325,9 +358,9 @@ export default function Home() {
       sessionStorage.setItem(SETTINGS_STORAGE_KEY, str);
     } catch (e) {}
 
-    // 3. Save to document.cookie (1 year duration)
+    // 3. Save to document.cookie (1 year duration, Secure on HTTPS)
     try {
-      document.cookie = `lb_crm_settings=${encoded}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `lb_crm_settings=${encoded}; path=/; max-age=31536000; SameSite=Lax; Secure`;
     } catch (e) {}
   };
 
@@ -760,7 +793,7 @@ export default function Home() {
       const ids: string[] = (stageData.created || []).map((o: any) => o.id).filter(Boolean);
 
       if (ids.length > 0) {
-        const BATCH_SIZE = 15;
+        const BATCH_SIZE = 4;
         let totalDrafted = 0;
         const stored = getStoredSettings();
         const secPass = settings?.secondaryGmailAppPassword || secondaryGmailAppPassword || stored?.secondaryGmailAppPassword || '';
@@ -785,12 +818,20 @@ export default function Home() {
               secondaryGmailAppPassword: secPass
             })
           });
-          const draftData = await draftRes.json();
+
+          const resText = await draftRes.text();
+          let draftData: any = null;
+          try {
+            draftData = JSON.parse(resText);
+          } catch {
+            throw new Error(`Server returned status ${draftRes.status}. Successfully pushed ${totalDrafted} of ${ids.length} drafts.`);
+          }
+
           if (!draftRes.ok) {
-            if (draftData.needsConfig) {
+            if (draftData?.needsConfig) {
               setShowGmailModal(true);
             }
-            throw new Error(draftData.error || 'Failed to create drafts in Gmail');
+            throw new Error(draftData?.error || 'Failed to create drafts in Gmail');
           }
           if (draftData.results && draftData.results.length > 0 && draftData.draftedCount === 0 && !draftData.simulated) {
             const firstErr = draftData.results.find((r: any) => !r.success)?.error;

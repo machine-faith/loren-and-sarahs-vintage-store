@@ -3,6 +3,26 @@ import { getStore } from '@/lib/db';
 import { createBatchDraftsInGmail, DraftTarget } from '@/lib/gmail';
 import { evaluateStageAdvancement } from '@/lib/dispatch-state';
 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
+function parseCookiePayload(raw: string | undefined): any {
+  if (!raw) return null;
+  let val = raw;
+  for (let i = 0; i < 3; i++) {
+    try {
+      const parsed = JSON.parse(val);
+      if (parsed && typeof parsed === 'object') return parsed;
+    } catch {}
+    try {
+      val = decodeURIComponent(val);
+    } catch {
+      break;
+    }
+  }
+  return null;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -10,20 +30,11 @@ export async function POST(request: NextRequest) {
 
     // Check cookie fallback if secondary credentials were not passed in body
     const cookieHeader = request.cookies.get('lb_crm_settings')?.value;
-    if (cookieHeader) {
-      try {
-        let parsed: any = null;
-        try {
-          parsed = JSON.parse(decodeURIComponent(cookieHeader));
-        } catch {
-          parsed = JSON.parse(cookieHeader);
-        }
-        if (parsed && typeof parsed === 'object') {
-          if (!secondaryGmailUser && parsed.secondaryGmailUser) secondaryGmailUser = parsed.secondaryGmailUser;
-          if (!secondaryGmailAppPassword && parsed.secondaryGmailAppPassword) secondaryGmailAppPassword = parsed.secondaryGmailAppPassword;
-          if (!channel && parsed.activeGmailAccount) channel = parsed.activeGmailAccount;
-        }
-      } catch (e) {}
+    const cookieSettings = parseCookiePayload(cookieHeader);
+    if (cookieSettings && typeof cookieSettings === 'object') {
+      if (!secondaryGmailUser && cookieSettings.secondaryGmailUser) secondaryGmailUser = cookieSettings.secondaryGmailUser;
+      if (!secondaryGmailAppPassword && cookieSettings.secondaryGmailAppPassword) secondaryGmailAppPassword = cookieSettings.secondaryGmailAppPassword;
+      if (!channel && cookieSettings.activeGmailAccount) channel = cookieSettings.activeGmailAccount;
     }
 
     if (!Array.isArray(outboxIds) || outboxIds.length === 0) {
