@@ -249,6 +249,16 @@ export default function Home() {
 
   const SETTINGS_STORAGE_KEY = 'love_banana_crm_settings';
 
+  const updateLocalSettings = (partial: Record<string, any>) => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      const updated = { ...parsed, ...partial };
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {}
+  };
+
   // Contacts / Import state
   const [csvText, setCsvText] = useState('');
   const [isImporting, setIsImporting] = useState(false);
@@ -271,6 +281,37 @@ export default function Home() {
           if (parsed.activeGmailAccount) setActiveGmailAccount(parsed.activeGmailAccount);
           if (parsed.secondaryContactName) setSecondaryContactName(parsed.secondaryContactName);
           if (parsed.secondaryAccountLabel) setSecondaryAccountLabel(parsed.secondaryAccountLabel);
+          if (parsed.gmailUser) setGmailUser(parsed.gmailUser);
+          if (parsed.gmailAppPassword) setGmailAppPassword(parsed.gmailAppPassword);
+          if (parsed.contactName) setPrimaryContactName(parsed.contactName);
+          if (parsed.primaryAccountLabel) setPrimaryAccountLabel(parsed.primaryAccountLabel);
+          setSettings(prev => ({
+            bandName: "Love Banana",
+            contactName: "Henry Collins",
+            fromEmail: "lovebananaband@gmail.com",
+            hometown: "Sydney, Australia",
+            genre: "Five-piece garage pop / scuzzy rock & roll",
+            epkUrl: "https://love-banana-epk.vercel.app/epk.html",
+            albumUrl: "https://love-banana-epk.vercel.app/album.html",
+            singleTitle: "Seagull",
+            singleReleaseDate: "September 16",
+            albumTitle: "Any Direction",
+            label: "Ragnar Records",
+            masteredBy: "Mikey Young",
+            wavDownloadUrl: "https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav",
+            artworkDownloadUrl: "https://love-banana-epk.vercel.app/downloads/Seagull%20-%20Artwork.png",
+            spotifyUrl: "https://open.spotify.com/artist/1x9qaTZAvF4e79h2Lj6dZC",
+            bandcampUrl: "https://lovebanana.bandcamp.com/",
+            instagramUrl: "https://www.instagram.com/lovebanarna/?hl=en",
+            googleClientId: "",
+            googleClientSecret: "",
+            googleRefreshToken: "",
+            gmailUser: "lovebananaband@gmail.com",
+            gmailAppPassword: "",
+            simulationMode: "true",
+            ...(prev || {}),
+            ...parsed
+          } as Settings));
         }
       } catch (e) {}
     }
@@ -340,42 +381,46 @@ export default function Home() {
           } catch (e) {}
         }
 
-        if (localCached?.secondaryGmailUser && !s.secondaryGmailUser) {
-          s = {
-            ...s,
-            secondaryGmailUser: localCached.secondaryGmailUser,
-            secondaryGmailAppPassword: localCached.secondaryGmailAppPassword || '',
-            activeGmailAccount: localCached.activeGmailAccount || 'secondary',
-            secondaryContactName: localCached.secondaryContactName || s.secondaryContactName || 'Henry Collins',
-            secondaryAccountLabel: localCached.secondaryAccountLabel || s.secondaryAccountLabel || 'Henry (Outreach Email)'
-          };
+        const secUser = s.secondaryGmailUser || localCached?.secondaryGmailUser || '';
+        const secPass = s.secondaryGmailAppPassword || localCached?.secondaryGmailAppPassword || '';
+        const secName = s.secondaryContactName || localCached?.secondaryContactName || 'Henry Collins';
+        const secLabel = s.secondaryAccountLabel || localCached?.secondaryAccountLabel || 'Henry (Outreach Email)';
+        const secActive = localCached?.activeGmailAccount || s.activeGmailAccount || (secUser ? 'secondary' : 'primary');
 
-          // Automatically re-hydrate server so backend APIs have the credentials too
+        s = {
+          ...s,
+          secondaryGmailUser: secUser,
+          secondaryGmailAppPassword: secPass,
+          secondaryContactName: secName,
+          secondaryAccountLabel: secLabel,
+          activeGmailAccount: secActive
+        };
+
+        // Automatically re-hydrate server if missing secondary credentials
+        if (secUser && !settingsData.settings.secondaryGmailUser) {
           fetch('/api/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              secondaryGmailUser: localCached.secondaryGmailUser,
-              secondaryGmailAppPassword: localCached.secondaryGmailAppPassword || '',
-              activeGmailAccount: localCached.activeGmailAccount || 'secondary',
-              secondaryContactName: localCached.secondaryContactName || 'Henry Collins',
-              secondaryAccountLabel: localCached.secondaryAccountLabel || 'Henry (Outreach Email)'
+              secondaryGmailUser: secUser,
+              secondaryGmailAppPassword: secPass,
+              activeGmailAccount: secActive,
+              secondaryContactName: secName,
+              secondaryAccountLabel: secLabel
             })
           }).catch(() => {});
         }
 
         setSettings(s);
-        // If secondary email is configured, prioritize secondary as active channel
-        const resolvedActive = (localCached?.activeGmailAccount) || s.activeGmailAccount || (s.secondaryGmailUser ? 'secondary' : 'primary');
-        setActiveGmailAccount(resolvedActive);
+        setActiveGmailAccount(secActive);
         setGmailUser(s.gmailUser || s.fromEmail || 'lovebananaband@gmail.com');
         setGmailAppPassword(s.gmailAppPassword || '');
         setPrimaryContactName(s.contactName || 'Henry Collins');
         setPrimaryAccountLabel(s.primaryAccountLabel || 'Main Band Account (Love Banana)');
-        setSecondaryGmailUser(s.secondaryGmailUser || '');
-        setSecondaryGmailAppPassword(s.secondaryGmailAppPassword || '');
-        setSecondaryContactName(s.secondaryContactName || 'Henry Collins');
-        setSecondaryAccountLabel(s.secondaryAccountLabel || 'Secondary / Safe Outreach Account');
+        setSecondaryGmailUser(secUser);
+        setSecondaryGmailAppPassword(secPass);
+        setSecondaryContactName(secName);
+        setSecondaryAccountLabel(secLabel);
       }
     } catch (e) {
       console.error('Error fetching data:', e);
@@ -657,8 +702,8 @@ export default function Home() {
           .catch(() => {});
 
         const targetAccountDisplay = isSecondaryActive 
-          ? (settings?.secondaryGmailUser || 'Outreach Gmail') 
-          : (settings?.gmailUser || 'lovebananaband@gmail.com');
+          ? (settings?.secondaryGmailUser || secondaryGmailUser || 'Outreach Gmail') 
+          : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
 
         if (draftData.capped) {
           setBannerMessage(`📥 Pushed ${draftData.draftedCount} drafts into ${targetAccountDisplay} Drafts folder (daily cap of ${draftData.draftedCount} reached)!`);
@@ -725,14 +770,7 @@ export default function Home() {
   // Quick switch active sending account
   const handleQuickSwitchAccount = async (targetAccount: 'primary' | 'secondary') => {
     setActiveGmailAccount(targetAccount);
-    if (typeof window !== 'undefined') {
-      try {
-        const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
-        const parsed = raw ? JSON.parse(raw) : {};
-        parsed.activeGmailAccount = targetAccount;
-        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(parsed));
-      } catch (e) {}
-    }
+    updateLocalSettings({ activeGmailAccount: targetAccount });
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
@@ -740,7 +778,14 @@ export default function Home() {
         body: JSON.stringify({ activeGmailAccount: targetAccount })
       });
       const data = await res.json();
-      if (data.settings) setSettings(data.settings);
+      if (data.settings) {
+        setSettings(prev => ({
+          ...(prev || {}),
+          ...data.settings,
+          secondaryGmailUser: data.settings.secondaryGmailUser || prev?.secondaryGmailUser || secondaryGmailUser,
+          secondaryGmailAppPassword: data.settings.secondaryGmailAppPassword || prev?.secondaryGmailAppPassword || secondaryGmailAppPassword
+        }));
+      }
       setBannerMessage(`Switched sending account to ${targetAccount === 'secondary' ? "Henry's Outreach Account (Channel 2)" : 'Main Band Account (Channel 1)'}`);
       setTimeout(() => setBannerMessage(null), 3000);
     } catch (e: any) {
@@ -753,7 +798,7 @@ export default function Home() {
     e.preventDefault();
     setSavingGmail(true);
     // If user filled in secondary Gmail, activate secondary channel as active outreach pathway
-    const resolvedActive = secondaryGmailUser.trim() ? activeGmailAccount : 'primary';
+    const resolvedActive = secondaryGmailUser.trim() ? 'secondary' : 'primary';
 
     const payload = {
       activeGmailAccount: resolvedActive,
@@ -768,11 +813,7 @@ export default function Home() {
       simulationMode: (gmailAppPassword.trim() || secondaryGmailAppPassword.trim()) ? 'false' : 'true'
     };
 
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(payload));
-      } catch (e) {}
-    }
+    updateLocalSettings(payload);
 
     try {
       const res = await fetch('/api/settings', {
@@ -781,14 +822,12 @@ export default function Home() {
         body: JSON.stringify(payload)
       });
       const data = await res.json();
-      if (data.settings) {
-        setSettings(data.settings);
-        // Sync local state from returned settings so the header badge updates immediately
-        setActiveGmailAccount(data.settings.activeGmailAccount || resolvedActive);
-        setGmailUser(data.settings.gmailUser || gmailUser);
-        setSecondaryGmailUser(data.settings.secondaryGmailUser || secondaryGmailUser);
-        setSecondaryGmailAppPassword(data.settings.secondaryGmailAppPassword || secondaryGmailAppPassword);
-      }
+      const merged = { ...(data?.settings || {}), ...payload };
+      setSettings(merged);
+      setActiveGmailAccount(resolvedActive);
+      setGmailUser(merged.gmailUser || gmailUser);
+      setSecondaryGmailUser(merged.secondaryGmailUser || secondaryGmailUser);
+      setSecondaryGmailAppPassword(merged.secondaryGmailAppPassword || secondaryGmailAppPassword);
       setShowGmailModal(false);
       setBannerMessage(resolvedActive === 'secondary' && secondaryGmailUser.trim()
         ? `✅ Saved! Dispatches now routed through Henry's Outreach Account (${secondaryGmailUser.trim()}).`
@@ -867,6 +906,7 @@ export default function Home() {
   const unreadReplies = replies.filter(r => !r.is_read).length;
   const preview = renderPreview();
 
+  const hasSecondaryUser = Boolean(settings?.secondaryGmailUser || secondaryGmailUser);
   const isSecondaryActive = activeGmailAccount === 'secondary';
   const currentSenderEmail = isSecondaryActive 
     ? (settings?.secondaryGmailUser || secondaryGmailUser || 'lovebananapress@gmail.com')
@@ -877,11 +917,10 @@ export default function Home() {
   const isSecondaryConnected = Boolean(
     (settings?.secondaryGmailAppPassword && settings?.secondaryGmailUser) ||
     (secondaryGmailAppPassword && secondaryGmailUser) ||
-    (settings?.secondaryGmailUser && settings?.gmailAppPassword) ||
-    secondaryGmailUser ||
-    settings?.secondaryGmailUser
+    (hasSecondaryUser && (settings?.gmailAppPassword || gmailAppPassword)) ||
+    hasSecondaryUser
   );
-  const isPrimaryConnected = Boolean(settings?.gmailAppPassword && settings?.gmailUser);
+  const isPrimaryConnected = Boolean((settings?.gmailAppPassword || gmailAppPassword) && (settings?.gmailUser || gmailUser));
   const isGmailConnected = isSecondaryActive ? isSecondaryConnected : isPrimaryConnected;
 
   return (
@@ -1040,7 +1079,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (!settings?.secondaryGmailUser) {
+                    if (!hasSecondaryUser) {
                       setShowGmailModal(true);
                     } else {
                       handleQuickSwitchAccount('secondary');
@@ -1051,10 +1090,10 @@ export default function Home() {
                       ? 'bg-[#00f044] text-[#121316] shadow-sm font-black'
                       : 'text-[#9ca0ae] hover:text-white'
                   }`}
-                  title={settings?.secondaryGmailUser ? "Send as Henry via Outreach Account" : "Setup Henry's Secondary Outreach Account"}
+                  title={hasSecondaryUser ? "Send as Henry via Outreach Account" : "Setup Henry's Secondary Outreach Account"}
                 >
                   <span>CH 2</span>
-                  {!settings?.secondaryGmailUser && (
+                  {!hasSecondaryUser && (
                     <span className="text-[8.5px] bg-[#00f044]/20 text-[#00f044] px-1 rounded font-mono">+LINK</span>
                   )}
                 </button>
@@ -1091,9 +1130,12 @@ export default function Home() {
               {/* Compact Warmup Pill */}
               {dispatchState && (
                 <div 
-                  className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${
+                  onClick={() => setShowGmailModal(true)}
+                  className={`px-1.5 py-0.5 rounded text-[9.5px] font-mono font-bold border cursor-pointer ${
                     dispatchState.status === 'frozen'
                       ? 'bg-[#ff3333]/20 text-[#ff3333] border-[#ff3333]/40'
+                      : dispatchState.status === 'paused'
+                      ? 'bg-[#ffd000]/20 text-[#ffd000] border-[#ffd000]/40'
                       : 'bg-[#1c1e24] text-[#00f044] border-[#3e424f]'
                   }`}
                   title={`Stage ${dispatchState.current_stage}: ${dispatchState.sent_today}/${dispatchState.daily_cap} sent today`}
@@ -1105,7 +1147,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => {
-                  if (settings?.secondaryGmailUser) {
+                  if (hasSecondaryUser) {
                     handleQuickSwitchAccount(isSecondaryActive ? 'primary' : 'secondary');
                   } else {
                     setShowGmailModal(true);
@@ -1509,7 +1551,7 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => {
-                            if (!settings?.secondaryGmailUser) {
+                            if (!hasSecondaryUser) {
                               setShowGmailModal(true);
                             } else {
                               handleQuickSwitchAccount('secondary');
@@ -1528,7 +1570,7 @@ export default function Home() {
                             </span>
                           </div>
                           <p className="text-[10px] text-[#8e93a2] font-mono truncate">
-                            {settings?.secondaryGmailUser || '+ Connect Outreach Gmail'}
+                            {settings?.secondaryGmailUser || secondaryGmailUser || '+ Connect Outreach Gmail'}
                           </p>
                         </button>
                       </div>
@@ -2286,7 +2328,11 @@ export default function Home() {
                       type="email"
                       placeholder="e.g. your-new-email@gmail.com"
                       value={secondaryGmailUser}
-                      onChange={(e) => setSecondaryGmailUser(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSecondaryGmailUser(val);
+                        updateLocalSettings({ secondaryGmailUser: val, activeGmailAccount: 'secondary' });
+                      }}
                       className="w-full bg-[#18191f] border border-[#3b3e4a] rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-[#00f044] text-xs font-mono"
                     />
                     <span className="text-[9px] text-[#757a8a] block mt-0.5">
@@ -2301,7 +2347,11 @@ export default function Home() {
                       type="password"
                       placeholder="Optional (leave blank if blocked)"
                       value={secondaryGmailAppPassword}
-                      onChange={(e) => setSecondaryGmailAppPassword(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSecondaryGmailAppPassword(val);
+                        updateLocalSettings({ secondaryGmailAppPassword: val });
+                      }}
                       className="w-full bg-[#18191f] border border-[#3b3e4a] rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-[#00f044] font-mono text-xs"
                     />
                     <span className="text-[9px] text-[#757a8a] block mt-0.5">
@@ -2317,7 +2367,11 @@ export default function Home() {
                       type="text"
                       placeholder="Henry Collins"
                       value={secondaryContactName}
-                      onChange={(e) => setSecondaryContactName(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSecondaryContactName(val);
+                        updateLocalSettings({ secondaryContactName: val });
+                      }}
                       className="bg-[#18191f] border border-[#3b3e4a] rounded px-2 py-0.5 text-white focus:outline-none focus:border-[#00f044] text-xs"
                     />
                   </div>
