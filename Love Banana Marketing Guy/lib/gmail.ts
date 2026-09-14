@@ -296,6 +296,11 @@ export async function appendBatchDraftsImap({
       resetActivityTimeout();
       buffer += chunk;
 
+      if (buffer.includes('* BYE')) {
+        cleanup(new Error(`Gmail IMAP closed connection: ${buffer.trim()}`));
+        return;
+      }
+
       if (state === 'WAIT_GREETING' && buffer.includes('* OK')) {
         buffer = '';
         state = 'LOGGING_IN';
@@ -394,6 +399,16 @@ export async function appendBatchDraftsImap({
     }
 
     socket.on('error', (err) => cleanup(err));
+    socket.on('end', () => {
+      if (currentDraftIndex < drafts.length && state !== 'LOGGING_OUT') {
+        cleanup(new Error('IMAP connection ended unexpectedly by Gmail server'));
+      }
+    });
+    socket.on('close', (hadError) => {
+      if (currentDraftIndex < drafts.length && state !== 'LOGGING_OUT') {
+        cleanup(new Error(`IMAP connection closed unexpectedly (hadError: ${hadError})`));
+      }
+    });
   });
 }
 

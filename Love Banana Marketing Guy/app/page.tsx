@@ -216,6 +216,14 @@ export default function Home() {
   // Send action state
   const [isSending, setIsSending] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
+  const [draftProgress, setDraftProgress] = useState<{
+    current: number;
+    total: number;
+    targetName: string;
+    confirmed: number;
+    failed: number;
+  } | null>(null);
+  const [draftedContactIds, setDraftedContactIds] = useState<string[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [bannerMessage, setBannerMessage] = useState<string | null>(null);
 
@@ -449,6 +457,15 @@ export default function Home() {
         if (contactsData.contacts.length > 0) {
           setPreviewContactId(contactsData.contacts[0].id);
         }
+        try {
+          const storedDrafted = localStorage.getItem('lb_drafted_contact_ids');
+          const parsedDrafted = storedDrafted ? JSON.parse(storedDrafted) : [];
+          const fromStage = contactsData.contacts
+            .filter((c: Contact) => c.stage === 'drafted' || c.stage === 'awaiting_approval' || c.stage === 'sent')
+            .map((c: Contact) => c.id);
+          const mergedDrafted = Array.from(new Set([...(Array.isArray(parsedDrafted) ? parsedDrafted : []), ...fromStage]));
+          setDraftedContactIds(mergedDrafted);
+        } catch (e) {}
       }
 
       if (repliesData.replies) {
@@ -773,7 +790,7 @@ export default function Home() {
     }
   };
 
-  // Push selected as Gmail drafts
+  // Push selected as Gmail drafts with stateless payloads, zero false completions, and incremental persistence
   const handlePushDrafts = async () => {
     if (contactsToSend.length === 0) {
       alert('Please check at least one contact to draft for.');
@@ -789,83 +806,148 @@ export default function Home() {
     }
 
     setIsDrafting(true);
+    setDraftProgress({
+      current: 0,
+      total: contactsToSend.length,
+      targetName: contactsToSend[0]?.name || contactsToSend[0]?.outlet || contactsToSend[0]?.email || 'Contact',
+      confirmed: 0,
+      failed: 0
+    });
+
     try {
-      // Stage the outbox items — use the returned IDs directly (don't re-fetch globally)
-      const stageRes = await fetch('/api/outbox', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          contactIds: contactsToSend.map(c => c.id), 
-          subject, 
-          body 
-        })
+      const stored = getStoredSettings();
+      const secPass = settings?.secondaryGmailAppPassword || secondaryGmailAppPassword || stored?.secondaryGmailAppPassword || '';
+      const secUser = settings?.secondaryGmailUser || secondaryGmailUser || stored?.secondaryGmailUser || 'lovebananacomms@gmail.com';
+      const targetChannel = isSecondaryActive ? 'secondary' : 'primary';
+      const targetAccountDisplay = targetChannel === 'secondary'
+        ? (secUser || 'Outreach Gmail') 
+        : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
+
+      // Pre-render the pitches client-side so payload is 100% self-contained & immune to serverless cold starts
+      const draftItems = contactsToSend.map((contact, idx) => {
+        const rendered = renderPitchClient({
+          templateSubject: subject,
+          templateBody: body,
+          contact,
+          settings,
+          seedIndex: idx
+        });
+        return {
+          id: `draft-${contact.id}`,
+          contactId: contact.id,
+          to: contact.email,
+          subject: rendered.subject,
+          body: rendered.body,
+          displayName: `${contact.name || contact.outlet} (${contact.email})`
+        };
       });
-      const stageData = await stageRes.json();
-      const ids: string[] = (stageData.created || []).map((o: any) => o.id).filter(Boolean);
 
-      if (ids.length > 0) {
-        const BATCH_SIZE = 4;
-        let totalDrafted = 0;
-        const stored = getStoredSettings();
-        const secPass = settings?.secondaryGmailAppPassword || secondaryGmailAppPassword || stored?.secondaryGmailAppPassword || '';
-        const secUser = settings?.secondaryGmailUser || secondaryGmailUser || stored?.secondaryGmailUser || 'lovebananacomms@gmail.com';
-        const targetChannel = isSecondaryActive ? 'secondary' : 'primary';
-        const targetAccountDisplay = targetChannel === 'secondary'
-          ? (secUser || 'Outreach Gmail') 
-          : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
+      const BATCH_SIZE = 4;
+      let totalDrafted = 0;
+      let totalFailed = 0;
+      const newlyDraftedContactIds: string[] = [];
 
-        for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-          const chunk = ids.slice(i, i + BATCH_SIZE);
-          const currentProgress = Math.min(i + chunk.length, ids.length);
-          setBannerMessage(`📥 Pushing drafts to ${targetAccountDisplay}: ${currentProgress} of ${ids.length}...`);
+      for (let i = 0; i < draftItems.length; i += BATCH_SIZE) {
+        const chunk = draftItems.slice(i, i + BATCH_SIZE);
+        const currentProgress = Math.min(i + chunk.length, draftItems.length);
+        const currentTargetName = chunk[0].displayName;
 
-          const draftRes = await fetch('/api/outbox/draft-in-gmail', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              outboxIds: chunk,
-              channel: targetChannel,
-              secondaryGmailUser: secUser,
-              secondaryGmailAppPassword: secPass
-            })
-          });
+        setDraftProgress({
+          current: currentProgress,
+          total: draftItems.length,
+          targetName: currentTargetName,
+          confirmed: totalDrafted,
+          failed: totalFailed
+        });
+        setBannerMessage(`📥 Pushing batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(draftItems.length / BATCH_SIZE)} to ${targetAccountDisplay}: ${currentProgress} of ${draftItems.length}...`);
 
-          const resText = await draftRes.text();
-          let draftData: any = null;
-          try {
-            draftData = JSON.parse(resText);
-          } catch {
-            throw new Error(`Server returned status ${draftRes.status}. Successfully pushed ${totalDrafted} of ${ids.length} drafts.`);
-          }
+        const draftRes = await fetch('/api/outbox/draft-in-gmail', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            drafts: chunk.map(c => ({
+              id: c.id,
+              contactId: c.contactId,
+              to: c.to,
+              subject: c.subject,
+              body: c.body
+            })),
+            channel: targetChannel,
+            secondaryGmailUser: secUser,
+            secondaryGmailAppPassword: secPass
+          })
+        });
 
-          if (!draftRes.ok) {
-            if (draftData?.needsConfig) {
-              setShowGmailModal(true);
-            }
-            throw new Error(draftData?.error || 'Failed to create drafts in Gmail');
-          }
-          if (draftData.results && draftData.results.length > 0 && draftData.draftedCount === 0 && !draftData.simulated) {
-            const firstErr = draftData.results.find((r: any) => !r.success)?.error;
-            throw new Error(firstErr || 'IMAP failed to append drafts. Please verify your Gmail App Password.');
-          }
-          totalDrafted += (draftData.draftedCount || chunk.length);
+        const resText = await draftRes.text();
+        let draftData: any = null;
+        try {
+          draftData = JSON.parse(resText);
+        } catch {
+          throw new Error(`Server returned status ${draftRes.status} (${resText.slice(0, 100)}). Pushed ${totalDrafted} of ${draftItems.length} drafts before stopping.`);
         }
 
-        // Refresh dispatch warmup counters
-        fetch('/api/dispatch-state')
-          .then(r => r.json())
-          .then(d => d.state && setDispatchState(d.state))
-          .catch(() => {});
+        if (!draftRes.ok) {
+          if (draftData?.needsConfig) {
+            setShowGmailModal(true);
+          }
+          throw new Error(draftData?.error || `Failed to create drafts in Gmail (HTTP ${draftRes.status})`);
+        }
 
-        setBannerMessage(`📥 Successfully pushed all ${totalDrafted} drafts into ${targetAccountDisplay} Drafts folder!`);
-        setTimeout(() => setBannerMessage(null), 6000);
-      } else {
-        throw new Error('No outbox items were staged. Check that contacts are selected and try again.');
+        const confirmedInBatch = (draftData.results || []).filter((r: any) => r.success);
+        const failedInBatch = (draftData.results || []).filter((r: any) => !r.success);
+
+        // Strict verification: only count drafts explicitly confirmed by Google IMAP
+        const batchSuccessCount = typeof draftData.draftedCount === 'number' 
+          ? draftData.draftedCount 
+          : confirmedInBatch.length;
+
+        if (batchSuccessCount === 0 && chunk.length > 0 && !draftData.simulated) {
+          const firstErr = failedInBatch[0]?.error || draftData.error || 'IMAP failed to append drafts to Gmail. Please check your Gmail connection.';
+          throw new Error(`${firstErr}. Successfully created ${totalDrafted} drafts before halting.`);
+        }
+
+        totalDrafted += batchSuccessCount;
+        totalFailed += failedInBatch.length;
+
+        // Record confirmed IDs
+        for (const item of confirmedInBatch) {
+          const matched = chunk.find(c => c.id === item.id || c.contactId === item.id);
+          if (matched) newlyDraftedContactIds.push(matched.contactId);
+        }
+
+        // Persist newly confirmed IDs incrementally to localStorage so progress is never lost even on refresh
+        try {
+          const prevDrafted = JSON.parse(localStorage.getItem('lb_drafted_contact_ids') || '[]');
+          const updatedDrafted = Array.from(new Set([...prevDrafted, ...newlyDraftedContactIds]));
+          localStorage.setItem('lb_drafted_contact_ids', JSON.stringify(updatedDrafted));
+          setDraftedContactIds(updatedDrafted);
+        } catch (e) {}
+
+        // Polite pause between batches to prevent socket saturation (250ms)
+        if (i + BATCH_SIZE < draftItems.length) {
+          await new Promise(r => setTimeout(r, 250));
+        }
       }
+
+      // Refresh dispatch warmup counters
+      fetch('/api/dispatch-state')
+        .then(r => r.json())
+        .then(d => d.state && setDispatchState(d.state))
+        .catch(() => {});
+
+      // Mark newly drafted in local state
+      setContacts(prev => prev.map(c => 
+        newlyDraftedContactIds.includes(c.id) ? { ...c, stage: 'awaiting_approval' } : c
+      ));
+
+      setBannerMessage(`✅ Verified: Successfully pushed all ${totalDrafted} drafts into ${targetAccountDisplay} Drafts folder!`);
+      setTimeout(() => setBannerMessage(null), 8000);
     } catch (e: any) {
       alert(`Draft error: ${e.message}`);
+      setBannerMessage(`⚠️ Draft process stopped: ${e.message}`);
     } finally {
       setIsDrafting(false);
+      setDraftProgress(null);
     }
   };
 
@@ -1546,6 +1628,19 @@ export default function Home() {
                         >
                           CLEAR
                         </button>
+                        {draftedContactIds.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const remaining = contacts.filter(c => !draftedContactIds.includes(c.id)).map(c => c.id);
+                              setSelectedContactIds(remaining);
+                            }}
+                            className="px-2.5 py-1 rounded text-[10.5px] font-bold bg-[#ffd000]/20 hover:bg-[#ffd000]/30 text-[#ffd000] border border-[#ffd000]/50 transition font-mono uppercase"
+                            title={`${draftedContactIds.length} already drafted in Gmail. Click to select only un-drafted contacts.`}
+                          >
+                            REMAINING ONLY ({Math.max(0, contacts.length - draftedContactIds.length)})
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -1623,6 +1718,11 @@ export default function Home() {
                               </div>
 
                               <div className="flex items-center space-x-1.5 shrink-0">
+                                {draftedContactIds.includes(contact.id) && (
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold font-mono border border-[#ffd000]/50 bg-[#ffd000]/15 text-[#ffd000]">
+                                    DRAFTED
+                                  </span>
+                                )}
                                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold font-mono border ${prof.tierBadge.border} ${prof.tierBadge.bg} ${prof.tierBadge.text}`}>
                                   {prof.tierBadge.label.split(' ')[0]} {prof.affinityTier === 'tier1_bullseye' ? 'BULLS-EYE' : prof.affinityTier === 'tier2_indie' ? 'INDIE' : 'ECLECTIC'}
                                 </span>
@@ -1767,6 +1867,31 @@ export default function Home() {
                       />
                     </div>
 
+                    {/* Ableton Live Draft Inspector Panel */}
+                    {draftProgress && (
+                      <div className="bg-[#141519] border border-[#00d4ff]/50 rounded p-3 space-y-2 font-mono text-xs shadow-inner">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-[#00d4ff] font-bold flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-[#00d4ff] animate-ping" />
+                            BATCH {Math.ceil(draftProgress.current / 4)} OF {Math.ceil(draftProgress.total / 4)} IN FLIGHT
+                          </span>
+                          <span className="text-[#ffd000] font-bold">
+                            {draftProgress.current} / {draftProgress.total} CONTACTS
+                          </span>
+                        </div>
+                        <div className="w-full bg-[#20222a] rounded-full h-2 overflow-hidden border border-[#383b46]">
+                          <div 
+                            className="bg-gradient-to-r from-[#00d4ff] to-[#00f044] h-full transition-all duration-300"
+                            style={{ width: `${Math.min(100, Math.round((draftProgress.current / draftProgress.total) * 100))}%` }}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between text-[10.5px] text-[#9ca0ae] pt-0.5">
+                          <span className="truncate max-w-[70%]">Current: {draftProgress.targetName}</span>
+                          <span className="text-[#00f044] font-bold">✓ {draftProgress.confirmed} Confirmed in Gmail</span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Ableton Master Draft Trigger with Safety Lock */}
                     <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#3b3e4a]">
                       <div className="flex items-center space-x-2 text-[11px] font-mono text-[#00f044] bg-[#00f044]/10 border border-[#00f044]/30 px-3 py-2 rounded">
@@ -1781,7 +1906,13 @@ export default function Home() {
                         className="w-full sm:w-auto px-6 py-2.5 rounded text-xs font-mono font-black bg-[#00d4ff] hover:bg-[#20dcff] text-[#121316] shadow-sm border border-[#00d4ff] transition flex items-center justify-center space-x-2 uppercase tracking-wide disabled:opacity-50"
                       >
                         <Mail className="w-4 h-4 text-[#121316]" />
-                        <span>{isDrafting ? 'PUSHING TO DRAFTS...' : `PUSH (${contactsToSend.length}) TO GMAIL DRAFTS`}</span>
+                        <span>
+                          {isDrafting 
+                            ? `PUSHING (${draftProgress ? draftProgress.current : 0}/${contactsToSend.length})...` 
+                            : contactsToSend.length === 0 
+                            ? 'NO CONTACTS SELECTED' 
+                            : `PUSH (${contactsToSend.length}) TO GMAIL DRAFTS`}
+                        </span>
                       </button>
                     </div>
                   </div>

@@ -26,7 +26,7 @@ function parseCookiePayload(raw: string | undefined): any {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    let { outboxIds, channel, secondaryGmailUser, secondaryGmailAppPassword } = body;
+    let { outboxIds, drafts, channel, secondaryGmailUser, secondaryGmailAppPassword } = body;
 
     // Check cookie fallback if secondary credentials were not passed in body
     const cookieHeader = request.cookies.get('lb_crm_settings')?.value;
@@ -35,10 +35,6 @@ export async function POST(request: NextRequest) {
       if (!secondaryGmailUser && cookieSettings.secondaryGmailUser) secondaryGmailUser = cookieSettings.secondaryGmailUser;
       if (!secondaryGmailAppPassword && cookieSettings.secondaryGmailAppPassword) secondaryGmailAppPassword = cookieSettings.secondaryGmailAppPassword;
       if (!channel && cookieSettings.activeGmailAccount) channel = cookieSettings.activeGmailAccount;
-    }
-
-    if (!Array.isArray(outboxIds) || outboxIds.length === 0) {
-      return NextResponse.json({ error: 'outboxIds array required' }, { status: 400 });
     }
 
     const store = getStore();
@@ -70,21 +66,46 @@ export async function POST(request: NextRequest) {
     }
 
     const targets: DraftTarget[] = [];
-    const validMap: Record<string, { outboxId: string; contactId: string }> = {};
+    const validMap: Record<string, { outboxId?: string; contactId?: string }> = {};
 
-    for (const outboxId of outboxIds) {
-      const item = store.getOutboxItem(outboxId);
-      if (!item) continue;
-      const contact = store.getContactById(item.contact_id);
-      if (!contact || !contact.email) continue;
+    // 1. Direct stateless drafts payload (preferred — immune to serverless cold starts)
+    if (Array.isArray(drafts) && drafts.length > 0) {
+      for (const d of drafts) {
+        if (!d.to || !d.subject || !d.body) continue;
+        const targetId = d.id || d.contactId || `d-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+        targets.push({
+          id: targetId,
+          to: d.to,
+          subject: d.subject,
+          body: d.body
+        });
+        validMap[targetId] = { outboxId: d.id, contactId: d.contactId };
+      }
+    } else if (Array.isArray(outboxIds) && outboxIds.length > 0) {
+      // 2. Legacy outbox ID store lookup fallback
+      for (const outboxId of outboxIds) {
+        const item = store.getOutboxItem(outboxId);
+        if (!item) continue;
+        const contact = store.getContactById(item.contact_id);
+        if (!contact || !contact.email) continue;
 
-      targets.push({
-        id: outboxId,
-        to: contact.email,
-        subject: item.subject,
-        body: item.body
-      });
-      validMap[outboxId] = { outboxId, contactId: contact.id };
+        targets.push({
+          id: outboxId,
+          to: contact.email,
+          subject: item.subject,
+          body: item.body
+        });
+        validMap[outboxId] = { outboxId, contactId: contact.id };
+      }
+    } else {
+      return NextResponse.json({ error: 'drafts array or outboxIds array required' }, { status: 400 });
+    }
+
+    if (targets.length === 0) {
+      return NextResponse.json({
+        error: 'No valid draft targets found. Recipients, subjects, and bodies must not be empty.',
+        results: []
+      }, { status: 400 });
     }
 
     // Update last batch start timestamp
@@ -94,15 +115,20 @@ export async function POST(request: NextRequest) {
 
     let successCount = 0;
     for (const r of batchRes.results) {
-      if (r.id && r.success && validMap[r.id]) {
+      if (r.id && r.success) {
         successCount++;
-        store.updateOutboxItem(validMap[r.id].outboxId, {
-          gmail_draft_id: r.draftId || null,
-          status: 'approved'
-        });
-        store.updateContact(validMap[r.id].contactId, {
-          stage: 'awaiting_approval'
-        });
+        const mapping = validMap[r.id];
+        if (mapping?.outboxId) {
+          store.updateOutboxItem(mapping.outboxId, {
+            gmail_draft_id: r.draftId || null,
+            status: 'approved'
+          });
+        }
+        if (mapping?.contactId) {
+          store.updateContact(mapping.contactId, {
+            stage: 'awaiting_approval'
+          });
+        }
       }
     }
 
