@@ -461,6 +461,11 @@ export function renderPitchClient({
 
   // Location phrase adjustment in body:
   body = body.replace(/based (here in Sydney|in Sydney, Australia|in Sydney)/gi, profile.locationPhrase);
+  if (profile.locationCategory === 'international') {
+    body = body.replace(/Love Banana from Sydney(?!, Australia)/gi, 'Love Banana from Sydney, Australia');
+  } else {
+    body = body.replace(/Love Banana from Sydney, Australia/gi, 'Love Banana from Sydney');
+  }
 
   // Variable replacements
   const s = settings || {};

@@ -179,12 +179,10 @@ export default function Home() {
     {
       id: 'australia' as const,
       label: '🇦🇺 Australian National Pitch',
-      sublabel: 'Says: "based in Sydney"',
+      sublabel: 'Says: "Love Banana from Sydney"',
       targetLoc: 'australia',
       subject: radioTemplate.subject,
-      body: radioTemplate.body.includes('based here in Sydney')
-        ? radioTemplate.body.replace('based here in Sydney', 'based in Sydney')
-        : radioTemplate.body
+      body: radioTemplate.body
     },
     {
       id: 'press' as const,
@@ -197,14 +195,12 @@ export default function Home() {
     {
       id: 'overseas' as const,
       label: '🌏 Overseas / Europe Pitch',
-      sublabel: 'Says: "based in Sydney, Australia"',
+      sublabel: 'Says: "Love Banana from Sydney, Australia"',
       targetLoc: 'international',
       subject: radioTemplate.subject,
-      body: radioTemplate.body.includes('based here in Sydney')
-        ? radioTemplate.body.replace('based here in Sydney', 'based in Sydney, Australia')
-        : radioTemplate.body.includes('based in Sydney')
-        ? radioTemplate.body.replace('based in Sydney', 'based in Sydney, Australia')
-        : radioTemplate.body
+      body: radioTemplate.body.includes('Love Banana from Sydney, Australia')
+        ? radioTemplate.body
+        : radioTemplate.body.replace('Love Banana from Sydney', 'Love Banana from Sydney, Australia')
     }
   ], [radioTemplate, blogTemplate]);
 
