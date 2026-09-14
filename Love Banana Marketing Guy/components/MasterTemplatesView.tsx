@@ -144,7 +144,6 @@ export default function MasterTemplatesView({
     { tag: '{{from_email}}', desc: "Active sender email (e.g. outreach or main band email)" },
     { tag: '{{contact_name}}', desc: "Sender display name (Henry Collins)" },
     { tag: '{{greeting}}', desc: "Opening greeting (e.g. 'Hey Marc,')" },
-    { tag: '{{greeting_intro}}', desc: "Intro opener (e.g. 'Hope you\\'re well!')" },
     { tag: '{{signoff_line}}', desc: "Warm sign-off line" },
     { tag: '{{outlet}}', desc: "Station or publication or label name (e.g. 2SER, Clash)" },
     { tag: '{{city}}', desc: "City (e.g. Sydney, London)" },

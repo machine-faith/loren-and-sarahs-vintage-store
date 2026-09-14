@@ -281,17 +281,8 @@ export function getContactProfile(
     angleDescription = 'Music Consideration & Feature/Interview Ask';
   }
 
-  // 7. Expanded 8x8 Natural Human Micro-Variations & Subject Line Pool
-  const INTROS = [
-    "Hope you're having a good week!",
-    "Hope you're having a solid week!",
-    "Hope things are good your end!",
-    "Hope things are going well your end!",
-    "Hope you're well!",
-    "Hope you're having a good one!",
-    "Hope you're doing well.",
-    "Hope the week's treating you well!"
-  ];
+  // 7. Expanded Natural Human Micro-Variations & Subject Line Pool
+  const INTROS = [''];
 
   const SIGNOFFS = [
     "No stress either way, really appreciate you having a listen.",
@@ -525,9 +516,9 @@ export function renderPitchClient({
     body = body.replace(/^(Hey|Hi)\s+[^,\n]+,/i, profile.greeting);
   }
 
-  // Clean any stray em dashes
+  // Clean any stray em dashes and collapse redundant blank lines
   subject = subject.replace(/—/g, '-');
-  body = body.replace(/—/g, '-');
+  body = body.replace(/—/g, '-').replace(/\n{3,}/g, '\n\n').trim();
 
   return { subject, body, profile };
 }

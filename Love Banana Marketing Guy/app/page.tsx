@@ -126,7 +126,7 @@ const DEFAULT_LABEL_TEMPLATE: ChannelTemplateData = {
   subject: "Love Banana / debut LP (Michael Barker recommended we get in touch)",
   body: `{{salutation}}
 
-Hope you're doing well. Reaching out from Sydney, Australia. I sing and play guitar in Love Banana, a five-piece garage pop band from Sydney, Australia.
+Reaching out from Sydney, Australia. I sing and play guitar in Love Banana, a five-piece garage pop band.
 
 Michael Barker (Gee Tee / RMFC) is putting out our debut album 'Any Direction' here in Australia on his label Ragnar Records, and he pointed us in your direction to see if you'd be interested in teaming up on an overseas physical release.
 
@@ -471,7 +471,8 @@ export default function Home() {
             tpl.body.includes('Petersham') ||
             tpl.body.includes('in-studio') ||
             tpl.body.includes('physical copy') ||
-            tpl.body.includes('{{greeting_intro}}')
+            tpl.body.includes('{{greeting_intro}}') ||
+            tpl.body.includes("Hope you're")
           ) {
             return defaultTpl;
           }

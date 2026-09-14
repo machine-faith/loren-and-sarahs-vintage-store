@@ -169,7 +169,7 @@ This is a critical architectural distinction that separates amateur PR from prof
 1. **The Central Music Director (Gatekeeper 1):**
    - **Role:** Handles station-wide intake, weekly review meetings, official playlist additions (Feature Album of the Week, High Rotation, Spot Adds).
    - **Target Email:** `music@`, `submissions@`, `musicdirector@`, `md@`.
-   - **Pitch Angle:** Concise single summary, chart history, mastering engineer (Mikey Young), WAV master download, in-studio or phone interview offer.
+   - **Pitch Angle:** Concise single summary, chart history, mastering engineer (Mikey Young), WAV master download, phone interview or chat offer.
 2. **The Specialty Show Presenter (Gatekeeper 2):**
    - **Role:** Hosts a dedicated 1-to-2-hour weekly show (e.g., a Sunday night garage/punk hour, a local music showcase, a jangle/indie program). In community broadcasting, presenters have complete programming freedom to play whatever they choose, regardless of central playlist adds.
    - **Target Email:** Dedicated show email (e.g., `postpunkshow@fbiradio.com`, `presentername@gmail.com`) or show-specific web form.
@@ -387,7 +387,7 @@ When airplay logs verify a recent sound-alike play, the pitch composer injects t
 ```text
 Hey Jack,
 
-Hope you're well! Heard you spin Straight Arrows on "The Garage Hang" last month - thought our new single "Seagull" would be right up your alley. My name's Henry, from Love Banana, a five-piece garage pop band from Sydney...
+Heard you spin Straight Arrows on "The Garage Hang" last month - thought our new single "Seagull" would be right up your alley. My name's Henry, from Love Banana, a five-piece garage pop band from Sydney...
 ```
 This single sentence elevates the pitch above 99% of competitor emails: it proves the sender actually listens to the show and understands the host's programming taste.
 
@@ -437,7 +437,7 @@ flowchart LR
     B --> F[Deterministic Seed Generator]
     
     C --> G[Clean Name & Greeting Token]
-    D --> H[Location Phrase & In-Studio Hook]
+    D --> H[Location Phrase & Interview Hook]
     E --> I[Context-Aware Ask Phrase]
     F --> J[Micro-Variation Intro & Outro]
     
@@ -472,7 +472,7 @@ The band's physical roots are in **Sydney, Australia**. Pitch framing must intel
 
 | Recipient Location | Computed Category | Injected Location Hook | Custom Angle Injected |
 | :--- | :--- | :--- | :--- |
-| **Sydney Metro / Local** | `sydney` | `"based here in Sydney"` | Emphasizes local Sydney gigs, offers in-studio live chats or interviews. |
+| **Sydney Metro / Local** | `sydney` | `"based here in Sydney"` | Emphasizes local Sydney connection, offers phone interview or chat. |
 | **Australia (National)** | `australia` | `"based in Sydney"` | Emphasizes national community radio support, AMRAP airplay, regional touring. |
 | **New Zealand** | `international` | `"from Sydney, Australia"` | Casual trans-Tasman indie kinship, student radio network affinity. |
 | **UK / Europe / North America** | `international` | `"from Sydney, Australia"` | Australian garage pop export, international airplay consideration. |
@@ -491,12 +491,12 @@ One of the most frequent errors in automated PR is asking a blogger or zine edit
    `"Would you be interested in featuring the track or doing a quick Q&A / interview around the single? Happy to send through a full advance stream, hi-res photos, or anything else you need."`
 3. **Print Magazine / Senior Music Critic:**  
    *(Editorial and long-form review framing)*  
-   `"Would you be interested in a feature, review, or a short Q&A / interview around the single? Happy to send through a full advance stream, hi-res press shots, or a physical copy if any of that is useful."`
+   `"Would you be interested in a feature, review, or a short Q&A / interview around the single? Happy to send through a full advance stream, hi-res press shots, or a phone chat if useful."`
 4. **Playlist Curator:**  
    *(Streaming playlist placement framing)*  
    `"Thought it might be a good fit for one of your playlists if you get a chance to check it out."`
 5. **Community Radio (Local Sydney):**  
-   `"Would love for you to give it a spin if you feel it fits any of your shows, and would you be interested in having us in for an in-studio chat or interview?"`
+   `"Would love for you to give it a spin if you feel it fits any of your shows, and would you be interested in a quick interview or phone chat around the release?"`
 6. **Community Radio (Grassroots / Regional / National):**  
    `"We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows. Also, would you be interested in a quick phone interview or chat around the release?"`
 7. **Broadcast Radio (General Indie / College):**  
@@ -538,15 +538,8 @@ This hash deterministically selects sentence variations from verified natural hu
 - Variant 4: `Love Banana - debut single "Seagull" (Sydney garage pop)`
 - Variant 5: `For {{outlet}}: Love Banana - "Seagull" (Mastered by Mikey Young)`
 
-#### 2. Intro Variations Pool (8 Variants, Selected via `hash % 8`):
-- Variant 0: `"Hope you're well!"`
-- Variant 1: `"Hope you're having a good one!"`
-- Variant 2: `"Hope this finds you well!"`
-- Variant 3: `"Hope you're having a solid week!"`
-- Variant 4: `"Hope things are going well your end!"`
-- Variant 5: `"Hope you're not too buried in promo at the moment!"`
-- Variant 6: `"Hope your week is going well."`
-- Variant 7: `"Hope you're doing well."`
+#### 2. Intro Greetings Policy (Zero Generic Filler):
+Generic pleasantries (e.g. *"Hope you're well!"*, *"Hope you're having a good week"*) are strictly prohibited across all templates. Outreach emails jump straight from personal greeting (`Hey [Name],`) to direct musician identity (`I play guitar and sing in Love Banana from Sydney.`) to respect the recipient's time and sound like a genuine musician rather than an automated marketer.
 
 #### 3. Sign-off Variations Pool (8 Variants, Selected via `(hash + 3) % 8`):
 - Variant 0: `"Let me know if you need anything else from our end!"`
@@ -860,9 +853,9 @@ The UI is organized into four Ableton-style device racks:
 |                                                  |                                                |
 | DEVICE 03: PITCH CONSOLE & GMAIL DISPATCH        | Hey Ethan,                                     |
 | Active Account: Channel 2 (Outreach)             |                                                |
-| Subject: [Love Banana - "Seagull"              ] | Hope you're well! My name's Henry, from Love   |
-| Body:    [Hey {{first_name}},                  ] | Banana, a garage pop band based here in Sydney.|
-|          [We've just released our new single...] | ...                                            |
+| Subject: [Love Banana - "Seagull"              ] | I play guitar and sing in Love Banana from     |
+| Body:    [Hey {{first_name}},                  ] | Sydney. Our new single "Seagull" drops...      |
+|          [I play guitar and sing in Love...]     | ...                                            |
 | [ 📥 PUSH (373) TO GMAIL DRAFTS ]                | [ 🔒 SAFETY LOCK ACTIVE: DIRECT BLAST BLOCKED ]|
 +---------------------------------------------------------------------------------------------------+
 ```

@@ -418,7 +418,7 @@ export function buildLabelPitch(
 
   const body = `${target.salutation}
 
-Hope you're doing well. Reaching out from Sydney, Australia. I sing and play guitar in a garage pop / rock & roll five-piece called Love Banana.
+Reaching out from Sydney, Australia. I sing and play guitar in Love Banana, a five-piece garage pop band.
 
 ${connectionLine}
 
