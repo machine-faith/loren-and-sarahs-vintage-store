@@ -234,7 +234,7 @@ export default function Home() {
 
   // Gmail Multi-Account State
   const [showGmailModal, setShowGmailModal] = useState(false);
-  const [activeGmailAccount, setActiveGmailAccount] = useState<'primary' | 'secondary'>('primary');
+  const [activeGmailAccount, setActiveGmailAccount] = useState<'primary' | 'secondary'>('secondary');
   // Account 1 (Primary Band Account)
   const [gmailUser, setGmailUser] = useState('lovebananaband@gmail.com');
   const [gmailAppPassword, setGmailAppPassword] = useState('');
@@ -278,7 +278,10 @@ export default function Home() {
           const parsed = JSON.parse(raw);
           if (parsed.secondaryGmailUser) setSecondaryGmailUser(parsed.secondaryGmailUser);
           if (parsed.secondaryGmailAppPassword) setSecondaryGmailAppPassword(parsed.secondaryGmailAppPassword);
-          if (parsed.activeGmailAccount) setActiveGmailAccount(parsed.activeGmailAccount);
+          const initialActive = parsed.secondaryGmailUser 
+            ? (parsed.activeGmailAccount || 'secondary') 
+            : (parsed.activeGmailAccount || 'primary');
+          setActiveGmailAccount(initialActive);
           if (parsed.secondaryContactName) setSecondaryContactName(parsed.secondaryContactName);
           if (parsed.secondaryAccountLabel) setSecondaryAccountLabel(parsed.secondaryAccountLabel);
           if (parsed.gmailUser) setGmailUser(parsed.gmailUser);
@@ -385,7 +388,9 @@ export default function Home() {
         const secPass = s.secondaryGmailAppPassword || localCached?.secondaryGmailAppPassword || '';
         const secName = s.secondaryContactName || localCached?.secondaryContactName || 'Henry Collins';
         const secLabel = s.secondaryAccountLabel || localCached?.secondaryAccountLabel || 'Henry (Outreach Email)';
-        const secActive = localCached?.activeGmailAccount || s.activeGmailAccount || (secUser ? 'secondary' : 'primary');
+        const secActive = secUser 
+          ? (localCached?.activeGmailAccount || 'secondary') 
+          : (localCached?.activeGmailAccount || s.activeGmailAccount || 'primary');
 
         s = {
           ...s,
@@ -406,7 +411,8 @@ export default function Home() {
               secondaryGmailAppPassword: secPass,
               activeGmailAccount: secActive,
               secondaryContactName: secName,
-              secondaryAccountLabel: secLabel
+              secondaryAccountLabel: secLabel,
+              simulationMode: secPass ? 'false' : (s.simulationMode || 'true')
             })
           }).catch(() => {});
         }
@@ -679,7 +685,8 @@ export default function Home() {
       if (ids.length > 0) {
         const BATCH_SIZE = 15;
         let totalDrafted = 0;
-        const targetAccountDisplay = isSecondaryActive 
+        const targetChannel = hasSecUser ? 'secondary' : (isSecondaryActive ? 'secondary' : 'primary');
+        const targetAccountDisplay = targetChannel === 'secondary'
           ? (settings?.secondaryGmailUser || secondaryGmailUser || 'Outreach Gmail') 
           : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
 
@@ -693,7 +700,7 @@ export default function Home() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               outboxIds: chunk,
-              channel: isSecondaryActive ? 'secondary' : 'primary',
+              channel: targetChannel,
               secondaryGmailUser: settings?.secondaryGmailUser || secondaryGmailUser,
               secondaryGmailAppPassword: settings?.secondaryGmailAppPassword || secondaryGmailAppPassword
             })
@@ -704,6 +711,10 @@ export default function Home() {
               setShowGmailModal(true);
             }
             throw new Error(draftData.error || 'Failed to create drafts in Gmail');
+          }
+          if (draftData.results && draftData.results.length > 0 && draftData.draftedCount === 0 && !draftData.simulated) {
+            const firstErr = draftData.results.find((r: any) => !r.success)?.error;
+            throw new Error(firstErr || 'IMAP failed to append drafts. Please verify your Gmail App Password.');
           }
           totalDrafted += (draftData.draftedCount || chunk.length);
         }

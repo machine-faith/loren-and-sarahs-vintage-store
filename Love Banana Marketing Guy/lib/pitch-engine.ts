@@ -38,7 +38,9 @@ export function generateOutboxDrafts(
     bodyTpl = bodyTpl || template.body;
   }
 
-  const created = [];
+  const itemsToCreate: Array<Omit<import('./db').OutboxItem, 'id' | 'created_at'>> = [];
+  const validContactIds: string[] = [];
+
   for (let i = 0; i < contactIds.length; i++) {
     const cid = contactIds[i];
     const contact = store.getContactById(cid);
@@ -46,8 +48,7 @@ export function generateOutboxDrafts(
 
     const { subject, body } = renderPitch({ subject: subjectTpl, body: bodyTpl }, contact, i);
 
-    // Add to outbox as draft
-    const item = store.addOutboxItem({
+    itemsToCreate.push({
       contact_id: cid,
       subject,
       body,
@@ -58,10 +59,12 @@ export function generateOutboxDrafts(
       sent_at: null,
       error_message: null
     });
+    validContactIds.push(cid);
+  }
 
-    // Update contact stage to 'drafted'
+  const created = store.addOutboxItems(itemsToCreate);
+  for (const cid of validContactIds) {
     store.updateContact(cid, { stage: 'drafted' });
-    created.push(item);
   }
 
   return created;

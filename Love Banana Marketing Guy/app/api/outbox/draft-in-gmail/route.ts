@@ -15,12 +15,13 @@ export async function POST(request: Request) {
     const store = getStore();
     let settings = store.getSettings();
 
-    // If client supplied secondary credentials and server is missing them, persist immediately
-    if (secondaryGmailUser && (!settings.secondaryGmailUser || !settings.secondaryGmailAppPassword)) {
+    // If client supplied secondary credentials, persist immediately and ensure simulationMode is disabled if password present
+    if (secondaryGmailUser) {
       settings = store.updateSettings({
         secondaryGmailUser,
         secondaryGmailAppPassword: secondaryGmailAppPassword || settings.secondaryGmailAppPassword || '',
-        activeGmailAccount: channel || 'secondary'
+        activeGmailAccount: channel || 'secondary',
+        simulationMode: (secondaryGmailAppPassword || settings.secondaryGmailAppPassword) ? 'false' : settings.simulationMode
       });
     }
 
@@ -74,6 +75,14 @@ export async function POST(request: Request) {
           stage: 'awaiting_approval'
         });
       }
+    }
+
+    if (targets.length > 0 && successCount === 0 && !batchRes.simulated) {
+      const firstErr = batchRes.results.find(r => r.error)?.error || 'Failed to append drafts to Gmail. Please verify your Gmail App Password.';
+      return NextResponse.json({
+        error: firstErr,
+        results: batchRes.results
+      }, { status: 400 });
     }
 
     return NextResponse.json({

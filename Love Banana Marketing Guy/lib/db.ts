@@ -660,6 +660,17 @@ class Store {
     return newItem;
   }
 
+  addOutboxItems(items: Array<Omit<OutboxItem, 'id' | 'created_at'>>) {
+    const newItems: OutboxItem[] = items.map((item, idx) => ({
+      ...item,
+      id: `out-${Date.now()}-${idx}-${Math.random().toString(36).substr(2, 4)}`,
+      created_at: new Date().toISOString()
+    }));
+    this.data.outbox.unshift(...newItems);
+    this.persist();
+    return newItems;
+  }
+
   updateOutboxItem(id: string, updates: Partial<OutboxItem>) {
     const item = this.getOutboxItem(id);
     if (!item) return null;

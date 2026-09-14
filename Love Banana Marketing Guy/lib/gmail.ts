@@ -418,8 +418,8 @@ export async function createBatchDraftsInGmail(
   const authUser = activeAccount.appPassword ? activeAccount.userEmail : (activeAccount.relayUser || settings.gmailUser);
   const authPass = activeAccount.appPassword ? activeAccount.appPassword : (activeAccount.relayPass || settings.gmailAppPassword);
 
-  // 1. If active Gmail App Password is configured and simulation mode is off, use real IMAP Append
-  if (authPass && settings.simulationMode !== 'true') {
+  // 1. If active Gmail App Password is configured, use real IMAP Append
+  if (authPass) {
     const imapResults = await appendBatchDraftsImap({
       user: authUser,
       pass: authPass,
