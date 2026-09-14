@@ -173,9 +173,7 @@ export function getContactProfile(
   }
 
   let locationFrom = 'Sydney, Australia';
-  if (locationCategory === 'sydney') {
-    locationFrom = 'Petersham';
-  } else if (locationCategory === 'australia') {
+  if (locationCategory === 'sydney' || locationCategory === 'australia') {
     locationFrom = 'Sydney';
   } else {
     locationFrom = 'Sydney, Australia';
@@ -217,29 +215,29 @@ export function getContactProfile(
   // 5. Deterministic Seed Hashing & 5-Variant Story Hooks per Tier
   const hash = Array.from(contact.id || contact.email || '').reduce((acc, c) => acc + c.charCodeAt(0), seedIndex);
 
-  // Real, authentic story hooks in Henry's voice (zero cringe, zero hot chips, mastered by Mikey Young)
+  // Real, authentic story hooks in Henry's voice (recorded on Gold Coast, mastered by Mikey Young, 13 tracks garage punk / playful pop)
   const TIER1_HOOKS = [
-    "We've just put out our lead single \"Seagull\" from our upcoming debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). It's a fast, upbeat garage pop tune with driving guitars and catchy group-vocal hooks, tracked right here in Petersham. Our previous 7\" hit #3 on the Australian AIR indie charts and picked up community radio spins across the country.",
-    "Our new single \"Seagull\" just came out - it's the lead track off our debut LP 'Any Direction' on Ragnar Records, mastered by Mikey Young. Fast, driving garage pop with loud guitars and group vocals, recorded in Petersham. Our debut 7\" went to #3 on the Australian AIR indie charts last year.",
-    "We've just released the lead single \"Seagull\", off our upcoming debut album 'Any Direction' (Ragnar Records, mastered by Mikey Young). Tracked in Petersham - fast, energetic garage pop with melodic guitar hooks and group vocals. Following our debut 7\" which hit #3 on the AIR indie charts, we're really excited to share this new one.",
-    "We're putting out our debut album 'Any Direction' on Ragnar Records later this year, mastered by Mikey Young. \"Seagull\" is the lead single - an energetic, guitar-forward garage pop track recorded in Petersham. Our debut 7\" landed at #3 on the Australian AIR indie charts and we've recently supported Ty Segall, Babe Rainbow, and Bananagun.",
-    "We've just dropped our new single \"Seagull\" from our upcoming debut LP 'Any Direction' (Ragnar Records, mastered by Mikey Young). It's a fast, scuzzy garage pop track with group-vocal choruses, recorded in Petersham. Our debut 7\" went to #3 on the AIR charts and we've been playing lots of shows around Sydney and Melbourne."
+    "\"Seagull\" is the lead single from our upcoming debut LP 'Any Direction', releasing on Ragnar Records (run by Michael Barker from Gee Tee / RMFC). The album is thirteen tracks recorded on the Gold Coast and mastered by Mikey Young - pushing into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" hit #3 on the Australian AIR indie charts and we've recently supported Ty Segall, Babe Rainbow, and Bananagun.",
+    "We've just released \"Seagull\", the lead track off our debut LP 'Any Direction' coming out on Ragnar Records. The album is thirteen tracks recorded on the Gold Coast and mastered by Mikey Young - pushing into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the Australian AIR indie charts.",
+    "Our new single \"Seagull\" is out now via Ragnar Records, taken from our debut album 'Any Direction'. Recorded on the Gold Coast and mastered by Mikey Young, the album features thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Following our debut 7\" which hit #3 on the AIR indie charts, we're really excited to share this one.",
+    "We're gearing up to release our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the lead single - thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our previous 7\" landed at #3 on the Australian AIR indie charts.",
+    "We've just dropped \"Seagull\" from our upcoming debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). Recorded on the Gold Coast, it's thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" went to #3 on the AIR charts."
   ];
 
   const TIER2_HOOKS = [
-    "We've just released our single \"Seagull\" from our upcoming debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). It's a fast, upbeat guitar pop tune with catchy group vocals and plenty of energy. Our debut 7\" hit #3 on the Australian AIR indie charts and picked up radio spins across Australia.",
-    "Our new single \"Seagull\" is out now - the lead track from our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. Upbeat garage pop with driving guitars and melodic choruses. Our previous 7\" reached #3 on the Australian Independent Record Labels (AIR) charts.",
-    "We've just put out the lead single \"Seagull\" from our debut album 'Any Direction' (Ragnar Records, mastered by Mikey Young). It's an energetic, guitar-driven indie track with group-vocal hooks. Following our debut 7\" which went to #3 on the AIR indie charts, we wanted to send this new one your way.",
-    "\"Seagull\" is the lead single from our upcoming debut LP 'Any Direction' on Ragnar Records, mastered by Mikey Young. It's a fast, melodic garage pop track with group vocals and driving energy. Our debut 7\" went to #3 on the AIR charts and we're gearing up for Australian and overseas touring.",
-    "We're gearing up to release our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the first taste - fast, catchy guitar pop with group choruses. Our debut 7\" hit #3 on the Australian AIR indie charts and got a great run on community radio."
+    "\"Seagull\" is the lead single from our upcoming debut LP 'Any Direction' (releasing on Ragnar Records, mastered by Mikey Young). The album is thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the Australian AIR indie charts.",
+    "Our new single \"Seagull\" is out now - the lead track from our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. Thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our previous 7\" hit #3 on the AIR indie charts.",
+    "We've just put out the lead single \"Seagull\" from our debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). Recorded on the Gold Coast, it's thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the Australian AIR indie charts.",
+    "We're putting out our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the lead single - thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our previous release went to #3 on the AIR indie charts.",
+    "We've just released our single \"Seagull\" off our upcoming debut album 'Any Direction' (Ragnar Records, mastered by Mikey Young). It features thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" hit #3 on the AIR charts."
   ];
 
   const TIER3_HOOKS = [
-    "We've just put out our new single \"Seagull\" from our upcoming debut album 'Any Direction' (Ragnar Records, mastered by Mikey Young). It's a high-energy guitar pop track with catchy melodies and group vocals. Our debut 7\" reached #3 on the Australian Independent Record Labels (AIR) charts.",
-    "\"Seagull\" is the lead single from our debut LP 'Any Direction', releasing on Ragnar Records and mastered by Mikey Young. Fast, melodic rock & roll with scuzzy guitars and group-vocal hooks. Our debut 7\" went to #3 on the Australian AIR charts and picked up spins across Australia and Europe.",
-    "We've just released \"Seagull\" off our debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). It's a fast, energetic guitar track with group vocals. Following our debut 7\" which hit #3 on the Australian AIR indie charts, we're really proud of this record.",
-    "Our new single \"Seagull\" just dropped - the lead track off our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. Upbeat, guitar-driven garage pop with melodic hooks. Our debut 7\" went to #3 on the Australian AIR charts.",
-    "We're releasing our debut LP 'Any Direction' later this year on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the lead single - fast, melodic guitar pop with group-vocal hooks. Our debut 7\" reached #3 on the AIR indie charts."
+    "\"Seagull\" is the lead single from our upcoming debut album 'Any Direction' (releasing on Ragnar Records, mastered by Mikey Young). Recorded on the Gold Coast, the album features thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the Australian AIR indie charts.",
+    "We've just released \"Seagull\", the lead track off our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. It's thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" went to #3 on the Australian AIR charts.",
+    "Our new single \"Seagull\" just dropped - the first track from our debut LP 'Any Direction' (Ragnar Records, mastered by Mikey Young). The album is thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our previous 7\" hit #3 on the Australian AIR indie charts.",
+    "We're releasing our debut LP 'Any Direction' on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the lead single - thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" went to #3 on the AIR charts.",
+    "We've just put out our single \"Seagull\" from our debut album 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). Recorded on the Gold Coast, the album features thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the AIR indie charts."
   ];
 
   let storyHook = '';

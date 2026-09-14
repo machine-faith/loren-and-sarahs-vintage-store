@@ -236,22 +236,22 @@ function getDefaultData(): DatabaseSchema {
     templates: [
       {
         id: "tpl-1",
-        name: `"Seagull" - European Indie Radio Pitch`,
+        name: `"Seagull" - European & Overseas Radio Pitch`,
         target_category: "Radio",
         subject: `{{subject_variant}}`,
         body: `Hey {{first_name}},
 
-Hope you're well! Reaching out from Sydney, Australia. I play guitar and sing in a garage pop / rock and roll five-piece called Love Banana.
+Hope you're well! Reaching out from Sydney, Australia. I play guitar and sing in Love Banana, a five-piece garage pop band from Sydney, Australia.
 
-We're putting out the lead single "Seagull" from our debut album 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). It's out on September 16, and thought it would be right up the alley for {{outlet}}.
+Any Direction is our debut album - thirteen tracks recorded on the Gold Coast and mastered by Mikey Young that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. "Seagull" is our lead single, coming out on Ragnar Records.
 
-Following our 7" which hit #3 on the Australian Independent Record Labels (AIR) charts and picked up radio spins on 4ZZZ, Triple R, and Radio Elance over in Spain, we'd love for you to give this new one a spin.
+Following our debut 7" which hit #3 on the Australian Independent Record Labels (AIR) charts and picked up radio spins on 4ZZZ, Triple R, and Radio Elance over in Spain, we'd love for you to give this new one a spin.
 
 🎧 Full WAV Master: {{wav_url}}
 🎨 Artwork: {{artwork_url}}
 📖 Full EPK & Stream: {{epk_url}}
 
-If you fancy playing it on {{outlet}}, we'd love for you to give it a spin. Also, would you be interested in doing an interview around the release?
+If you fancy playing it on {{outlet}}, we'd love for you to give it a spin. Would you be interested in doing a quick interview or phone chat around the release?
 
 Cheers,
 Henry Collins
@@ -266,13 +266,11 @@ Love Banana
         subject: `{{subject_variant}}`,
         body: `Hi {{first_name}},
 
-Long-time reader of {{outlet}}. I'm Henry from the Sydney garage pop outfit Love Banana.
+Long-time reader of {{outlet}}. I play guitar and sing in Love Banana, a five-piece garage pop band from Sydney, Australia.
 
-We're gearing up to drop our debut album 'Any Direction' later this year on Ragnar Records (mastered by Mikey Young). We wrote and tracked the records in a shed on the Gold Coast in the middle of a brutal heatwave before mixing it in Sydney.
+Any Direction is our debut album - thirteen tracks recorded on the Gold Coast and mastered by Mikey Young that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Releasing on Ragnar Records later this year, with our lead single "Seagull" dropping September 16.
 
-Our lead single "Seagull" drops September 16. It leans into scuzzy garage punk while keeping the catchy, group-vocal pop hooks we're known for.
-
-Given {{outlet}}'s taste for eclectic indie/garage sounds, we'd be stoked if you'd consider featuring the track or doing a quick write-up:
+Given {{outlet}}'s taste for eclectic indie/garage sounds, would you be interested in featuring the track or doing a quick Q&A / interview around the release?
 
 🎵 Private Stream & Press Kit: {{epk_url}}
 💿 Hi-Res Press Photos & Artwork: {{album_url}}
@@ -281,7 +279,8 @@ Given {{outlet}}'s taste for eclectic indie/garage sounds, we'd be stoked if you
 Would love to know your thoughts if you get a few minutes to give it a listen!
 
 Best,
-Henry & the Love Banana crew
+Henry Collins
+Love Banana
 Sydney, Australia`,
         created_at: new Date().toISOString()
       },
@@ -292,20 +291,21 @@ Sydney, Australia`,
         subject: `Album Review Copy & Interview: Love Banana ('Any Direction' LP)`,
         body: `Hey {{first_name}},
 
-Reaching out from Sydney! I love what you guys are doing with {{outlet}}.
+Reaching out from Sydney, Australia! I love what you're doing with {{outlet}}.
 
-My band Love Banana has just wrapped our debut 13-track LP 'Any Direction', releasing on Ragnar Records. Along with our music, our keyboardist Paris Rodd handles all our handmade collages, animations, and zine-style art, as we come from a heavy DIY visual arts background.
+I play guitar and sing in Love Banana, a five-piece garage pop band from Sydney. Any Direction is our debut album - thirteen tracks recorded on the Gold Coast and mastered by Mikey Young that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Along with our music, our keyboardist Paris Rodd handles our handmade visual art and zine aesthetic.
 
-Our debut 7" landed at #3 on the AIR Charts and Bandcamp Daily's Best Punk, and we've toured with Ty Segall, Babe Rainbow, Bananagun, and RMFC.
+Our debut 7" landed at #3 on the AIR Charts and Bandcamp Daily's Best Punk, and we've shared stages with Ty Segall, Babe Rainbow, Bananagun, and RMFC.
 
-We'd love to send you a full advance album copy for review or chat about the Australian DIY scene:
+Would you be interested in doing a feature, album review, or a short Q&A / interview around the album?
 - Full Album & EPK: {{epk_url}}
 - High-res photo archive: https://drive.google.com/drive/folders/1mco7BjG2jaSqvCsZ1Td-z7kLybdg-CZ7
 
 Let me know if you'd like a physical vinyl/cassette or digital advance stream sent through!
 
 All the best,
-Henry Collins`,
+Henry Collins
+Love Banana`,
         created_at: new Date().toISOString()
       },
       {

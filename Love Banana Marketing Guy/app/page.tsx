@@ -84,7 +84,7 @@ const DEFAULT_RADIO_TEMPLATE: ChannelTemplateData = {
   subject: '{{subject_variant}}',
   body: `{{greeting}}
 
-{{greeting_intro}} Reaching out from {{location_from}} - I play guitar and sing in Love Banana, a five-piece garage pop / rock & roll band {{location_phrase}}.
+{{greeting_intro}} I play guitar and sing in Love Banana, a five-piece garage pop band {{location_phrase}}.
 
 {{story_hook}}
 
@@ -106,7 +106,7 @@ const DEFAULT_BLOG_TEMPLATE: ChannelTemplateData = {
   subject: '{{subject_variant}}',
   body: `{{greeting}}
 
-{{greeting_intro}} Reaching out from Sydney, Australia. I play guitar and sing in Love Banana, an indie / garage pop five-piece. Big fan of what you share on {{outlet}} and wanted to send across our new single.
+{{greeting_intro}} I play guitar and sing in Love Banana, a five-piece garage pop band {{location_phrase}}. Big fan of what you share on {{outlet}} and wanted to send across our new single.
 
 {{story_hook}}
 
@@ -469,7 +469,7 @@ export default function Home() {
 
         const sanitizeTpl = (tpl: any, defaultTpl: ChannelTemplateData) => {
           if (!tpl || !tpl.body) return defaultTpl;
-          if (tpl.body.includes('hot chips') || tpl.body.includes('Owen Penglis') || tpl.body.includes('station ident')) {
+          if (tpl.body.includes('hot chips') || tpl.body.includes('Owen Penglis') || tpl.body.includes('station ident') || tpl.body.includes('Petersham')) {
             return defaultTpl;
           }
           return { subject: tpl.subject || defaultTpl.subject, body: tpl.body };
