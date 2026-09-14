@@ -215,29 +215,29 @@ export function getContactProfile(
   // 5. Deterministic Seed Hashing & 5-Variant Story Hooks per Tier
   const hash = Array.from(contact.id || contact.email || '').reduce((acc, c) => acc + c.charCodeAt(0), seedIndex);
 
-  // Real, authentic story hooks in Henry's voice (recorded on Gold Coast, mastered by Mikey Young, 13 tracks garage punk / playful pop)
+  // Ultra-clean, single-sentence advance release hooks in Henry's voice (drops Sept 16, mastered by Mikey Young)
   const TIER1_HOOKS = [
-    "\"Seagull\" is the lead single from our upcoming debut LP 'Any Direction', releasing on Ragnar Records (run by Michael Barker from Gee Tee / RMFC). The album is thirteen tracks recorded on the Gold Coast and mastered by Mikey Young - pushing into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" hit #3 on the Australian AIR indie charts and we've recently supported Ty Segall, Babe Rainbow, and Bananagun.",
-    "We've just released \"Seagull\", the lead track off our debut LP 'Any Direction' coming out on Ragnar Records. The album is thirteen tracks recorded on the Gold Coast and mastered by Mikey Young - pushing into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the Australian AIR indie charts.",
-    "Our new single \"Seagull\" is out now via Ragnar Records, taken from our debut album 'Any Direction'. Recorded on the Gold Coast and mastered by Mikey Young, the album features thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Following our debut 7\" which hit #3 on the AIR indie charts, we're really excited to share this one.",
-    "We're gearing up to release our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the lead single - thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our previous 7\" landed at #3 on the Australian AIR indie charts.",
-    "We've just dropped \"Seagull\" from our upcoming debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). Recorded on the Gold Coast, it's thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" went to #3 on the AIR charts."
+    "Our new single \"Seagull\" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.",
+    "We've got a new single \"Seagull\" dropping September 16 on Ragnar Records (mastered by Mikey Young), the lead track from our upcoming debut album.",
+    "\"Seagull\" is our new single dropping September 16 via Ragnar Records (mastered by Mikey Young), the first taste of our debut LP coming out later this year.",
+    "We're releasing our new single \"Seagull\" on September 16 through Ragnar Records (mastered by Mikey Young), taken from our debut album coming later this year.",
+    "Our upcoming single \"Seagull\" comes out September 16 on Ragnar Records (mastered by Mikey Young), leading into our debut album later this year."
   ];
 
   const TIER2_HOOKS = [
-    "\"Seagull\" is the lead single from our upcoming debut LP 'Any Direction' (releasing on Ragnar Records, mastered by Mikey Young). The album is thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the Australian AIR indie charts.",
-    "Our new single \"Seagull\" is out now - the lead track from our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. Thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our previous 7\" hit #3 on the AIR indie charts.",
-    "We've just put out the lead single \"Seagull\" from our debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). Recorded on the Gold Coast, it's thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the Australian AIR indie charts.",
-    "We're putting out our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the lead single - thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our previous release went to #3 on the AIR indie charts.",
-    "We've just released our single \"Seagull\" off our upcoming debut album 'Any Direction' (Ragnar Records, mastered by Mikey Young). It features thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" hit #3 on the AIR charts."
+    "Our new single \"Seagull\" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.",
+    "We've got a new single \"Seagull\" dropping September 16 on Ragnar Records (mastered by Mikey Young), the lead track from our upcoming debut album.",
+    "\"Seagull\" is our new single dropping September 16 via Ragnar Records (mastered by Mikey Young), the first taste of our debut LP coming out later this year.",
+    "We're releasing our new single \"Seagull\" on September 16 through Ragnar Records (mastered by Mikey Young), taken from our debut album coming later this year.",
+    "Our upcoming single \"Seagull\" comes out September 16 on Ragnar Records (mastered by Mikey Young), leading into our debut album later this year."
   ];
 
   const TIER3_HOOKS = [
-    "\"Seagull\" is the lead single from our upcoming debut album 'Any Direction' (releasing on Ragnar Records, mastered by Mikey Young). Recorded on the Gold Coast, the album features thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the Australian AIR indie charts.",
-    "We've just released \"Seagull\", the lead track off our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. It's thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" went to #3 on the Australian AIR charts.",
-    "Our new single \"Seagull\" just dropped - the first track from our debut LP 'Any Direction' (Ragnar Records, mastered by Mikey Young). The album is thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our previous 7\" hit #3 on the Australian AIR indie charts.",
-    "We're releasing our debut LP 'Any Direction' on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the lead single - thirteen tracks recorded on the Gold Coast that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" went to #3 on the AIR charts.",
-    "We've just put out our single \"Seagull\" from our debut album 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). Recorded on the Gold Coast, the album features thirteen tracks that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Our debut 7\" reached #3 on the AIR indie charts."
+    "Our new single \"Seagull\" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.",
+    "We've got a new single \"Seagull\" dropping September 16 on Ragnar Records (mastered by Mikey Young), the lead track from our upcoming debut album.",
+    "\"Seagull\" is our new single dropping September 16 via Ragnar Records (mastered by Mikey Young), the first taste of our debut LP coming out later this year.",
+    "We're releasing our new single \"Seagull\" on September 16 through Ragnar Records (mastered by Mikey Young), taken from our debut album coming later this year.",
+    "Our upcoming single \"Seagull\" comes out September 16 on Ragnar Records (mastered by Mikey Young), leading into our debut album later this year."
   ];
 
   let storyHook = '';
@@ -250,7 +250,7 @@ export function getContactProfile(
     storyHook = TIER3_HOOKS[hookIndex];
   }
 
-  // 6. Strict Context-Aware Ask Phrase Logic Tree (No ident mentions, direct interview/feature asks)
+  // 6. Strict Context-Aware Ask Phrase Logic Tree (No in-studio promises, no physical copy promises)
   let askPhrase = '';
   let angleDescription = '';
 
@@ -265,27 +265,19 @@ export function getContactProfile(
     askPhrase = "We'd love to know if you think the record could be a good fit for your roster. Give the stream a listen when you get a chance and let us know - no stress either way.";
     angleDescription = 'Label Distro - Physical Release Partner';
   } else if (mode === 'blog_feature' || outletType === 'Blog') {
-    askPhrase = "Would you be interested in featuring the track or doing a quick Q&A / interview around the single? Happy to send through a full advance stream, hi-res press photos, or anything else you need.";
+    askPhrase = "Would love to hear your thoughts, and let me know if you'd be keen to feature the track or do a quick Q&A / interview around the release?";
     angleDescription = 'Blog / Webzine - Track Feature or Interview';
   } else if (mode === 'magazine_review' || outletType === 'Magazine' || outletType === 'Writer/Critic') {
-    askPhrase = "Would you be interested in a feature, review, or a short Q&A / interview around the album? Happy to send through the full advance album stream, hi-res press shots, or a physical copy if any of that is helpful.";
+    askPhrase = "Would love to hear your thoughts, and let me know if you'd be keen to review the album, run a feature, or do a short Q&A / interview around the release? Happy to send through the full advance stream or press photos if needed.";
     angleDescription = 'Magazine / Press - Album Review, Feature or Interview';
   } else if (mode === 'playlist_curator' || outletType === 'Curator') {
     askPhrase = "Thought it might be a good fit for one of your playlists if you get a chance to check it out. Let us know what you think!";
     angleDescription = 'Playlist Curator';
   } else if (outletType === 'Radio') {
-    if (locationCategory === 'sydney') {
-      askPhrase = "Would love for you to give it a spin if you feel it fits any of your shows, and would you be interested in having us in for an in-studio chat or interview?";
-      angleDescription = 'Radio Airplay + Local In-Studio Interview';
-    } else if (affinityTier === 'tier3_eclectic' || isGrassrootsCommunity) {
-      askPhrase = "We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows. Also, would you be interested in a quick phone interview or chat around the release?";
-      angleDescription = 'Grassroots Community Radio Airplay + Interview';
-    } else {
-      askPhrase = "Would love for you to give it a spin if you feel it fits into any of your programming. Would you be interested in an interview or chat around the release?";
-      angleDescription = 'Radio Airplay Consideration + Interview';
-    }
+    askPhrase = "Would love to hear your thoughts, and let me know if you'd be up for a quick interview or phone chat around the release?";
+    angleDescription = 'Radio Airplay Consideration + Phone Interview';
   } else {
-    askPhrase = "Would you be interested in an interview or feature around the single? Give the track a listen and let us know what you think - happy to send through anything else you need.";
+    askPhrase = "Would love to hear your thoughts, and let me know if you'd be keen on an interview or feature around the single?";
     angleDescription = 'Music Consideration & Feature/Interview Ask';
   }
 

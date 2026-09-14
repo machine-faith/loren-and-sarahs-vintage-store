@@ -241,17 +241,14 @@ function getDefaultData(): DatabaseSchema {
         subject: `{{subject_variant}}`,
         body: `Hey {{first_name}},
 
-Hope you're well! Reaching out from Sydney, Australia. I play guitar and sing in Love Banana, a five-piece garage pop band from Sydney, Australia.
+I play guitar and sing in Love Banana from Sydney.
 
-Any Direction is our debut album - thirteen tracks recorded on the Gold Coast and mastered by Mikey Young that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. "Seagull" is our lead single, coming out on Ragnar Records.
+Our new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.
 
-Following our debut 7" which hit #3 on the Australian Independent Record Labels (AIR) charts and picked up radio spins on 4ZZZ, Triple R, and Radio Elance over in Spain, we'd love for you to give this new one a spin.
+• WAV Master: {{wav_url}}
+• EPK & Stream: {{epk_url}}
 
-🎧 Full WAV Master: {{wav_url}}
-🎨 Artwork: {{artwork_url}}
-📖 Full EPK & Stream: {{epk_url}}
-
-If you fancy playing it on {{outlet}}, we'd love for you to give it a spin. Would you be interested in doing a quick interview or phone chat around the release?
+Would love to hear your thoughts, and let me know if you'd be up for a quick interview or phone chat around the release?
 
 Cheers,
 Henry Collins
@@ -266,19 +263,16 @@ Love Banana
         subject: `{{subject_variant}}`,
         body: `Hi {{first_name}},
 
-Long-time reader of {{outlet}}. I play guitar and sing in Love Banana, a five-piece garage pop band from Sydney, Australia.
+I play guitar and sing in Love Banana from Sydney. Big fan of what you share on {{outlet}}.
 
-Any Direction is our debut album - thirteen tracks recorded on the Gold Coast and mastered by Mikey Young that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Releasing on Ragnar Records later this year, with our lead single "Seagull" dropping September 16.
+Our new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.
 
-Given {{outlet}}'s taste for eclectic indie/garage sounds, would you be interested in featuring the track or doing a quick Q&A / interview around the release?
+• WAV Master: {{wav_url}}
+• EPK & Press Photos: {{epk_url}}
 
-🎵 Private Stream & Press Kit: {{epk_url}}
-💿 Hi-Res Press Photos & Artwork: {{album_url}}
-📻 High-Res WAV Master: {{wav_url}}
+Would love to hear your thoughts, and let me know if you'd be keen to feature the track or do a quick Q&A / interview around the release?
 
-Would love to know your thoughts if you get a few minutes to give it a listen!
-
-Best,
+Cheers,
 Henry Collins
 Love Banana
 Sydney, Australia`,
@@ -291,19 +285,16 @@ Sydney, Australia`,
         subject: `Album Review Copy & Interview: Love Banana ('Any Direction' LP)`,
         body: `Hey {{first_name}},
 
-Reaching out from Sydney, Australia! I love what you're doing with {{outlet}}.
+I play guitar and sing in Love Banana from Sydney. Big fan of what you're doing with {{outlet}}.
 
-I play guitar and sing in Love Banana, a five-piece garage pop band from Sydney. Any Direction is our debut album - thirteen tracks recorded on the Gold Coast and mastered by Mikey Young that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. Along with our music, our keyboardist Paris Rodd handles our handmade visual art and zine aesthetic.
+Our new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.
 
-Our debut 7" landed at #3 on the AIR Charts and Bandcamp Daily's Best Punk, and we've shared stages with Ty Segall, Babe Rainbow, Bananagun, and RMFC.
+• WAV Master: {{wav_url}}
+• Advance Album Stream & EPK: {{epk_url}}
 
-Would you be interested in doing a feature, album review, or a short Q&A / interview around the album?
-- Full Album & EPK: {{epk_url}}
-- High-res photo archive: https://drive.google.com/drive/folders/1mco7BjG2jaSqvCsZ1Td-z7kLybdg-CZ7
+Would love to hear your thoughts, and let me know if you'd be keen to review the album, run a feature, or do a short Q&A / interview? Happy to send through press photos or anything else you need.
 
-Let me know if you'd like a physical vinyl/cassette or digital advance stream sent through!
-
-All the best,
+Cheers,
 Henry Collins
 Love Banana`,
         created_at: new Date().toISOString()

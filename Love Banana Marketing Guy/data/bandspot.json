@@ -37,7 +37,7 @@
       "name": "\"Seagull\" - Sydney Local Pitch",
       "target_category": "Radio",
       "subject": "{{subject_variant}}",
-      "body": "{{greeting}}\n\n{{greeting_intro}} I play guitar and sing in Love Banana, a five-piece garage pop band {{location_phrase}}.\n\n{{story_hook}}\n\n• WAV Master (\"Seagull\"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav\n• Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html\n• Advance Album Stream: https://love-banana-epk.vercel.app/album.html\n\n{{ask_phrase}}\n\n{{signoff_line}}\n\nCheers,\nHenry Collins\nLove Banana\n{{from_email}}",
+      "body": "{{greeting}}\n\nI play guitar and sing in Love Banana from Sydney.\n\n{{story_hook}}\n\n• WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav\n• EPK & Stream: https://love-banana-epk.vercel.app/epk.html\n\n{{ask_phrase}}\n\n{{signoff_line}}\n\nCheers,\nHenry Collins\nLove Banana\n{{from_email}}",
       "created_at": "2026-09-08T11:35:00.000Z"
     },
     {
@@ -45,7 +45,7 @@
       "name": "\"Seagull\" - Australian National Pitch",
       "target_category": "Radio",
       "subject": "{{subject_variant}}",
-      "body": "{{greeting}}\n\n{{greeting_intro}} I play guitar and sing in Love Banana, a five-piece garage pop band {{location_phrase}}.\n\n{{story_hook}}\n\n• WAV Master (\"Seagull\"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav\n• Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html\n• Advance Album Stream: https://love-banana-epk.vercel.app/album.html\n\n{{ask_phrase}}\n\n{{signoff_line}}\n\nCheers,\nHenry Collins\nLove Banana\n{{from_email}}",
+      "body": "{{greeting}}\n\nI play guitar and sing in Love Banana from Sydney.\n\n{{story_hook}}\n\n• WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav\n• EPK & Stream: https://love-banana-epk.vercel.app/epk.html\n\n{{ask_phrase}}\n\n{{signoff_line}}\n\nCheers,\nHenry Collins\nLove Banana\n{{from_email}}",
       "created_at": "2026-09-08T11:35:00.000Z"
     },
     {
@@ -53,7 +53,7 @@
       "name": "\"Seagull\" - European & Overseas Radio Pitch",
       "target_category": "Radio",
       "subject": "{{subject_variant}}",
-      "body": "{{greeting}}\n\n{{greeting_intro}} I play guitar and sing in Love Banana, a five-piece garage pop band {{location_phrase}}.\n\n{{story_hook}}\n\n• WAV Master (\"Seagull\"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav\n• Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html\n• Advance Album Stream: https://love-banana-epk.vercel.app/album.html\n\n{{ask_phrase}}\n\n{{signoff_line}}\n\nCheers,\nHenry Collins\nLove Banana\n{{from_email}}",
+      "body": "{{greeting}}\n\nI play guitar and sing in Love Banana from Sydney.\n\n{{story_hook}}\n\n• WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav\n• EPK & Stream: https://love-banana-epk.vercel.app/epk.html\n\n{{ask_phrase}}\n\n{{signoff_line}}\n\nCheers,\nHenry Collins\nLove Banana\n{{from_email}}",
       "created_at": "2026-09-08T11:35:00.000Z"
     },
     {
@@ -61,7 +61,7 @@
       "name": "\"Seagull\" - Music Blogs & Press Feature",
       "target_category": "Blog",
       "subject": "{{subject_variant}}",
-      "body": "{{greeting}}\n\n{{greeting_intro}} I play guitar and sing in Love Banana, a five-piece garage pop band {{location_phrase}}. Big fan of what you share on {{outlet}} and wanted to send across our new single.\n\n{{story_hook}}\n\n• WAV Master (\"Seagull\"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav\n• Band EPK & Press Photos: https://love-banana-epk.vercel.app/epk.html\n• Advance Album Stream: https://love-banana-epk.vercel.app/album.html\n\n{{ask_phrase}}\n\n{{signoff_line}}\n\nCheers,\nHenry Collins\nLove Banana\n{{from_email}}",
+      "body": "{{greeting}}\n\nI play guitar and sing in Love Banana from Sydney. Big fan of what you share on {{outlet}}.\n\n{{story_hook}}\n\n• WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav\n• EPK & Press Photos: https://love-banana-epk.vercel.app/epk.html\n\n{{ask_phrase}}\n\n{{signoff_line}}\n\nCheers,\nHenry Collins\nLove Banana\n{{from_email}}",
       "created_at": "2026-09-08T11:45:00.000Z"
     },
     {

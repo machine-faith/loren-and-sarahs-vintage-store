@@ -585,20 +585,14 @@ Subject: Love Banana - "Seagull"
 
 Hey FBi Radio team,
 
-Hope you're well! My name's Henry, from Love Banana, a five-piece garage pop band from Sydney.
+I play guitar and sing in Love Banana from Sydney.
 
-"Seagull" is the lead single from our upcoming debut LP 'Any Direction', releasing on Ragnar Records (run by Michael Barker from Gee Tee / RMFC). The album is thirteen tracks recorded on the Gold Coast and mastered by Mikey Young - pushing into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases.
+Our new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.
 
-• WAV Master Download ("Seagull"): 
-https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• EPK & Stream: https://love-banana-epk.vercel.app/epk.html
 
-• Band EPK & Videos: 
-https://love-banana-epk.vercel.app/epk.html
-
-• Album Stream & WAV Downloads: 
-https://love-banana-epk.vercel.app/album.html
-
-Would love for you to give it a spin if you feel it fits any of your shows, and would you be interested in having us in for an in-studio chat or interview?
+Would love to hear your thoughts, and let me know if you'd be up for a quick interview or phone chat around the release?
 
 No stress either way, really appreciate you having a listen.
 

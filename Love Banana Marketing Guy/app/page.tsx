@@ -84,13 +84,12 @@ const DEFAULT_RADIO_TEMPLATE: ChannelTemplateData = {
   subject: '{{subject_variant}}',
   body: `{{greeting}}
 
-{{greeting_intro}} I play guitar and sing in Love Banana, a five-piece garage pop band {{location_phrase}}.
+I play guitar and sing in Love Banana from Sydney.
 
 {{story_hook}}
 
-• WAV Master ("Seagull"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
-• Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html
-• Advance Album Stream: https://love-banana-epk.vercel.app/album.html
+• WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• EPK & Stream: https://love-banana-epk.vercel.app/epk.html
 
 {{ask_phrase}}
 
@@ -106,13 +105,12 @@ const DEFAULT_BLOG_TEMPLATE: ChannelTemplateData = {
   subject: '{{subject_variant}}',
   body: `{{greeting}}
 
-{{greeting_intro}} I play guitar and sing in Love Banana, a five-piece garage pop band {{location_phrase}}. Big fan of what you share on {{outlet}} and wanted to send across our new single.
+I play guitar and sing in Love Banana from Sydney. Big fan of what you share on {{outlet}}.
 
 {{story_hook}}
 
-• WAV Master ("Seagull"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
-• Band EPK & Press Photos: https://love-banana-epk.vercel.app/epk.html
-• Advance Album Stream: https://love-banana-epk.vercel.app/album.html
+• WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• EPK & Press Photos: https://love-banana-epk.vercel.app/epk.html
 
 {{ask_phrase}}
 
@@ -128,13 +126,13 @@ const DEFAULT_LABEL_TEMPLATE: ChannelTemplateData = {
   subject: "Love Banana / debut LP (Michael Barker recommended we get in touch)",
   body: `{{salutation}}
 
-Hope you're doing well. Reaching out from Sydney, Australia. I sing and play guitar in a garage pop / rock & roll five-piece called Love Banana.
+Hope you're doing well. Reaching out from Sydney, Australia. I sing and play guitar in Love Banana, a five-piece garage pop band from Sydney, Australia.
 
-{{connection_line}}
+Michael Barker (Gee Tee / RMFC) is putting out our debut album 'Any Direction' here in Australia on his label Ragnar Records, and he pointed us in your direction to see if you'd be interested in teaming up on an overseas physical release.
 
 We're doing our digital release ourselves, but we're looking for an indie label partner to team up on a physical release (vinyl / tape) over your way. In Australia, Michael is pressing the records, sorting us with band copies for shows, and keeping the sales from the run. We'd love to do something similar over there to get the record into local shops and into people's hands.
 
-The album has 13 tracks and was mastered by Mikey Young. We don't have a locked release date for the full album yet because we want to coordinate with our physical partners. The digital rollout starts with our first single "Seagull" dropping on September 16, followed by our second single "Fit For Motion" alongside an official music video.
+Any Direction is our debut album - thirteen tracks recorded on the Gold Coast and mastered by Mikey Young that push into scrappier, more garage punk territory while keeping the playful, poppy spirit of our earlier releases. We don't have a locked release date for the full album yet because we want to coordinate with our physical partners. The digital rollout starts with our first single "Seagull" dropping on September 16, followed by our second single "Fit For Motion" alongside an official music video.
 
 On the live side, we're taking this global to back the record: we've already begun booking a European tour for October 2027, and we're currently putting together an American tour as well. Over here in Australia we've supported Ty Segall, Babe Rainbow, and Bananagun, and our debut 7" went to #3 on the Australian AIR indie charts.
 
@@ -156,6 +154,7 @@ lovebananaband@gmail.com`
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'send' | 'labels' | 'templates' | 'discovery' | 'replies' | 'contacts'>('send');
+  const [activeChannel, setActiveChannel] = useState<TemplateChannel>('radio');
   const [loading, setLoading] = useState(true);
 
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -172,7 +171,7 @@ export default function Home() {
     {
       id: 'sydney' as const,
       label: '🦘 Sydney Local Pitch',
-      sublabel: 'Says: "based here in Sydney" + in-studio chats',
+      sublabel: 'Says: "Love Banana from Sydney" + phone interview ask',
       targetLoc: 'sydney',
       subject: radioTemplate.subject,
       body: radioTemplate.body
@@ -469,7 +468,15 @@ export default function Home() {
 
         const sanitizeTpl = (tpl: any, defaultTpl: ChannelTemplateData) => {
           if (!tpl || !tpl.body) return defaultTpl;
-          if (tpl.body.includes('hot chips') || tpl.body.includes('Owen Penglis') || tpl.body.includes('station ident') || tpl.body.includes('Petersham')) {
+          if (
+            tpl.body.includes('hot chips') || 
+            tpl.body.includes('Owen Penglis') || 
+            tpl.body.includes('station ident') || 
+            tpl.body.includes('Petersham') ||
+            tpl.body.includes('in-studio') ||
+            tpl.body.includes('physical copy') ||
+            tpl.body.includes('{{greeting_intro}}')
+          ) {
             return defaultTpl;
           }
           return { subject: tpl.subject || defaultTpl.subject, body: tpl.body };

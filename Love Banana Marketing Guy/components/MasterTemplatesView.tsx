@@ -161,7 +161,7 @@ export default function MasterTemplatesView({
       { tag: '{{subject_variant}}', desc: 'Smart human subject line variant' },
       { tag: '{{location_phrase}}', desc: '"based here in Sydney" / "based in Sydney"' },
       { tag: '{{story_hook}}', desc: 'Single & album release backstory (mastered by Mikey Young)' },
-      { tag: '{{ask_phrase}}', desc: 'Contextual airplay or in-studio request' }
+      { tag: '{{ask_phrase}}', desc: 'Contextual airplay or phone interview request' }
     ],
     blog: [
       { tag: '{{subject_variant}}', desc: 'Smart human review/feature subject line' },
