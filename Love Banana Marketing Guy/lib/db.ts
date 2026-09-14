@@ -251,7 +251,7 @@ Following our 7" which hit #3 on the Australian Independent Record Labels (AIR) 
 🎨 Artwork: {{artwork_url}}
 📖 Full EPK & Stream: {{epk_url}}
 
-If you fancy playing it on {{outlet}} or would like an exclusive station ident/shoutout, just let me know!
+If you fancy playing it on {{outlet}}, we'd love for you to give it a spin. Also, would you be interested in doing an interview around the release?
 
 Cheers,
 Henry Collins
@@ -500,8 +500,8 @@ Henry`,
     replies: [
       {
         id: "rep-1",
-        contact_id: "c-6",
-        gmail_thread_id: "thread-sim-1",
+        contact_id: null,
+        gmail_thread_id: "thread-sample-1",
         from_email: "contacto@radioelance.com",
         from_name: "Radio Elance",
         subject: "Re: New Music from Sydney: Love Banana — \"Seagull\"",
@@ -510,7 +510,7 @@ Henry`,
 
 Great to hear from you again. Loved the 7" and Seagull sounds huge with Mikey Young's mastering!
 
-We're adding it to our prime afternoon rotation starting this Friday at 4pm CET. Would you be able to send over a quick 10-second station ident ("Hey this is Henry from Love Banana and you're listening to Radio Elance")?
+We're adding it to our prime afternoon rotation starting this Friday at 4pm CET. Would you be up for doing a quick interview or phone chat with our afternoon host next week?
 
 Cheers from Barcelona!
 Radio Elance Team`,

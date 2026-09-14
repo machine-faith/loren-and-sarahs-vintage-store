@@ -16,6 +16,7 @@ export interface ContactProfile {
   outletName: string;
   locationCategory: 'sydney' | 'australia' | 'international';
   locationPhrase: string;
+  locationFrom: string;
   locationBadge: {
     label: string;
     bg: string;
@@ -171,6 +172,15 @@ export function getContactProfile(
     locationBadge = { label: '🇳🇿 New Zealand', bg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' };
   }
 
+  let locationFrom = 'Sydney, Australia';
+  if (locationCategory === 'sydney') {
+    locationFrom = 'Petersham';
+  } else if (locationCategory === 'australia') {
+    locationFrom = 'Sydney';
+  } else {
+    locationFrom = 'Sydney, Australia';
+  }
+
   // 5. Tiered Affinity (Wide Net & Serendipity Principle)
   let affinityTier: AffinityTier = (contact as any).affinityTier || 'tier3_eclectic';
   const genreLower = (contact.genre_fit || '').toLowerCase();
@@ -207,28 +217,29 @@ export function getContactProfile(
   // 5. Deterministic Seed Hashing & 5-Variant Story Hooks per Tier
   const hash = Array.from(contact.id || contact.email || '').reduce((acc, c) => acc + c.charCodeAt(0), seedIndex);
 
+  // Real, authentic story hooks in Henry's voice (zero cringe, zero hot chips, mastered by Mikey Young)
   const TIER1_HOOKS = [
-    "It's a fast, upbeat track about beach birds stealing your hot chips - recorded in Petersham and mastered by Owen Penglis (Straight Arrows).",
-    "Fast, scuzzy garage pop - recorded in Petersham, mastered by Owen Penglis (Straight Arrows). It's about seagulls nicking people's hot chips, if that tells you anything about the vibe.",
-    "Recorded in Petersham and mastered by Owen Penglis (Straight Arrows). Fast, catchy garage pop about seagulls nicking hot chips at the beach.",
-    "Upbeat garage rock with scuzzy guitars and group-vocal hooks, about beach birds making off with your hot chips. Mastered by Owen Penglis (Straight Arrows), tracked in Petersham.",
-    "Mastered by Owen Penglis (Straight Arrows). Fast garage pop, recorded in Petersham - it's about seagulls stealing hot chips, which sounds funny but lands as a genuinely catchy, high-energy track."
+    "We've just put out our lead single \"Seagull\" from our upcoming debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). It's a fast, upbeat garage pop tune with driving guitars and catchy group-vocal hooks, tracked right here in Petersham. Our previous 7\" hit #3 on the Australian AIR indie charts and picked up community radio spins across the country.",
+    "Our new single \"Seagull\" just came out - it's the lead track off our debut LP 'Any Direction' on Ragnar Records, mastered by Mikey Young. Fast, driving garage pop with loud guitars and group vocals, recorded in Petersham. Our debut 7\" went to #3 on the Australian AIR indie charts last year.",
+    "We've just released the lead single \"Seagull\", off our upcoming debut album 'Any Direction' (Ragnar Records, mastered by Mikey Young). Tracked in Petersham - fast, energetic garage pop with melodic guitar hooks and group vocals. Following our debut 7\" which hit #3 on the AIR indie charts, we're really excited to share this new one.",
+    "We're putting out our debut album 'Any Direction' on Ragnar Records later this year, mastered by Mikey Young. \"Seagull\" is the lead single - an energetic, guitar-forward garage pop track recorded in Petersham. Our debut 7\" landed at #3 on the Australian AIR indie charts and we've recently supported Ty Segall, Babe Rainbow, and Bananagun.",
+    "We've just dropped our new single \"Seagull\" from our upcoming debut LP 'Any Direction' (Ragnar Records, mastered by Mikey Young). It's a fast, scuzzy garage pop track with group-vocal choruses, recorded in Petersham. Our debut 7\" went to #3 on the AIR charts and we've been playing lots of shows around Sydney and Melbourne."
   ];
 
   const TIER2_HOOKS = [
-    "It's a fast, upbeat garage pop track with catchy group-vocal hooks and scuzzy guitars, off our upcoming debut LP 'Any Direction'.",
-    "Energetic garage pop with group-vocal choruses and scuzzy guitar work, from our upcoming debut LP 'Any Direction' on Ragnar Records.",
-    "Fast and catchy garage pop - group vocals, scuzzy guitars, the whole deal. Off our debut LP 'Any Direction', coming out on Ragnar Records.",
-    "It's from our debut LP 'Any Direction' - fast, guitar-forward garage pop with group vocal hooks. Mastered by Mikey Young.",
-    "Our debut LP 'Any Direction' is coming out on Ragnar Records, mastered by Mikey Young. 'Seagull' is the lead single - energetic, catchy, scuzzy guitars."
+    "We've just released our single \"Seagull\" from our upcoming debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). It's a fast, upbeat guitar pop tune with catchy group vocals and plenty of energy. Our debut 7\" hit #3 on the Australian AIR indie charts and picked up radio spins across Australia.",
+    "Our new single \"Seagull\" is out now - the lead track from our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. Upbeat garage pop with driving guitars and melodic choruses. Our previous 7\" reached #3 on the Australian Independent Record Labels (AIR) charts.",
+    "We've just put out the lead single \"Seagull\" from our debut album 'Any Direction' (Ragnar Records, mastered by Mikey Young). It's an energetic, guitar-driven indie track with group-vocal hooks. Following our debut 7\" which went to #3 on the AIR indie charts, we wanted to send this new one your way.",
+    "\"Seagull\" is the lead single from our upcoming debut LP 'Any Direction' on Ragnar Records, mastered by Mikey Young. It's a fast, melodic garage pop track with group vocals and driving energy. Our debut 7\" went to #3 on the AIR charts and we're gearing up for Australian and overseas touring.",
+    "We're gearing up to release our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the first taste - fast, catchy guitar pop with group choruses. Our debut 7\" hit #3 on the Australian AIR indie charts and got a great run on community radio."
   ];
 
   const TIER3_HOOKS = [
-    'It\'s a fun, upbeat rock and roll track about beach birds making off with your hot chips - our debut 7" hit #3 on the Australian AIR indie charts.',
-    'Fast, energetic rock and roll - it\'s about seagulls stealing hot chips at the beach. Our debut 7" went to #3 on the Australian AIR indie charts.',
-    'Upbeat, guitar-driven rock and roll with a fun hook - our debut 7" recently hit #3 on the Australian Independent Record Labels (AIR) charts.',
-    'Catchy, fast rock and roll - our debut 7" went to #3 on the AIR charts and picked up community radio spins across Australia.',
-    'It\'s from our debut LP, coming out later this year. Fast, fun guitar pop - our debut 7" hit #3 on the Australian AIR indie charts.'
+    "We've just put out our new single \"Seagull\" from our upcoming debut album 'Any Direction' (Ragnar Records, mastered by Mikey Young). It's a high-energy guitar pop track with catchy melodies and group vocals. Our debut 7\" reached #3 on the Australian Independent Record Labels (AIR) charts.",
+    "\"Seagull\" is the lead single from our debut LP 'Any Direction', releasing on Ragnar Records and mastered by Mikey Young. Fast, melodic rock & roll with scuzzy guitars and group-vocal hooks. Our debut 7\" went to #3 on the Australian AIR charts and picked up spins across Australia and Europe.",
+    "We've just released \"Seagull\" off our debut LP 'Any Direction' (coming out on Ragnar Records, mastered by Mikey Young). It's a fast, energetic guitar track with group vocals. Following our debut 7\" which hit #3 on the Australian AIR indie charts, we're really proud of this record.",
+    "Our new single \"Seagull\" just dropped - the lead track off our debut album 'Any Direction' on Ragnar Records, mastered by Mikey Young. Upbeat, guitar-driven garage pop with melodic hooks. Our debut 7\" went to #3 on the Australian AIR charts.",
+    "We're releasing our debut LP 'Any Direction' later this year on Ragnar Records, mastered by Mikey Young. \"Seagull\" is the lead single - fast, melodic guitar pop with group-vocal hooks. Our debut 7\" reached #3 on the AIR indie charts."
   ];
 
   let storyHook = '';
@@ -241,7 +252,7 @@ export function getContactProfile(
     storyHook = TIER3_HOOKS[hookIndex];
   }
 
-  // 6. Strict Context-Aware Ask Phrase Logic Tree
+  // 6. Strict Context-Aware Ask Phrase Logic Tree (No ident mentions, direct interview/feature asks)
   let askPhrase = '';
   let angleDescription = '';
 
@@ -256,60 +267,60 @@ export function getContactProfile(
     askPhrase = "We'd love to know if you think the record could be a good fit for your roster. Give the stream a listen when you get a chance and let us know - no stress either way.";
     angleDescription = 'Label Distro - Physical Release Partner';
   } else if (mode === 'blog_feature' || outletType === 'Blog') {
-    askPhrase = "Would you be interested in featuring the track or doing a quick Q&A / interview around the single? Happy to send through a full advance stream, hi-res photos, or anything else you need.";
+    askPhrase = "Would you be interested in featuring the track or doing a quick Q&A / interview around the single? Happy to send through a full advance stream, hi-res press photos, or anything else you need.";
     angleDescription = 'Blog / Webzine - Track Feature or Interview';
   } else if (mode === 'magazine_review' || outletType === 'Magazine' || outletType === 'Writer/Critic') {
-    askPhrase = "Would you be interested in a feature, review, or a short Q&A / interview around the single? Happy to send through a full advance stream, hi-res press shots, or a physical copy if any of that is useful.";
+    askPhrase = "Would you be interested in a feature, review, or a short Q&A / interview around the album? Happy to send through the full advance album stream, hi-res press shots, or a physical copy if any of that is helpful.";
     angleDescription = 'Magazine / Press - Album Review, Feature or Interview';
   } else if (mode === 'playlist_curator' || outletType === 'Curator') {
-    askPhrase = "Thought it might be a good fit for one of your playlists if you get a chance to check it out.";
+    askPhrase = "Thought it might be a good fit for one of your playlists if you get a chance to check it out. Let us know what you think!";
     angleDescription = 'Playlist Curator';
   } else if (outletType === 'Radio') {
     if (locationCategory === 'sydney') {
       askPhrase = "Would love for you to give it a spin if you feel it fits any of your shows, and would you be interested in having us in for an in-studio chat or interview?";
       angleDescription = 'Radio Airplay + Local In-Studio Interview';
     } else if (affinityTier === 'tier3_eclectic' || isGrassrootsCommunity) {
-      askPhrase = "We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows. Also, would you be interested in a quick phone interview or having us record a station shoutout?";
+      askPhrase = "We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows. Also, would you be interested in a quick phone interview or chat around the release?";
       angleDescription = 'Grassroots Community Radio Airplay + Interview';
     } else {
-      askPhrase = "Would love for you to give it a spin if you feel it fits any of your programming. Also, would you be interested in doing an interview or having us record an exclusive station ident?";
+      askPhrase = "Would love for you to give it a spin if you feel it fits into any of your programming. Would you be interested in an interview or chat around the release?";
       angleDescription = 'Radio Airplay Consideration + Interview';
     }
   } else {
-    askPhrase = "Would you be interested in an interview, feature, or review around the single? Give the track a listen and let us know what you think - happy to send through anything else you need.";
+    askPhrase = "Would you be interested in an interview or feature around the single? Give the track a listen and let us know what you think - happy to send through anything else you need.";
     angleDescription = 'Music Consideration & Feature/Interview Ask';
   }
 
   // 7. Expanded 8x8 Natural Human Micro-Variations & Subject Line Pool
   const INTROS = [
+    "Hope you're having a good week!",
+    "Hope you're having a solid week!",
+    "Hope things are good your end!",
+    "Hope things are going well your end!",
     "Hope you're well!",
     "Hope you're having a good one!",
-    "Hope things are good your end!",
-    "Hope you're having a solid week!",
-    "Hope things are going well your end!",
-    "Hope you're not too buried in promo at the moment!",
-    "Hope your week is going well.",
-    "Hope you're doing well."
+    "Hope you're doing well.",
+    "Hope the week's treating you well!"
   ];
 
   const SIGNOFFS = [
+    "No stress either way, really appreciate you having a listen.",
+    "No stress either way, really appreciate your time.",
+    "Cheers for taking the time to have a listen.",
+    "Really appreciate you taking the time to check it out.",
+    "Thanks heaps for your time.",
     "Let me know if you need anything else from our end!",
     "If you need anything else from us, just shout.",
-    "Happy to send through anything else you need.",
-    "Let us know if there's anything else useful we can send through.",
-    "Feel free to reach out if you need any other assets.",
-    "No stress either way - really appreciate your time.",
-    "Cheers for taking the time to have a read.",
-    "Really appreciate you taking the time."
+    "Happy to send through anything else you need."
   ];
 
   const SUBJECTS = [
-    'New music from Sydney: Love Banana - "Seagull"',
     `Love Banana - "Seagull" (for ${shortBrand || 'you'})`,
-    `Australian garage pop for ${shortBrand || 'you'}: Love Banana`,
-    'New single from Sydney - Love Banana, "Seagull"',
-    'Love Banana - debut single "Seagull" (Sydney garage pop)',
-    `For ${shortBrand || 'you'}: Love Banana - "Seagull" (Mastered by Mikey Young)`
+    'New music from Sydney: Love Banana - "Seagull"',
+    'Love Banana - debut single "Seagull" (Mastered by Mikey Young)',
+    'Love Banana - "Seagull" (debut LP on Ragnar Records)',
+    `For ${shortBrand || 'you'}: Love Banana - "Seagull"`,
+    `Australian garage pop for ${shortBrand || 'you'}: Love Banana - "Seagull"`
   ];
 
   const greetingIntro = INTROS[Math.abs(hash) % INTROS.length];
@@ -326,6 +337,7 @@ export function getContactProfile(
     outletName: shortBrand,
     locationCategory,
     locationPhrase,
+    locationFrom,
     locationBadge,
     affinityTier,
     tierBadge,
@@ -479,7 +491,8 @@ export function renderPitchClient({
     '{{country}}': contact.country || 'Australia',
     '{{city}}': contact.city || '',
     '{{location_phrase}}': profile.locationPhrase,
-    '{{location_intro}}': `Reaching out from ${profile.locationCategory === 'sydney' ? 'here in Sydney' : 'Sydney'}`,
+    '{{location_from}}': profile.locationFrom,
+    '{{location_intro}}': `Reaching out from ${profile.locationFrom}`,
     '{{story_hook}}': profile.storyHook,
     '{{ask_phrase}}': profile.askPhrase,
     '{{greeting_intro}}': profile.greetingIntro,
@@ -493,7 +506,7 @@ export function renderPitchClient({
     '{{single_release_date}}': s.singleReleaseDate || 'September 16',
     '{{album_title}}': s.albumTitle || 'Any Direction',
     '{{label}}': s.label || 'Ragnar Records',
-    '{{mastered_by}}': s.masteredBy || 'Owen Penglis (Straight Arrows)',
+    '{{mastered_by}}': s.masteredBy || 'Mikey Young',
     '{{epk_url}}': s.epkUrl || 'https://love-banana-epk.vercel.app/epk.html',
     '{{album_url}}': s.albumUrl || 'https://love-banana-epk.vercel.app/album.html',
     '{{wav_url}}': s.wavDownloadUrl || 'https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav',

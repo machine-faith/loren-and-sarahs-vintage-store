@@ -84,15 +84,13 @@ const DEFAULT_RADIO_TEMPLATE: ChannelTemplateData = {
   subject: '{{subject_variant}}',
   body: `{{greeting}}
 
-{{greeting_intro}} My name's Henry, from Love Banana, a five-piece garage pop band {{location_phrase}}.
-
-We've just put out our debut single "Seagull" - it's a fast, upbeat track about beach birds stealing hot chips, recorded in Petersham and mastered by Owen Penglis (Straight Arrows). Off our debut LP 'Any Direction', coming out on Ragnar Records later this year.
+{{greeting_intro}} Reaching out from {{location_from}} - I play guitar and sing in Love Banana, a five-piece garage pop / rock & roll band {{location_phrase}}.
 
 {{story_hook}}
 
 • WAV Master ("Seagull"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
 • Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html
-• Album Stream & WAV Downloads: https://love-banana-epk.vercel.app/album.html
+• Advance Album Stream: https://love-banana-epk.vercel.app/album.html
 
 {{ask_phrase}}
 
@@ -108,15 +106,13 @@ const DEFAULT_BLOG_TEMPLATE: ChannelTemplateData = {
   subject: '{{subject_variant}}',
   body: `{{greeting}}
 
-{{greeting_intro}} My name's Henry, from Love Banana, a five-piece garage pop band {{location_phrase}}.
-
-We've put out our debut single "Seagull" - fast, scuzzy garage pop about beach birds making off with your hot chips. Recorded in Petersham, mastered by Owen Penglis (Straight Arrows). It's the lead single off our debut LP 'Any Direction', coming out on Ragnar Records.
+{{greeting_intro}} Reaching out from Sydney, Australia. I play guitar and sing in Love Banana, an indie / garage pop five-piece. Big fan of what you share on {{outlet}} and wanted to send across our new single.
 
 {{story_hook}}
 
 • WAV Master ("Seagull"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
-• Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html
-• Album Stream & WAV Downloads: https://love-banana-epk.vercel.app/album.html
+• Band EPK & Press Photos: https://love-banana-epk.vercel.app/epk.html
+• Advance Album Stream: https://love-banana-epk.vercel.app/album.html
 
 {{ask_phrase}}
 
@@ -470,13 +466,24 @@ export default function Home() {
         const rTpl = tpls.find(t => t.target_category === 'Radio' || t.id === 'tpl-syd');
         const bTpl = tpls.find(t => t.target_category === 'Blog' || t.id === 'tpl-press');
         const lTpl = tpls.find(t => t.target_category === 'Label' || t.id === 'tpl-label-distro');
-        if (rTpl?.body) {
-          setRadioTemplate({ subject: rTpl.subject, body: rTpl.body });
-          setSubject(rTpl.subject);
-          setBody(rTpl.body);
-        }
-        if (bTpl?.body) setBlogTemplate({ subject: bTpl.subject, body: bTpl.body });
-        if (lTpl?.body) setLabelTemplate({ subject: lTpl.subject, body: lTpl.body });
+
+        const sanitizeTpl = (tpl: any, defaultTpl: ChannelTemplateData) => {
+          if (!tpl || !tpl.body) return defaultTpl;
+          if (tpl.body.includes('hot chips') || tpl.body.includes('Owen Penglis') || tpl.body.includes('station ident')) {
+            return defaultTpl;
+          }
+          return { subject: tpl.subject || defaultTpl.subject, body: tpl.body };
+        };
+
+        const activeRadio = sanitizeTpl(rTpl, DEFAULT_RADIO_TEMPLATE);
+        const activeBlog = sanitizeTpl(bTpl, DEFAULT_BLOG_TEMPLATE);
+        const activeLabel = sanitizeTpl(lTpl, DEFAULT_LABEL_TEMPLATE);
+
+        setRadioTemplate(activeRadio);
+        setSubject(activeRadio.subject);
+        setBody(activeRadio.body);
+        setBlogTemplate(activeBlog);
+        setLabelTemplate(activeLabel);
       }
 
       if (settingsData.settings) {

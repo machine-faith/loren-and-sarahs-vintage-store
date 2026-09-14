@@ -160,7 +160,7 @@ export default function MasterTemplatesView({
     radio: [
       { tag: '{{subject_variant}}', desc: 'Smart human subject line variant' },
       { tag: '{{location_phrase}}', desc: '"based here in Sydney" / "based in Sydney"' },
-      { tag: '{{story_hook}}', desc: 'Hot chips & Owen Penglis background hook' },
+      { tag: '{{story_hook}}', desc: 'Single & album release backstory (mastered by Mikey Young)' },
       { tag: '{{ask_phrase}}', desc: 'Contextual airplay or in-studio request' }
     ],
     blog: [
