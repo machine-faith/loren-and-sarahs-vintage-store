@@ -1087,5 +1087,16 @@ By substituting this manifest into the `Settings` store, the discovery crawlers,
 
 ---
 
+## 13. ENGINEERING DOCTRINE: ZERO FALSE COMPLETIONS
+
+1. **The Core Mandate:** Never declare a feature or fix complete because it compiles (`npm run build`), passes type checks, or pushes cleanly. You have not helped until it actually works in real execution.
+2. **Runtime Verification Checklist:**
+   - **Trace Lifecycle & Collisions:** Trace initial render -> localStorage hydration -> server API fetch -> component re-render. Verify default server payloads (e.g. `bandspot.json`) never silently overwrite user state or flip active accounts.
+   - **Eliminate Silent Simulation Guards:** Ensure functions do not quietly abort into mock/simulation branches when credentials are provided.
+   - **Real External Execution:** Ensure external operations (IMAP draft appends, SMTP sends, OAuth tokens) actually execute across real network sockets.
+   - **Surface Errors Instantly:** Never fail silently or claim success when 0 operations succeeded. Always bubble up genuine error diagnostics.
+
+---
+
 > **Final Engineering Verification:**  
 > This specification represents a complete, self-contained architectural blueprint. It contains all formulas, heuristic priorities, cryptographic hashing mechanics, Google Workspace relay sequences, and UI constraints required to build, operate, or extend **Messenger Pigeon on Steroids**.
