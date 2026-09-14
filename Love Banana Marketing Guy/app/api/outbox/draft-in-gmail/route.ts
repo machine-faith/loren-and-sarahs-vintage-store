@@ -78,6 +78,9 @@ export async function POST(request: NextRequest) {
     if (Array.isArray(drafts) && drafts.length > 0) {
       for (const d of drafts) {
         if (!d.to || !d.subject || !d.body) continue;
+        const contact = d.contactId ? store.getContactById(d.contactId) : null;
+        if (contact && contact.stage === 'bounced') continue;
+
         const targetId = d.id || d.contactId || `d-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
         targets.push({
           id: targetId,
@@ -93,7 +96,7 @@ export async function POST(request: NextRequest) {
         const item = store.getOutboxItem(outboxId);
         if (!item) continue;
         const contact = store.getContactById(item.contact_id);
-        if (!contact || !contact.email) continue;
+        if (!contact || !contact.email || contact.stage === 'bounced') continue;
 
         targets.push({
           id: outboxId,

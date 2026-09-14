@@ -453,16 +453,29 @@ export default function Home() {
       }
 
       if (contactsData.contacts) {
-        setContacts(contactsData.contacts);
-        // Default to checking all contacts
-        setSelectedContactIds(contactsData.contacts.map((c: Contact) => c.id));
-        if (contactsData.contacts.length > 0) {
-          setPreviewContactId(contactsData.contacts[0].id);
+        let localBounced: string[] = [];
+        try {
+          const stored = localStorage.getItem('lb_bounced_contact_ids');
+          if (stored) localBounced = JSON.parse(stored);
+        } catch (e) {}
+
+        const mappedContacts = contactsData.contacts.map((c: Contact) => {
+          if (localBounced.includes(c.id)) {
+            return { ...c, stage: 'bounced' as const };
+          }
+          return c;
+        });
+
+        setContacts(mappedContacts);
+        // Default to checking active (non-bounced) contacts only
+        setSelectedContactIds(mappedContacts.filter((c: Contact) => c.stage !== 'bounced').map((c: Contact) => c.id));
+        if (mappedContacts.length > 0) {
+          setPreviewContactId(mappedContacts[0].id);
         }
         try {
           const storedDrafted = localStorage.getItem('lb_drafted_contact_ids');
           const parsedDrafted = storedDrafted ? JSON.parse(storedDrafted) : [];
-          const fromStage = contactsData.contacts
+          const fromStage = mappedContacts
             .filter((c: Contact) => c.stage === 'drafted' || c.stage === 'awaiting_approval' || c.stage === 'sent')
             .map((c: Contact) => c.id);
           const mergedDrafted = Array.from(new Set([...(Array.isArray(parsedDrafted) ? parsedDrafted : []), ...fromStage]));
@@ -631,6 +644,18 @@ export default function Home() {
     if (!isCurrentlyBounced) {
       setSelectedContactIds(prev => prev.filter(id => id !== contactId));
     }
+
+    try {
+      const stored = localStorage.getItem('lb_bounced_contact_ids');
+      const list: string[] = stored ? JSON.parse(stored) : [];
+      let updated: string[];
+      if (newStage === 'bounced') {
+        updated = Array.from(new Set([...list, contactId]));
+      } else {
+        updated = list.filter(id => id !== contactId);
+      }
+      localStorage.setItem('lb_bounced_contact_ids', JSON.stringify(updated));
+    } catch (e) {}
 
     try {
       await fetch(`/api/contacts/${contactId}`, {
@@ -1148,7 +1173,7 @@ export default function Home() {
       const cData = await cRes.json();
       if (cData.contacts) {
         setContacts(cData.contacts);
-        setSelectedContactIds(cData.contacts.map((c: Contact) => c.id));
+        setSelectedContactIds(cData.contacts.filter((c: Contact) => c.stage !== 'bounced').map((c: Contact) => c.id));
       }
 
       setCsvText('');

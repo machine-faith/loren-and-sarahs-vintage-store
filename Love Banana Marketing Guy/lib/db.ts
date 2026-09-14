@@ -401,7 +401,7 @@ Henry`,
         city: "Barcelona",
         genre_fit: "Garage, Psych, Indie",
         notes: "Already spun previous 7 inch! Very warm target for 'Seagull'.",
-        stage: "lead",
+        stage: "bounced",
         last_contacted_at: null,
         created_at: new Date().toISOString()
       },
@@ -485,7 +485,7 @@ Henry`,
         city: "Hamburg",
         genre_fit: "Indie, Pop, Garage",
         notes: "Independent web and DAB+ radio across Germany.",
-        stage: "lead",
+        stage: "bounced",
         last_contacted_at: null,
         created_at: new Date().toISOString()
       }
