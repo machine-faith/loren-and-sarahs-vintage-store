@@ -84,11 +84,12 @@ const DEFAULT_RADIO_TEMPLATE: ChannelTemplateData = {
   subject: '{{subject_variant}}',
   body: `{{greeting}}
 
-I play guitar and sing in Love Banana from Sydney.
+My name is Henry and I play guitar and sing in Love Banana from Sydney.
 
 {{story_hook}}
 
 • WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• Album & Singles: https://love-banana-epk.vercel.app/album.html
 • EPK & Stream: https://love-banana-epk.vercel.app/epk.html
 
 {{ask_phrase}}
@@ -105,11 +106,12 @@ const DEFAULT_BLOG_TEMPLATE: ChannelTemplateData = {
   subject: '{{subject_variant}}',
   body: `{{greeting}}
 
-I play guitar and sing in Love Banana from Sydney. Big fan of what you share on {{outlet}}.
+My name is Henry and I play guitar and sing in Love Banana from Sydney. Big fan of what you share on {{outlet}}.
 
 {{story_hook}}
 
 • WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• Album & Singles: https://love-banana-epk.vercel.app/album.html
 • EPK & Press Photos: https://love-banana-epk.vercel.app/epk.html
 
 {{ask_phrase}}
@@ -126,7 +128,7 @@ const DEFAULT_LABEL_TEMPLATE: ChannelTemplateData = {
   subject: "Love Banana / debut LP (Michael Barker recommended we get in touch)",
   body: `{{salutation}}
 
-Reaching out from Sydney, Australia. I sing and play guitar in Love Banana, a five-piece garage pop band.
+Reaching out from Sydney, Australia. My name is Henry and I sing and play guitar in Love Banana, a five-piece garage pop band.
 
 Michael Barker (Gee Tee / RMFC) is putting out our debut album 'Any Direction' here in Australia on his label Ragnar Records, and he pointed us in your direction to see if you'd be interested in teaming up on an overseas physical release.
 
@@ -493,7 +495,19 @@ export default function Home() {
           ) {
             return defaultTpl;
           }
-          return { subject: tpl.subject || defaultTpl.subject, body: tpl.body };
+          let cleanBody = tpl.body;
+          cleanBody = cleanBody.replace(/(?<!My name is Henry and )I play guitar and sing in Love Banana/g, 'My name is Henry and I play guitar and sing in Love Banana');
+          cleanBody = cleanBody.replace(/(?<!My name is Henry and )I sing and play guitar in Love Banana/g, 'My name is Henry and I sing and play guitar in Love Banana');
+          if (!cleanBody.includes('album.html') && !cleanBody.includes('{{album_url}}')) {
+            if (cleanBody.includes('• EPK & Stream:')) {
+              cleanBody = cleanBody.replace('• EPK & Stream:', '• Album & Singles: https://love-banana-epk.vercel.app/album.html\n• EPK & Stream:');
+            } else if (cleanBody.includes('• EPK & Press Photos:')) {
+              cleanBody = cleanBody.replace('• EPK & Press Photos:', '• Album & Singles: https://love-banana-epk.vercel.app/album.html\n• EPK & Press Photos:');
+            } else if (cleanBody.includes('• EPK:')) {
+              cleanBody = cleanBody.replace('• EPK:', '• Album & Singles: https://love-banana-epk.vercel.app/album.html\n• EPK:');
+            }
+          }
+          return { subject: tpl.subject || defaultTpl.subject, body: cleanBody };
         };
 
         const activeRadio = sanitizeTpl(rTpl, DEFAULT_RADIO_TEMPLATE);

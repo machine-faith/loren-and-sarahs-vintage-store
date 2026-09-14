@@ -44,7 +44,7 @@ export default function TemplatesView({ templates, settings, onSaveTemplate }: T
       name: 'New Custom Pitch',
       target_category: 'Radio',
       subject: 'Love Banana - "Seagull" (debut LP on Ragnar Records)',
-      body: `Hey {{first_name}},\n\nI play guitar and sing in Love Banana from Sydney.\n\nOur new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.\n\n• WAV Master: {{wav_url}}\n• EPK & Stream: {{epk_url}}\n\nWould love to hear your thoughts, and let me know if you'd be up for a quick interview or phone chat around the release?\n\nCheers,\nHenry Collins\nLove Banana`,
+      body: `Hey {{first_name}},\n\nMy name is Henry and I play guitar and sing in Love Banana from Sydney.\n\nOur new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.\n\n• WAV Master: {{wav_url}}\n• Album & Singles: {{album_url}}\n• EPK & Stream: {{epk_url}}\n\nWould love to hear your thoughts, and let me know if you'd be up for a quick interview or phone chat around the release?\n\nCheers,\nHenry Collins\nLove Banana`,
       created_at: new Date().toISOString()
     };
     setSelectedTemplate(fresh);

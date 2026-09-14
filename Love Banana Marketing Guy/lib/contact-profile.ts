@@ -332,9 +332,8 @@ export function getContactProfile(
 }
 
 export function shuffleLinks(links: string[], hash: number): string[] {
-  if (!links || links.length <= 1) return links;
-  const offset = Math.abs(hash) % links.length;
-  return [...links.slice(offset), ...links.slice(0, offset)];
+  // Preserve intentional link hierarchy: WAV Master -> Album & Singles -> EPK
+  return links;
 }
 
 export function rotateLinkLinesInBody(bodyText: string, hash: number): string {
@@ -506,6 +505,24 @@ export function renderPitchClient({
     const regex = new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
     subject = subject.replace(regex, val);
     body = body.replace(regex, val);
+  }
+
+  // Ensure Henry identity standard ("My name is Henry and I play...")
+  body = body.replace(/(?<!My name is Henry and )I play guitar and sing in Love Banana/g, 'My name is Henry and I play guitar and sing in Love Banana');
+  body = body.replace(/(?<!My name is Henry and )I sing and play guitar in Love Banana/g, 'My name is Henry and I sing and play guitar in Love Banana');
+
+  // Ensure Album & Singles link is included alongside EPK if missing
+  const albumUrl = s.albumUrl || 'https://love-banana-epk.vercel.app/album.html';
+  if (!body.includes('album.html') && !body.includes('{{album_url}}')) {
+    if (body.includes('• EPK & Stream:')) {
+      body = body.replace('• EPK & Stream:', `• Album & Singles: ${albumUrl}\n• EPK & Stream:`);
+    } else if (body.includes('• EPK & Press Photos:')) {
+      body = body.replace('• EPK & Press Photos:', `• Album & Singles: ${albumUrl}\n• EPK & Press Photos:`);
+    } else if (body.includes('• EPK:')) {
+      body = body.replace('• EPK:', `• Album & Singles: ${albumUrl}\n• EPK:`);
+    } else if (body.includes('Band EPK:')) {
+      body = body.replace('Band EPK:', `Advance LP Stream: ${albumUrl}\nBand EPK:`);
+    }
   }
 
   // Rotate asset link lines to break duplicate body hashing

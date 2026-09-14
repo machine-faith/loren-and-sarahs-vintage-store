@@ -241,11 +241,12 @@ function getDefaultData(): DatabaseSchema {
         subject: `{{subject_variant}}`,
         body: `Hey {{first_name}},
 
-I play guitar and sing in Love Banana from Sydney.
+My name is Henry and I play guitar and sing in Love Banana from Sydney.
 
 Our new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.
 
 • WAV Master: {{wav_url}}
+• Album & Singles: {{album_url}}
 • EPK & Stream: {{epk_url}}
 
 Would love to hear your thoughts, and let me know if you'd be up for a quick interview or phone chat around the release?
@@ -263,11 +264,12 @@ Love Banana
         subject: `{{subject_variant}}`,
         body: `Hi {{first_name}},
 
-I play guitar and sing in Love Banana from Sydney. Big fan of what you share on {{outlet}}.
+My name is Henry and I play guitar and sing in Love Banana from Sydney. Big fan of what you share on {{outlet}}.
 
 Our new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.
 
 • WAV Master: {{wav_url}}
+• Album & Singles: {{album_url}}
 • EPK & Press Photos: {{epk_url}}
 
 Would love to hear your thoughts, and let me know if you'd be keen to feature the track or do a quick Q&A / interview around the release?
@@ -285,11 +287,12 @@ Sydney, Australia`,
         subject: `Album Review Copy & Interview: Love Banana ('Any Direction' LP)`,
         body: `Hey {{first_name}},
 
-I play guitar and sing in Love Banana from Sydney. Big fan of what you're doing with {{outlet}}.
+My name is Henry and I play guitar and sing in Love Banana from Sydney. Big fan of what you're doing with {{outlet}}.
 
 Our new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.
 
 • WAV Master: {{wav_url}}
+• Album & Singles: {{album_url}}
 • Advance Album Stream & EPK: {{epk_url}}
 
 Would love to hear your thoughts, and let me know if you'd be keen to review the album, run a feature, or do a short Q&A / interview? Happy to send through press photos or anything else you need.

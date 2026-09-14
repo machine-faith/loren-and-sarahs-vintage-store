@@ -539,7 +539,7 @@ This hash deterministically selects sentence variations from verified natural hu
 - Variant 5: `For {{outlet}}: Love Banana - "Seagull" (Mastered by Mikey Young)`
 
 #### 2. Intro Greetings Policy (Zero Generic Filler):
-Generic pleasantries (e.g. *"Hope you're well!"*, *"Hope you're having a good week"*) are strictly prohibited across all templates. Outreach emails jump straight from personal greeting (`Hey [Name],`) to direct musician identity (`I play guitar and sing in Love Banana from Sydney.`) to respect the recipient's time and sound like a genuine musician rather than an automated marketer.
+Generic pleasantries (e.g. *"Hope you're well!"*, *"Hope you're having a good week"*) are strictly prohibited across all templates. Outreach emails jump straight from personal greeting (`Hey [Name],`) to direct musician identity (`My name is Henry and I play guitar and sing in Love Banana from Sydney.`) to respect the recipient's time and sound like a genuine musician rather than an automated marketer.
 
 #### 3. Sign-off Variations Pool (8 Variants, Selected via `(hash + 3) % 8`):
 - Variant 0: `"Let me know if you need anything else from our end!"`
@@ -560,12 +560,12 @@ Generic pleasantries (e.g. *"Hope you're well!"*, *"Hope you're having a good we
 
 ---
 
-### 6.3 Dynamic Asset Link Rotation (The Zero-Attachment Rule)
-The pitch provides direct, single-click access to promotional assets hosted on high-availability edge storage. To prevent byte-for-byte link block fingerprinting, the engine executes `rotateLinkLinesInBody(body, hash)`, cyclically permuting the order of asset download links for each individual recipient:
+### 6.3 Asset Link Hierarchy (The Zero-Attachment Rule)
+The pitch provides direct, single-click access to promotional assets hosted on high-availability edge storage. The standard hierarchy across all outreach channels presents the lead single WAV master, the album promotion hub, and the band EPK:
 ```text
-• WAV Master Download ("Seagull"): https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
-• Band EPK & Videos: https://love-banana-epk.vercel.app/epk.html
-• Album Stream & WAV Downloads: https://love-banana-epk.vercel.app/album.html
+• WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• Album & Singles: https://love-banana-epk.vercel.app/album.html
+• EPK & Stream: https://love-banana-epk.vercel.app/epk.html
 ```
 
 ---
@@ -578,11 +578,12 @@ Subject: Love Banana - "Seagull"
 
 Hey FBi Radio team,
 
-I play guitar and sing in Love Banana from Sydney.
+My name is Henry and I play guitar and sing in Love Banana from Sydney.
 
 Our new single "Seagull" drops September 16 via Ragnar Records (mastered by Mikey Young), taken from our debut album coming out later this year.
 
 • WAV Master: https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav
+• Album & Singles: https://love-banana-epk.vercel.app/album.html
 • EPK & Stream: https://love-banana-epk.vercel.app/epk.html
 
 Would love to hear your thoughts, and let me know if you'd be up for a quick interview or phone chat around the release?
