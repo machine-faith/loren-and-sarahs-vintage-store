@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import seedJson from '@/data/bandspot.json';
 
 export type AffinityTier = 'tier1_bullseye' | 'tier2_indie' | 'tier3_eclectic';
 
@@ -176,6 +177,16 @@ function ensureDirectoryExists() {
 }
 
 function getDefaultData(): DatabaseSchema {
+  try {
+    const cloned = JSON.parse(JSON.stringify(seedJson)) as DatabaseSchema;
+    if (!cloned.settings) (cloned as any).settings = {};
+    cloned.settings.secondaryGmailUser = cloned.settings.secondaryGmailUser || "lovebananacomms@gmail.com";
+    cloned.settings.secondaryFromEmail = cloned.settings.secondaryFromEmail || "lovebananacomms@gmail.com";
+    cloned.settings.activeGmailAccount = (cloned.settings.activeGmailAccount as any) || "secondary";
+    return cloned;
+  } catch {
+    // fallback below if clone fails
+  }
   const todayStr = new Date().toISOString().split('T')[0];
   return {
     dispatch_state: {
@@ -212,8 +223,15 @@ function getDefaultData(): DatabaseSchema {
       googleClientSecret: "",
       googleRefreshToken: "",
       gmailUser: "lovebananaband@gmail.com",
-      gmailAppPassword: "",
-      simulationMode: "true" // safe simulation by default
+      gmailAppPassword: "cgnj lder cgtq aclc",
+      primaryAccountLabel: "Love Banana (Henry)",
+      secondaryGmailUser: "lovebananacomms@gmail.com",
+      secondaryGmailAppPassword: "",
+      secondaryFromEmail: "lovebananacomms@gmail.com",
+      secondaryContactName: "Henry Collins",
+      secondaryAccountLabel: "Henry (Secondary / Outreach Email)",
+      activeGmailAccount: "secondary",
+      simulationMode: "false"
     },
     templates: [
       {
@@ -509,28 +527,35 @@ class Store {
   constructor() {
     ensureDirectoryExists();
     if (!fs.existsSync(DB_FILE)) {
-      if (fs.existsSync(SEED_FILE)) {
-        try {
-          const raw = fs.readFileSync(SEED_FILE, 'utf-8');
-          this.data = JSON.parse(raw);
-        } catch {
-          this.data = getDefaultData();
-        }
-      } else {
-        this.data = getDefaultData();
-      }
+      this.data = getDefaultData();
       this.persist();
     } else {
       try {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
         this.data = JSON.parse(raw);
-        // Ensure keys exist
-        if (!this.data.contacts) this.data.contacts = [];
-        if (!this.data.templates) this.data.templates = [];
+        const defaultData = getDefaultData();
+        // Ensure keys exist and have full contact list
+        if (!this.data.contacts || this.data.contacts.length < 20) {
+          this.data.contacts = defaultData.contacts;
+        }
+        if (!this.data.templates || this.data.templates.length === 0) {
+          this.data.templates = defaultData.templates;
+        }
         if (!this.data.outbox) this.data.outbox = [];
         if (!this.data.replies) this.data.replies = [];
-        if (!this.data.leads) this.data.leads = [];
+        if (!this.data.leads || this.data.leads.length === 0) {
+          this.data.leads = defaultData.leads;
+        }
         if (!this.data.settings) this.data.settings = {};
+        if (!this.data.settings.secondaryGmailUser) {
+          this.data.settings.secondaryGmailUser = "lovebananacomms@gmail.com";
+        }
+        if (!this.data.settings.activeGmailAccount) {
+          this.data.settings.activeGmailAccount = "secondary";
+        }
+        if (!this.data.settings.secondaryFromEmail) {
+          this.data.settings.secondaryFromEmail = "lovebananacomms@gmail.com";
+        }
       } catch {
         this.data = getDefaultData();
         this.persist();
@@ -830,7 +855,40 @@ class Store {
   // On Vercel, /tmp is wiped on cold starts — env vars are the persistent source of truth
   // for credentials. getSettings() merges stored settings with env var overrides.
   getSettings(): Settings {
-    const stored = this.data.settings as unknown as Settings;
+    const baseDefaults: Settings = {
+      bandName: "Love Banana",
+      contactName: "Henry Collins",
+      fromEmail: "lovebananaband@gmail.com",
+      hometown: "Sydney, Australia",
+      genre: "Five-piece garage pop / scuzzy rock & roll",
+      epkUrl: "https://love-banana-epk.vercel.app/epk.html",
+      albumUrl: "https://love-banana-epk.vercel.app/album.html",
+      singleTitle: "Seagull",
+      singleReleaseDate: "September 16",
+      albumTitle: "Any Direction",
+      label: "Ragnar Records",
+      masteredBy: "Mikey Young",
+      wavDownloadUrl: "https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav",
+      artworkDownloadUrl: "https://love-banana-epk.vercel.app/downloads/Seagull%20-%20Artwork.png",
+      spotifyUrl: "https://open.spotify.com/artist/1x9qaTZAvF4e79h2Lj6dZC",
+      bandcampUrl: "https://lovebanana.bandcamp.com/",
+      instagramUrl: "https://www.instagram.com/lovebanarna/?hl=en",
+      googleClientId: "",
+      googleClientSecret: "",
+      googleRefreshToken: "",
+      gmailUser: "lovebananaband@gmail.com",
+      gmailAppPassword: "cgnj lder cgtq aclc",
+      primaryAccountLabel: "Love Banana (Henry)",
+      secondaryAccountLabel: "Henry (Secondary / Outreach Email)",
+      secondaryGmailUser: "lovebananacomms@gmail.com",
+      secondaryGmailAppPassword: "",
+      secondaryFromEmail: "lovebananacomms@gmail.com",
+      secondaryContactName: "Henry Collins",
+      activeGmailAccount: "secondary",
+      simulationMode: "false"
+    };
+
+    const stored = { ...baseDefaults, ...(this.data.settings || {}) };
     if (!IS_VERCEL) return stored;
 
     // Env var overrides — set these in Vercel Dashboard > Project Settings > Environment Variables

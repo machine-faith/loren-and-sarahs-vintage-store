@@ -1,12 +1,30 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { getStore } from '@/lib/db';
 import { createBatchDraftsInGmail, DraftTarget } from '@/lib/gmail';
 import { evaluateStageAdvancement } from '@/lib/dispatch-state';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     let { outboxIds, channel, secondaryGmailUser, secondaryGmailAppPassword } = body;
+
+    // Check cookie fallback if secondary credentials were not passed in body
+    const cookieHeader = request.cookies.get('lb_crm_settings')?.value;
+    if (cookieHeader) {
+      try {
+        let parsed: any = null;
+        try {
+          parsed = JSON.parse(decodeURIComponent(cookieHeader));
+        } catch {
+          parsed = JSON.parse(cookieHeader);
+        }
+        if (parsed && typeof parsed === 'object') {
+          if (!secondaryGmailUser && parsed.secondaryGmailUser) secondaryGmailUser = parsed.secondaryGmailUser;
+          if (!secondaryGmailAppPassword && parsed.secondaryGmailAppPassword) secondaryGmailAppPassword = parsed.secondaryGmailAppPassword;
+          if (!channel && parsed.activeGmailAccount) channel = parsed.activeGmailAccount;
+        }
+      } catch (e) {}
+    }
 
     if (!Array.isArray(outboxIds) || outboxIds.length === 0) {
       return NextResponse.json({ error: 'outboxIds array required' }, { status: 400 });
@@ -15,7 +33,7 @@ export async function POST(request: Request) {
     const store = getStore();
     let settings = store.getSettings();
 
-    // If client supplied secondary credentials, persist immediately and ensure simulationMode is disabled if password present
+    // If client or cookie supplied secondary credentials, persist immediately and ensure simulationMode is disabled if password present
     if (secondaryGmailUser) {
       settings = store.updateSettings({
         secondaryGmailUser,

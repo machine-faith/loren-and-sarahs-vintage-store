@@ -266,18 +266,18 @@ export function getContactProfile(
     angleDescription = 'Playlist Curator';
   } else if (outletType === 'Radio') {
     if (locationCategory === 'sydney') {
-      askPhrase = "Would love for you to give it a spin if you feel it fits any of your shows, and we'd love to come in for an in-studio chat or interview if you're up for it!";
-      angleDescription = 'Radio Airplay + Local In-Studio Chats';
+      askPhrase = "Would love for you to give it a spin if you feel it fits any of your shows, and would you be interested in having us in for an in-studio chat or interview?";
+      angleDescription = 'Radio Airplay + Local In-Studio Interview';
     } else if (affinityTier === 'tier3_eclectic' || isGrassrootsCommunity) {
-      askPhrase = "We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows. Also more than happy to record a station shoutout or do a quick phone interview if you're keen!";
-      angleDescription = 'Grassroots Community Radio Airplay';
+      askPhrase = "We're big fans of what community radio does for independent music - would love for you to give this one a spin if you feel it's a good fit for your shows. Also, would you be interested in a quick phone interview or having us record a station shoutout?";
+      angleDescription = 'Grassroots Community Radio Airplay + Interview';
     } else {
-      askPhrase = "Would love for you to give it a spin if you feel it fits any of your programming. Also happy to record an exclusive station ident or do a quick chat if you'd like!";
-      angleDescription = 'Radio Airplay Consideration';
+      askPhrase = "Would love for you to give it a spin if you feel it fits any of your programming. Also, would you be interested in doing an interview or having us record an exclusive station ident?";
+      angleDescription = 'Radio Airplay Consideration + Interview';
     }
   } else {
-    askPhrase = "Would love for you to give it a listen and let us know what you think.";
-    angleDescription = 'Music Consideration';
+    askPhrase = "Would you be interested in an interview, feature, or review around the single? Give the track a listen and let us know what you think - happy to send through anything else you need.";
+    angleDescription = 'Music Consideration & Feature/Interview Ask';
   }
 
   // 7. Expanded 8x8 Natural Human Micro-Variations & Subject Line Pool
@@ -464,7 +464,7 @@ export function renderPitchClient({
   const s = settings || {};
   const isSecondary = s.activeGmailAccount === 'secondary';
   const activeUserEmail = isSecondary
-    ? (s.secondaryGmailUser || s.secondaryFromEmail || 'lovebananapress@gmail.com')
+    ? (s.secondaryGmailUser || s.secondaryFromEmail || 'lovebananacomms@gmail.com')
     : (s.fromEmail || s.gmailUser || 'lovebananaband@gmail.com');
   const activeSenderName = isSecondary
     ? (s.secondaryContactName || s.contactName || 'Henry Collins')

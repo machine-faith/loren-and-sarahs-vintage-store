@@ -93,7 +93,7 @@ export function getActiveGmailAccount(settings: any) {
   const primaryPass = (settings.gmailAppPassword || '').trim();
 
   if (isSecondary) {
-    const user = (settings.secondaryGmailUser || settings.secondaryFromEmail || '').trim();
+    const user = (settings.secondaryGmailUser || settings.secondaryFromEmail || 'lovebananacomms@gmail.com').trim();
     const pass = (settings.secondaryGmailAppPassword || '').trim();
     // Even if no separate App Password exists, we can relay through the primary account with Reply-To
     const hasRelayAuth = Boolean(primaryUser && primaryPass);

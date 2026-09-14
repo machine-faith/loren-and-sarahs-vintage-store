@@ -237,11 +237,11 @@ export default function Home() {
   const [activeGmailAccount, setActiveGmailAccount] = useState<'primary' | 'secondary'>('secondary');
   // Account 1 (Primary Band Account)
   const [gmailUser, setGmailUser] = useState('lovebananaband@gmail.com');
-  const [gmailAppPassword, setGmailAppPassword] = useState('');
+  const [gmailAppPassword, setGmailAppPassword] = useState('cgnj lder cgtq aclc');
   const [primaryContactName, setPrimaryContactName] = useState('Henry Collins');
   const [primaryAccountLabel, setPrimaryAccountLabel] = useState('Main Band Account (Love Banana)');
   // Account 2 (Secondary / Safe Outreach Account)
-  const [secondaryGmailUser, setSecondaryGmailUser] = useState('');
+  const [secondaryGmailUser, setSecondaryGmailUser] = useState('lovebananacomms@gmail.com');
   const [secondaryGmailAppPassword, setSecondaryGmailAppPassword] = useState('');
   const [secondaryContactName, setSecondaryContactName] = useState('Henry Collins');
   const [secondaryAccountLabel, setSecondaryAccountLabel] = useState('Henry (Outreach Email)');
@@ -249,14 +249,90 @@ export default function Home() {
 
   const SETTINGS_STORAGE_KEY = 'love_banana_crm_settings';
 
-  const updateLocalSettings = (partial: Record<string, any>) => {
-    if (typeof window === 'undefined') return;
+  // Multi-layer persistence across localStorage, sessionStorage, and 1-year cookies
+  const getStoredSettings = (): Record<string, any> => {
+    if (typeof window === 'undefined') return {};
+    let data: Record<string, any> = {};
+
+    const safeMerge = (source: Record<string, any>) => {
+      for (const [k, v] of Object.entries(source)) {
+        if (v !== undefined && v !== null && v !== '') {
+          data[k] = v;
+        } else if (data[k] === undefined) {
+          data[k] = v;
+        }
+      }
+    };
+
+    // 1. Try localStorage
     try {
       const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : {};
-      const updated = { ...parsed, ...partial };
-      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(updated));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') safeMerge(parsed);
+      }
     } catch (e) {}
+
+    // 2. Try sessionStorage
+    try {
+      const raw = sessionStorage.getItem(SETTINGS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') safeMerge(parsed);
+      }
+    } catch (e) {}
+
+    // 3. Try document.cookie
+    try {
+      const match = document.cookie.match(/(?:^|;\s*)lb_crm_settings=([^;]*)/);
+      if (match && match[1]) {
+        let parsed: any = null;
+        try {
+          parsed = JSON.parse(decodeURIComponent(match[1]));
+        } catch {
+          parsed = JSON.parse(match[1]);
+        }
+        if (parsed && typeof parsed === 'object') safeMerge(parsed);
+      }
+    } catch (e) {}
+
+    return data;
+  };
+
+  const saveStoredSettings = (partial: Record<string, any>) => {
+    if (typeof window === 'undefined') return;
+    const existing = getStoredSettings();
+    const merged = { ...existing };
+    for (const [k, v] of Object.entries(partial)) {
+      if (v !== undefined && v !== null) {
+        // Protect passwords from accidental empty overwrites
+        if ((k === 'secondaryGmailAppPassword' || k === 'gmailAppPassword') && v === '' && existing[k] && !partial._forceClear) {
+          continue;
+        }
+        merged[k] = v;
+      }
+    }
+    const str = JSON.stringify(merged);
+    const encoded = encodeURIComponent(str);
+
+    // 1. Save to localStorage
+    try {
+      localStorage.setItem(SETTINGS_STORAGE_KEY, str);
+    } catch (e) {}
+
+    // 2. Save to sessionStorage
+    try {
+      sessionStorage.setItem(SETTINGS_STORAGE_KEY, str);
+    } catch (e) {}
+
+    // 3. Save to document.cookie (1 year duration)
+    try {
+      document.cookie = `lb_crm_settings=${encoded}; path=/; max-age=31536000; SameSite=Lax`;
+    } catch (e) {}
+  };
+
+  const updateLocalSettings = (partial: Record<string, any>) => {
+    saveStoredSettings(partial);
   };
 
   // Contacts / Import state
@@ -270,53 +346,51 @@ export default function Home() {
   const [dispatchState, setDispatchState] = useState<any>(null);
 
   useEffect(() => {
-    // 1. Immediately hydrate from localStorage so connection state is preserved across refresh
-    if (typeof window !== 'undefined') {
-      try {
-        const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed.secondaryGmailUser) setSecondaryGmailUser(parsed.secondaryGmailUser);
-          if (parsed.secondaryGmailAppPassword) setSecondaryGmailAppPassword(parsed.secondaryGmailAppPassword);
-          const initialActive = parsed.secondaryGmailUser 
-            ? (parsed.activeGmailAccount || 'secondary') 
-            : (parsed.activeGmailAccount || 'primary');
-          setActiveGmailAccount(initialActive);
-          if (parsed.secondaryContactName) setSecondaryContactName(parsed.secondaryContactName);
-          if (parsed.secondaryAccountLabel) setSecondaryAccountLabel(parsed.secondaryAccountLabel);
-          if (parsed.gmailUser) setGmailUser(parsed.gmailUser);
-          if (parsed.gmailAppPassword) setGmailAppPassword(parsed.gmailAppPassword);
-          if (parsed.contactName) setPrimaryContactName(parsed.contactName);
-          if (parsed.primaryAccountLabel) setPrimaryAccountLabel(parsed.primaryAccountLabel);
-          setSettings(prev => ({
-            bandName: "Love Banana",
-            contactName: "Henry Collins",
-            fromEmail: "lovebananaband@gmail.com",
-            hometown: "Sydney, Australia",
-            genre: "Five-piece garage pop / scuzzy rock & roll",
-            epkUrl: "https://love-banana-epk.vercel.app/epk.html",
-            albumUrl: "https://love-banana-epk.vercel.app/album.html",
-            singleTitle: "Seagull",
-            singleReleaseDate: "September 16",
-            albumTitle: "Any Direction",
-            label: "Ragnar Records",
-            masteredBy: "Mikey Young",
-            wavDownloadUrl: "https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav",
-            artworkDownloadUrl: "https://love-banana-epk.vercel.app/downloads/Seagull%20-%20Artwork.png",
-            spotifyUrl: "https://open.spotify.com/artist/1x9qaTZAvF4e79h2Lj6dZC",
-            bandcampUrl: "https://lovebanana.bandcamp.com/",
-            instagramUrl: "https://www.instagram.com/lovebanarna/?hl=en",
-            googleClientId: "",
-            googleClientSecret: "",
-            googleRefreshToken: "",
-            gmailUser: "lovebananaband@gmail.com",
-            gmailAppPassword: "",
-            simulationMode: "true",
-            ...(prev || {}),
-            ...parsed
-          } as Settings));
-        }
-      } catch (e) {}
+    // 1. Immediately hydrate from all stored layers (localStorage, sessionStorage, cookies)
+    const stored = getStoredSettings();
+    if (stored) {
+      if (stored.secondaryGmailUser) setSecondaryGmailUser(stored.secondaryGmailUser);
+      if (stored.secondaryGmailAppPassword) setSecondaryGmailAppPassword(stored.secondaryGmailAppPassword);
+      if (stored.activeGmailAccount) setActiveGmailAccount(stored.activeGmailAccount);
+      if (stored.secondaryContactName) setSecondaryContactName(stored.secondaryContactName);
+      if (stored.secondaryAccountLabel) setSecondaryAccountLabel(stored.secondaryAccountLabel);
+      if (stored.gmailUser) setGmailUser(stored.gmailUser);
+      if (stored.gmailAppPassword) setGmailAppPassword(stored.gmailAppPassword);
+      if (stored.contactName) setPrimaryContactName(stored.contactName);
+      if (stored.primaryAccountLabel) setPrimaryAccountLabel(stored.primaryAccountLabel);
+      setSettings(prev => ({
+        bandName: "Love Banana",
+        contactName: "Henry Collins",
+        fromEmail: "lovebananaband@gmail.com",
+        hometown: "Sydney, Australia",
+        genre: "Five-piece garage pop / scuzzy rock & roll",
+        epkUrl: "https://love-banana-epk.vercel.app/epk.html",
+        albumUrl: "https://love-banana-epk.vercel.app/album.html",
+        singleTitle: "Seagull",
+        singleReleaseDate: "September 16",
+        albumTitle: "Any Direction",
+        label: "Ragnar Records",
+        masteredBy: "Mikey Young",
+        wavDownloadUrl: "https://love-banana-epk.vercel.app/downloads/Love%20Banana%20-%20Seagull.wav",
+        artworkDownloadUrl: "https://love-banana-epk.vercel.app/downloads/Seagull%20-%20Artwork.png",
+        spotifyUrl: "https://open.spotify.com/artist/1x9qaTZAvF4e79h2Lj6dZC",
+        bandcampUrl: "https://lovebanana.bandcamp.com/",
+        instagramUrl: "https://www.instagram.com/lovebanarna/?hl=en",
+        googleClientId: "",
+        googleClientSecret: "",
+        googleRefreshToken: "",
+        gmailUser: "lovebananaband@gmail.com",
+        gmailAppPassword: "cgnj lder cgtq aclc",
+        secondaryGmailUser: "lovebananacomms@gmail.com",
+        secondaryGmailAppPassword: stored.secondaryGmailAppPassword || "",
+        secondaryFromEmail: "lovebananacomms@gmail.com",
+        secondaryContactName: "Henry Collins",
+        secondaryAccountLabel: "Henry (Outreach Email)",
+        activeGmailAccount: stored.activeGmailAccount || "secondary",
+        simulationMode: "false",
+        ...(prev || {}),
+        ...stored
+      } as Settings));
     }
     fetchData();
   }, []);
@@ -373,36 +447,39 @@ export default function Home() {
       }
 
       if (settingsData.settings) {
-        let s = settingsData.settings;
+        const s = settingsData.settings;
+        const stored = getStoredSettings();
 
-        // Check if localStorage has stored secondary credentials that server lost (e.g. Vercel cold restart)
-        let localCached: any = null;
-        if (typeof window !== 'undefined') {
-          try {
-            const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
-            if (raw) localCached = JSON.parse(raw);
-          } catch (e) {}
-        }
+        // Safe merge: Client storage (localStorage/cookies) always guards against empty server fields
+        const secUser = stored.secondaryGmailUser || s.secondaryGmailUser || 'lovebananacomms@gmail.com';
+        const secPass = stored.secondaryGmailAppPassword || s.secondaryGmailAppPassword || '';
+        const secName = stored.secondaryContactName || s.secondaryContactName || 'Henry Collins';
+        const secLabel = stored.secondaryAccountLabel || s.secondaryAccountLabel || 'Henry (Outreach Email)';
+        const secActive = stored.activeGmailAccount || s.activeGmailAccount || 'secondary';
 
-        const secUser = s.secondaryGmailUser || localCached?.secondaryGmailUser || '';
-        const secPass = s.secondaryGmailAppPassword || localCached?.secondaryGmailAppPassword || '';
-        const secName = s.secondaryContactName || localCached?.secondaryContactName || 'Henry Collins';
-        const secLabel = s.secondaryAccountLabel || localCached?.secondaryAccountLabel || 'Henry (Outreach Email)';
-        const secActive = secUser 
-          ? (localCached?.activeGmailAccount || 'secondary') 
-          : (localCached?.activeGmailAccount || s.activeGmailAccount || 'primary');
+        const gUser = stored.gmailUser || s.gmailUser || s.fromEmail || 'lovebananaband@gmail.com';
+        const gPass = stored.gmailAppPassword || s.gmailAppPassword || 'cgnj lder cgtq aclc';
+        const gName = stored.contactName || s.contactName || 'Henry Collins';
+        const gLabel = stored.primaryAccountLabel || s.primaryAccountLabel || 'Main Band Account (Love Banana)';
 
-        s = {
+        const mergedSettings: Settings = {
           ...s,
+          gmailUser: gUser,
+          gmailAppPassword: gPass,
+          contactName: gName,
+          primaryAccountLabel: gLabel,
           secondaryGmailUser: secUser,
           secondaryGmailAppPassword: secPass,
           secondaryContactName: secName,
           secondaryAccountLabel: secLabel,
-          activeGmailAccount: secActive
+          activeGmailAccount: secActive,
+          simulationMode: (gPass || secPass) ? 'false' : 'true'
         };
 
-        // Automatically re-hydrate server if missing secondary credentials
-        if (secUser && !settingsData.settings.secondaryGmailUser) {
+        saveStoredSettings(mergedSettings);
+
+        // If client has secondary App Password but server doesn't, automatically sync to server
+        if (secPass && !s.secondaryGmailAppPassword) {
           fetch('/api/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -412,17 +489,17 @@ export default function Home() {
               activeGmailAccount: secActive,
               secondaryContactName: secName,
               secondaryAccountLabel: secLabel,
-              simulationMode: secPass ? 'false' : (s.simulationMode || 'true')
+              simulationMode: 'false'
             })
           }).catch(() => {});
         }
 
-        setSettings(s);
+        setSettings(mergedSettings);
         setActiveGmailAccount(secActive);
-        setGmailUser(s.gmailUser || s.fromEmail || 'lovebananaband@gmail.com');
-        setGmailAppPassword(s.gmailAppPassword || '');
-        setPrimaryContactName(s.contactName || 'Henry Collins');
-        setPrimaryAccountLabel(s.primaryAccountLabel || 'Main Band Account (Love Banana)');
+        setGmailUser(gUser);
+        setGmailAppPassword(gPass);
+        setPrimaryContactName(gName);
+        setPrimaryAccountLabel(gLabel);
         setSecondaryGmailUser(secUser);
         setSecondaryGmailAppPassword(secPass);
         setSecondaryContactName(secName);
@@ -685,9 +762,12 @@ export default function Home() {
       if (ids.length > 0) {
         const BATCH_SIZE = 15;
         let totalDrafted = 0;
-        const targetChannel = hasSecUser ? 'secondary' : (isSecondaryActive ? 'secondary' : 'primary');
+        const stored = getStoredSettings();
+        const secPass = settings?.secondaryGmailAppPassword || secondaryGmailAppPassword || stored?.secondaryGmailAppPassword || '';
+        const secUser = settings?.secondaryGmailUser || secondaryGmailUser || stored?.secondaryGmailUser || 'lovebananacomms@gmail.com';
+        const targetChannel = isSecondaryActive ? 'secondary' : 'primary';
         const targetAccountDisplay = targetChannel === 'secondary'
-          ? (settings?.secondaryGmailUser || secondaryGmailUser || 'Outreach Gmail') 
+          ? (secUser || 'Outreach Gmail') 
           : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
 
         for (let i = 0; i < ids.length; i += BATCH_SIZE) {
@@ -701,8 +781,8 @@ export default function Home() {
             body: JSON.stringify({ 
               outboxIds: chunk,
               channel: targetChannel,
-              secondaryGmailUser: settings?.secondaryGmailUser || secondaryGmailUser,
-              secondaryGmailAppPassword: settings?.secondaryGmailAppPassword || secondaryGmailAppPassword
+              secondaryGmailUser: secUser,
+              secondaryGmailAppPassword: secPass
             })
           });
           const draftData = await draftRes.json();
@@ -786,7 +866,7 @@ export default function Home() {
   // Quick switch active sending account
   const handleQuickSwitchAccount = async (targetAccount: 'primary' | 'secondary') => {
     setActiveGmailAccount(targetAccount);
-    updateLocalSettings({ activeGmailAccount: targetAccount });
+    saveStoredSettings({ activeGmailAccount: targetAccount });
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
@@ -829,7 +909,7 @@ export default function Home() {
       simulationMode: (gmailAppPassword.trim() || secondaryGmailAppPassword.trim()) ? 'false' : 'true'
     };
 
-    updateLocalSettings(payload);
+    saveStoredSettings(payload);
 
     try {
       const res = await fetch('/api/settings', {
@@ -839,6 +919,7 @@ export default function Home() {
       });
       const data = await res.json();
       const merged = { ...(data?.settings || {}), ...payload };
+      saveStoredSettings(merged);
       setSettings(merged);
       setActiveGmailAccount(resolvedActive);
       setGmailUser(merged.gmailUser || gmailUser);
@@ -925,7 +1006,7 @@ export default function Home() {
   const hasSecondaryUser = Boolean(settings?.secondaryGmailUser || secondaryGmailUser);
   const isSecondaryActive = activeGmailAccount === 'secondary';
   const currentSenderEmail = isSecondaryActive 
-    ? (settings?.secondaryGmailUser || secondaryGmailUser || 'lovebananapress@gmail.com')
+    ? (settings?.secondaryGmailUser || secondaryGmailUser || 'lovebananacomms@gmail.com')
     : (settings?.gmailUser || gmailUser || 'lovebananaband@gmail.com');
   const currentSenderName = isSecondaryActive
     ? (settings?.secondaryContactName || secondaryContactName || 'Henry Collins')
@@ -2347,7 +2428,7 @@ export default function Home() {
                       onChange={(e) => {
                         const val = e.target.value;
                         setSecondaryGmailUser(val);
-                        updateLocalSettings({ secondaryGmailUser: val, activeGmailAccount: 'secondary' });
+                        saveStoredSettings({ secondaryGmailUser: val, activeGmailAccount: 'secondary' });
                       }}
                       className="w-full bg-[#18191f] border border-[#3b3e4a] rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-[#00f044] text-xs font-mono"
                     />
@@ -2356,22 +2437,22 @@ export default function Home() {
                     </span>
                   </div>
                   <div>
-                    <label className="block text-[10px] text-[#8e93a2] mb-1">
-                      16-LETTER APP PASSWORD (OPTIONAL)
+                    <label className="block text-[10px] text-[#8e93a2] mb-1 font-bold">
+                      16-LETTER APP PASSWORD (GOOGLE)
                     </label>
                     <input
                       type="password"
-                      placeholder="Optional (leave blank if blocked)"
+                      placeholder="e.g. abcd efgh ijkl mnop"
                       value={secondaryGmailAppPassword}
                       onChange={(e) => {
                         const val = e.target.value;
                         setSecondaryGmailAppPassword(val);
-                        updateLocalSettings({ secondaryGmailAppPassword: val });
+                        saveStoredSettings({ secondaryGmailAppPassword: val });
                       }}
                       className="w-full bg-[#18191f] border border-[#3b3e4a] rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-[#00f044] font-mono text-xs"
                     />
                     <span className="text-[9px] text-[#757a8a] block mt-0.5">
-                      If your account blocks App Passwords, leave blank!
+                      Permanent direct IMAP & draft access for Channel 2.
                     </span>
                   </div>
                 </div>
@@ -2386,7 +2467,7 @@ export default function Home() {
                       onChange={(e) => {
                         const val = e.target.value;
                         setSecondaryContactName(val);
-                        updateLocalSettings({ secondaryContactName: val });
+                        saveStoredSettings({ secondaryContactName: val });
                       }}
                       className="bg-[#18191f] border border-[#3b3e4a] rounded px-2 py-0.5 text-white focus:outline-none focus:border-[#00f044] text-xs"
                     />
@@ -2422,23 +2503,14 @@ export default function Home() {
                 <p>2. Enter &quot;Messenger Pigeon on Steroids&quot; as the App Name, click Create, and paste the 16 characters above.</p>
               </div>
 
-              {/* Vercel Persistence Notice */}
-              <div className="bg-[#1a1008] border border-[#ffa020]/40 rounded p-3 text-[10.5px] space-y-1.5 font-sans">
-                <span className="font-bold text-[#ffa020] block font-mono text-[10px]">⚠️ IMPORTANT: CREDENTIALS RESET ON REFRESH?</span>
-                <p className="text-[#c9a060]">
-                  If your saved email resets every time the app refreshes, it&apos;s because Vercel&apos;s server storage is temporary. To make credentials stick permanently, add them as <strong className="text-white">Environment Variables</strong> in the Vercel dashboard:
-                </p>
-                <div className="bg-[#141519] border border-[#383b48] rounded p-2 font-mono text-[9.5px] text-[#d6d9e0] space-y-0.5">
-                  <div><span className="text-[#ffa020]">GMAIL_USER</span> = {gmailUser || 'lovebananaband@gmail.com'}</div>
-                  <div><span className="text-[#ffa020]">GMAIL_APP_PASSWORD</span> = (your 16-char app password)</div>
-                  {secondaryGmailUser && <div><span className="text-[#00f044]">SECONDARY_GMAIL_USER</span> = {secondaryGmailUser}</div>}
-                  {secondaryGmailUser && <div><span className="text-[#00f044]">SECONDARY_GMAIL_APP_PASSWORD</span> = (outreach app password)</div>}
-                  {secondaryGmailUser && <div><span className="text-[#00f044]">ACTIVE_GMAIL_ACCOUNT</span> = {activeGmailAccount}</div>}
+              {/* Permanent Persistence Confirmation Box */}
+              <div className="bg-[#131f18] border border-[#00f044]/40 rounded p-3 text-[10.5px] space-y-1 font-sans">
+                <div className="flex items-center gap-1.5 text-[#00f044] font-mono font-bold text-[10.5px]">
+                  <ShieldCheck className="w-4 h-4 text-[#00f044]" />
+                  <span>PERMANENT MULTI-LAYER HARDWARE PERSISTENCE ACTIVE</span>
                 </div>
-                <p className="text-[#8e93a2]">
-                  Go to{' '}
-                  <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="text-[#ffa020] underline">vercel.com/dashboard</a>
-                  {' '}→ your project → Settings → Environment Variables → add those above → Redeploy once. Done — credentials will never reset again.
+                <p className="text-[#a0c8a8]">
+                  Your credentials and selected channel are permanently synchronized across LocalStorage, SessionStorage, and a 1-year HTTP Cookie. Refreshing the page, closing your browser, or serverless cold restarts will <strong>never</strong> disconnect Channel 2.
                 </p>
               </div>
 

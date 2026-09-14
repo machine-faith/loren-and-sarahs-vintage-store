@@ -26,9 +26,9 @@
     "gmailUser": "lovebananaband@gmail.com",
     "gmailAppPassword": "cgnj lder cgtq aclc",
     "secondaryAccountLabel": "Henry (Secondary / Outreach Email)",
-    "secondaryGmailUser": "",
+    "secondaryGmailUser": "lovebananacomms@gmail.com",
     "secondaryGmailAppPassword": "",
-    "secondaryFromEmail": "",
+    "secondaryFromEmail": "lovebananacomms@gmail.com",
     "secondaryContactName": "Henry Collins"
   },
   "templates": [
@@ -73,7 +73,6 @@
       "created_at": "2026-09-09T13:00:00.000Z"
     }
   ],
-
   "contacts": [
     {
       "name": "Ethan",
